@@ -13,3 +13,4 @@ m<-get_map(location=c(lb,ur),source='google')
 p <- ggmap(m)
 p <- p + stat_density2d(data=chi,aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.4) + facet_grid(.~Year)
 # This code successfully facets the map with densities
+# Note: with the full chicago data set, things get loaded in but the plot crashes when it attempts to get made
