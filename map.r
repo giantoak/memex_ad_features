@@ -2,7 +2,7 @@ library(ggmap)
 library(ggplot2)
 #ggplot(subset(chi,Primary.Type == "NARCOTICS"), aes(Longitude, Latitude)) + stat_density2d(aes(fill=..level..), geom="polygon") + scale_alpha_continuous(limits=c(0,0.2),breaks=seq(0,0.2,by=0.025))+
 #chi<-read.csv('/home/ubuntu/maps/chicago.csv')
-load('/home/jeffrey/chicago.rdata')
+load('chicago.rdata')
 lonrange<-max(chi$Longitude,na.rm=TRUE)-min(chi$Longitude,na.rm=TRUE)
 latrange<-max(chi$Latitude,na.rm=TRUE)-min(chi$Latitude,na.rm=TRUE)
 extra<-.4
@@ -13,4 +13,4 @@ m<-get_map(location=c(lb,ur),source='google')
 p <- ggmap(m)
 p <- p + stat_density2d(data=chi,aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.4) + facet_grid(.~Year)
 # This code successfully facets the map with densities
-# Note: with the full chicago data set, things get loaded in but the plot crashes when it attempts to get made
+# Note: with the full chicago data set, it looks like I need about 8GB of memory
