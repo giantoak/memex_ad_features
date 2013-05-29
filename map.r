@@ -36,3 +36,7 @@ ggplot(f,aes(x=long,y=lat, group=group,fill=P0010001)) + geom_polygon() + geom_p
 # polygons, or else a simplification which would work well, like putting
 # all the people at the center of the tracts and then doing a kernel
 # density
+
+# Note: the plots above are a little useless.  What I really need is a 
+# dataset that is not at the point level to draw block groups but at the 
+# lat-lon center level, where each value is assigned to the center of the block group
