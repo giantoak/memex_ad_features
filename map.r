@@ -17,8 +17,13 @@ p <- p + stat_density2d(data=chi,aes(x=Longitude, y=Latitude, fill=..level..),ge
 # Note: with the full chicago data set, it looks like I need about 8GB of memory
 p
 # UScensus2010::install.tract(x='linux')
-# b<-county(name='cook',state='illinois',level='tract')
-# d<-fortify(b)
+b<-county(name='cook',state='illinois',level='blkgrp')
+d<-fortify(b)
+e<-data.frame("id"=rownames(b@data),"P0010001"=b$P0010001)
+# There must be a better way to do this, but I haven't done it yet.  I am fortifying d to make the plottable
+# object, but then I am also creating a new dataframe with the 'id' variable to merge in data.  
+# But it does work
+f<-merge(d,e,by="id")
 # ggplot(d,aes(x=long,y=lat, group=group)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
 # a<-demographics(state='illinois',level=c('tract'))
 # choropleth(b,dem="P0030003")
