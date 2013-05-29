@@ -24,7 +24,9 @@ e<-data.frame("id"=rownames(b@data),"P0010001"=b$P0010001)
 # object, but then I am also creating a new dataframe with the 'id' variable to merge in data.  
 # But it does work
 f<-merge(d,e,by="id")
-# ggplot(d,aes(x=long,y=lat, group=group)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
+f$popfact<-cut(f$P0010001,breaks=summary(f$P0010001))
+ggplot(f,aes(x=long,y=lat, group=group,fill=popfact)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
+ggplot(f,aes(x=long,y=lat, group=group,fill=P0010001)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
 # a<-demographics(state='illinois',level=c('tract'))
 # choropleth(b,dem="P0030003")
 # I need to start with UScensus2010::install.blkgrp(x='linux')
