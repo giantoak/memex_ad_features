@@ -15,3 +15,10 @@ p
 # b<-county(name='cook',state='illinois',level='blkgrp')
 # a<-demographics(state='illinois',level=c('blkgrp'))
 # choropleth(b,dem="P0030003")
+# I need to start with UScensus2010::install.blkgrp(x='linux')
+# current status is i need to figure out how to use the
+# SpatialPolygonsDataFrame thing, to merge it with the ggplots
+# This will require either some sort of 'raster' thing where i combine
+# polygons, or else a simplification which would work well, like putting
+# all the people at the center of the tracts and then doing a kernel
+# density
