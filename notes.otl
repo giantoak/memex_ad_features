@@ -6,4 +6,7 @@ I can get demographics with
 	the 'dem' argument comes from http://www.census.gov/prod/cen2010/doc/sf1.pdf
 		This is just the census documentation
 How do I merge this with the Chicago level data?
+	b<-county(name='cook',state='illinois',level='tract')
+	d<-fortify(b) # requires the ggplot2 package 
+	ggplot(d,aes(x=long,y=lat, group=group)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
 	
