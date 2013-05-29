@@ -1,0 +1,9 @@
+I can use UScensus2010 package
+	Then I do install.blkgrp (300MB) or install.blk (2gb)
+	This installs block group info, including I think geographic info
+I can get demographics with 
+	b<-demographics(dem = "P0010001",state="illinois", level="blkgrp")
+	the 'dem' argument comes from http://www.census.gov/prod/cen2010/doc/sf1.pdf
+		This is just the census documentation
+How do I merge this with the Chicago level data?
+	
