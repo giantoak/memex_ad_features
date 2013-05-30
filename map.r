@@ -54,4 +54,4 @@ p<-p+ geom_point(data=e,aes(x=long, y=lat, size=black),colour='green',alpha=.2) 
 # ^ This code plots the black/white stuff on top of the google map
 # ggplot(e,aes(x=long,y=lat)) + geom_point(aes(size=black),colour='blue',alpha=.4) + geom_point(aes(size=white),colour='red',alpha=.4)
 #^ plot the black/white data
-p <- p + stat_density2d(data=subset(chi,Primary.Type == "NARCOTICS"),aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.4)
+p <- p + stat_density2d(data=subset(chi,Primary.Type == "NARCOTICS"),aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.25)
