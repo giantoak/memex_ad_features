@@ -10,3 +10,8 @@ How do I merge this with the Chicago level data?
 	d<-fortify(b) # requires the ggplot2 package 
 	ggplot(d,aes(x=long,y=lat, group=group)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
 	
+New set of things to work on
+	Do a grid-based model here
+		For a grid of points, calculate the kernel density estimate of people density
+		And density by race
+	Use the 'shiny' package to make a quick web app
