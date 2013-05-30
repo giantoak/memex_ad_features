@@ -1,6 +1,8 @@
 library(ggmap)
 library(ggplot2)
 library(UScensus2010)
+library(plyr)
+setwd('/mnt/maps/')
 #ggplot(subset(chi,Primary.Type == "NARCOTICS"), aes(Longitude, Latitude)) + stat_density2d(aes(fill=..level..), geom="polygon") + scale_alpha_continuous(limits=c(0,0.2),breaks=seq(0,0.2,by=0.025))+
 #chi<-read.csv('/home/ubuntu/maps/chicago.csv')
 load('/mnt/maps/chicago.rdata')
@@ -51,7 +53,10 @@ ggplot(f,aes(x=long,y=lat, group=group,fill=P0010001)) + geom_polygon() + geom_p
 # lat-lon center level, where each value is assigned to the center of the block group
 p<-ggmap(m)
 p<-p+ geom_point(data=e,aes(x=long, y=lat, size=black),colour='green',alpha=.2) + geom_point(data=e,aes(x=long, y=lat, size=white),colour='red',alpha=.2)
+ggsave(filename='Race.pdf',plot=p)
 # ^ This code plots the black/white stuff on top of the google map
 # ggplot(e,aes(x=long,y=lat)) + geom_point(aes(size=black),colour='blue',alpha=.4) + geom_point(aes(size=white),colour='red',alpha=.4)
 #^ plot the black/white data
+p<-ggmap(m)
 p <- p + stat_density2d(data=subset(chi,Primary.Type == "NARCOTICS"),aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.25)
+ggsave(filename='DrugCrime.pdf',plot=p)
