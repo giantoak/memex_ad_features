@@ -63,16 +63,6 @@ p<-ggmap(m)
 p <- p + stat_density2d(data=subset(chi,Primary.Type == "NARCOTICS"),aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.25)
 ggsave(filename='DrugCrime.pdf',plot=p)
 
-# Work on melted data:
-library(reshape2)
-e$total<-NULL
-# The idea here is to pass a categorical variable to stat_density and have two
-# overlapping ones by race
-f<-melt(e,id.vars=c("id","long","lat"))
-ggplot(f,aes(x=long,y=lat)) + stat_density2d(aes(colour=variable,fill=..level..),alpha=.3,geom="polygon")
-ggplot(f,aes(x=long,y=lat)) + stat_density2d(aes(colour=variable))
-# This shouldn't be better since I'm still getting the density of where counties are for black and whites
-
 # A decent overlay here: Just use polygons for the fraction black
 p<-ggmap(m)
 p<-p + geom_polygon(data=f,aes(x=long.x,y=lat.x,group=group,fill=fraction.black),alpha=.3) + coord_equal()
