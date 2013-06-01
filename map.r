@@ -20,8 +20,9 @@ p <- p + stat_density2d(data=chi,aes(x=Longitude, y=Latitude, fill=..level..),ge
 p
 # UScensus2010::install.tract(x='linux')
 b<-county(name='cook',state='illinois',level='tract')
+b<-b[b$id != "illinois.tract10_2349",] # This drops the county that's in the lake.
 d<-fortify(b)
-e<-data.frame("id"=rownames(b@data),"P0010001"=b$P0010001,"black"=b$P0030003,"white"=b$P0030002)
+e<-data.frame("id"=rownames(b@data),"total"=b$P0010001,"black"=b$P0030003,"white"=b$P0030002)
 # There must be a better way to do this, but I haven't done it yet.  I am fortifying d to make the plottable
 # object, but then I am also creating a new dataframe with the 'id' variable to merge in data.  
 # But it does work
@@ -33,10 +34,11 @@ locations<-ldply(b@polygons,.fun=function(x){
   return(data.frame("id"=id, "long"=long, "lat"=lat))
 })
 e<-merge(e,locations)
-#f<-merge(d,e,by="id")
-#f$popfact<-cut(f$P0010001,breaks=summary(f$P0010001))
+e$fraction.black<-e$black/e$total
+f<-merge(d,e,by="id")
+#f$popfact<-cut(f$total,breaks=summary(f$total))
 #ggplot(f,aes(x=long,y=lat, group=group,fill=popfact)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
-#ggplot(f,aes(x=long,y=lat, group=group,fill=P0010001)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
+#ggplot(f,aes(x=long,y=lat, group=group,fill=total)) + geom_polygon() + geom_path(color="white") + coord_equal() + scale_fill_brewer("Population or something?")
 # a<-demographics(state='illinois',level=c('tract'))
 # choropleth(b,dem="P0030003")
 # I need to start with UScensus2010::install.blkgrp(x='linux')
@@ -63,7 +65,7 @@ ggsave(filename='DrugCrime.pdf',plot=p)
 
 # Work on melted data:
 library(reshape2)
-e$P0010001<-NULL
+e$total<-NULL
 # The idea here is to pass a categorical variable to stat_density and have two
 # overlapping ones by race
 f<-melt(e,id.vars=c("id","long","lat"))
@@ -71,3 +73,6 @@ ggplot(f,aes(x=long,y=lat)) + stat_density2d(aes(colour=variable,fill=..level..)
 ggplot(f,aes(x=long,y=lat)) + stat_density2d(aes(colour=variable))
 # This shouldn't be better since I'm still getting the density of where counties are for black and whites
 
+# A decent overlay here: Just use polygons for the fraction black
+p<-ggmap(m)
+p<-p + geom_polygon(data=f,aes(x=long.x,y=lat.x,group=group,fill=fraction.black),alpha=.3) + coord_equal()
