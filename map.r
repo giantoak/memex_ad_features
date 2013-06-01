@@ -62,7 +62,8 @@ p <- p + stat_density2d(data=subset(chi,Primary.Type == "NARCOTICS"),aes(x=Longi
 ggsave(filename='DrugCrime.pdf',plot=p)
 
 # Work on melted data:
-library(reshape2)e$P0010001<-NULL
+library(reshape2)
+e$P0010001<-NULL
 # The idea here is to pass a categorical variable to stat_density and have two
 # overlapping ones by race
 f<-melt(e,id.vars=c("id","long","lat"))

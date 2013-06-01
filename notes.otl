@@ -15,3 +15,4 @@ New set of things to work on
 		For a grid of points, calculate the kernel density estimate of people density
 		And density by race
 	Use the 'shiny' package to make a quick web app
+When I run R from command line, I need to do library(X,lib.loc='/home/ubuntu/R/library/')
