@@ -14,7 +14,7 @@ lb<-c(min(chi$Longitude,na.rm=TRUE)-extra*lonrange,min(chi$Latitude,na.rm=TRUE)-
 ur<-c(max(chi$Longitude,na.rm=TRUE)+extra*lonrange,max(chi$Latitude,na.rm=TRUE)+extra*latrange)
 m<-get_map(location=c(lb,ur),source='google')
 p <- ggmap(m)
-p <- p + stat_density2d(data=chi,aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.4) + facet_wrap(~Year)
+p <- p + stat_density2d(data=chi,aes(x=Longitude, y=Latitude, fill=..level..),geom='polygon',alpha=.4) 
 # This code successfully facets the map with densities
 # Note: with the full chicago data set, it looks like I need about 8GB of memory
 p
