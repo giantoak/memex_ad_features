@@ -12,3 +12,12 @@ reg$state<-gsub('.*, ','', reg$location, perl=T)
 reg$city<-gsub(', .*','', reg$location, perl=T)
 # put city and state into columns, based on what's before or after the ', '
 # delimiter
+
+a<-geo.make(state=reg[2,'state'], place=reg[2,'city'])
+me<-acs.fetch(geography=a, table.number="B01001")
+# get data for auburn
+me2 <- acs.fetch(geography=cook, variable="B01001_001")
+# Note: using 'variable' is more like what we really want: table.number
+# brings an entire report table, with like all the combinations of
+# male/female/age or whatever displayed
+# You can get more than one variable with: variable=c("B16001_058", "B16001_059")
