@@ -22,7 +22,8 @@ me2 <- acs.fetch(geography=cook, variable="B01001_001")
 # brings an entire report table, with like all the combinations of
 # male/female/age or whatever displayed
 # You can get more than one variable with: variable=c("B16001_058", "B16001_059")
-reg<-reg[1:40,]
+numrows <- 500
+reg<-reg[1:numrows,]
 look <- function(x){
     a <- geo.make(state=x[1,'state'], place=x[1,'city'])
     if (!is.na(a@geo.list)){
@@ -35,10 +36,31 @@ look <- function(x){
     }
 }
 #out<-ddply(.data=reg, .variables=.(state, city), .fun = look)
-features <- c("B01001_001", "B01001_002")
+features <- c(
+              "B01001_001", # Total population
+              "B19013_001", # Median Income
+              "B01001A_001", # Total White Population
+              "B01001B_001", # Total Black Population
+              "B15002_003", # Male: No schooling completed 
+              "B15002_004", #  Male: Nursery to 4th grade 5     
+              "B15002_005", # Male: 5th and 6th grade 
+              "B15002_006", #  Male: 7th and 8th grade 7     
+              "B15002_007", # Male: 9th grade 
+              "B15002_008", #  Male: 10th grade 9     
+              "B15002_009", # Male: 11th grade 10    
+              "B15002_010", # Male: 12th grade, no diploma 
+              "B15002_011", # Male: High school graduate, GED, or alternative 
+              "B15002_012", # Male: Some college, less than 1 year 
+              "B15002_013", # Male: Some college, 1 or more years, no degree 
+              "B15002_014", # Male: Associate's degree 15    
+              "B15002_015", # Male: Bachelor's degree 
+              "B15002_016", # Male: Master's degree 
+              "B15002_017", # Male: Professional school degree 
+              "B15002_018" # Male: Doctorate degree 
+              )
 out <- data.frame(matrix(ncol = 3+length(features), nrow = 10))
 names(out) <- c("location", "City", "State", features)
-for (i in seq(10)){
+for (i in seq(numrows)){
     a<-look(reg[i,])
     d <- NA
     tryCatch(d<-a@estimate[1,], error = function(e) print('Nothing found'))
@@ -46,4 +68,5 @@ for (i in seq(10)){
     if (!is.na(d)){
         out[i,features] <- d
     }
+    Sys.sleep(2)
 }
