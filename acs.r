@@ -61,12 +61,17 @@ features <- c(
 out <- data.frame(matrix(ncol = 3+length(features), nrow = 10))
 names(out) <- c("location", "City", "State", features)
 for (i in seq(numrows)){
-    a<-look(reg[i,])
-    d <- NA
-    tryCatch(d<-a@estimate[1,], error = function(e) print('Nothing found'))
-    out[i,c("location", "City", "State")] <- reg[i,c('location','city','state')]
-    if (!is.na(d)){
-        out[i,features] <- d
-    }
+    tryCatch({a<-look(reg[i,])
+        d <- NA
+        tryCatch(d<-a@estimate[1,], error = function(e) print('Nothing found'))
+        out[i,c("location", "City", "State")] <- reg[i,c('location','city','state')]
+        if (!is.na(d)){
+            out[i,features] <- d
+        }
+              }, error = function(e) {
+                  print('Probably connection error')
+                  print(reg[i,])
+              })
+
     Sys.sleep(2)
 }
