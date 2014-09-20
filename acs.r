@@ -10,6 +10,7 @@ reg$US <- grepl(" USA", reg$location)
 reg <- reg[reg$US,] # Keep only the american addresses
 reg$location<-gsub(", USA","",reg$location)  # Remove the USA piece
 reg$state<-gsub('.*, ','', reg$location, perl=T) 
+reg$state<-gsub(' $','', reg$state, perl=T) 
 reg$city<-gsub(', .*','', reg$location, perl=T)
 # put city and state into columns, based on what's before or after the ', '
 # delimiter
@@ -25,7 +26,28 @@ me2 <- acs.fetch(geography=cook, variable="B01001_001")
 numrows <- 500
 reg<-reg[1:numrows,]
 look <- function(x){
-    a <- geo.make(state=x[1,'state'], place=x[1,'city'])
+    if (x[1,'state'] == x[1,'city']) {
+        # "Alabama" here parses to "Alabama, Alabama" but needs to be put
+        # through as just a single state
+        a <- geo.make(state=x[1,'state'])
+        x$level <- 'state'
+    } else{
+        results_list  <- geo.lookup(state=x[1,'state'], place=x[1,'city'])
+        if (dim(results_list)[2] == 2){
+            # 2 columns in the result here means we have just found a
+            # state, which is like a miss here, since we have both a city
+            # and a state
+        cat('Only state lookup found for ',x[1,'state'],', city: ',x[1,'city'],'\n')
+        return(NA)
+        } else{
+            results_list<-results_list[!is.na(results_list$place),]
+            cat('Non-state places found for ',x[1,'state'],', city: ',x[1,'city'],':\n')
+            print(results_list)
+            cat('Taking first in list: ',results_list[1,'state.name'],', city: ',results_list[1,'place.name'],':\n')
+            a <- geo.make(state=results_list[1,'state.name'], place=results_list[1,'place.name'])
+            x$level <- 'place'
+        }
+    }
     if (!is.na(a@geo.list)){
         b <- acs.fetch(geography=a, variable=features)
         #x["B01001_001"] <- b
@@ -60,6 +82,7 @@ features <- c(
               )
 out <- data.frame(matrix(ncol = 3+length(features), nrow = 10))
 names(out) <- c("location", "City", "State", features)
+errored.indexes <- NULL
 for (i in seq(numrows)){
     tryCatch({a<-look(reg[i,])
         d <- NA
@@ -70,8 +93,7 @@ for (i in seq(numrows)){
         }
               }, error = function(e) {
                   print('Probably connection error')
+                  errored.indexes <- c(errored.indexes, i)
                   print(reg[i,])
               })
-
-    Sys.sleep(2)
 }
