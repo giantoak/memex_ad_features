@@ -5,6 +5,8 @@ class FIPSCountyReshaper(object):
     """Reads in a csv with a 5-digit fips code and city,
     splits it into a csv with 2-digit state code, 3-digit county code,
     and city"""
+    valid_suffixes = ['county', 'parish', 'city', 'borough', 'area']
+    
     def __init__(self):
         return
     
@@ -18,12 +20,21 @@ class FIPSCountyReshaper(object):
         df2.to_csv(out, index=False)
 
     def transform(self, df):
+        def get_name(s):
+            x = s.split()
+            if x[-1].lower() in self.valid_suffixes:
+                return ' '.join(x[:-1])
+
+        def get_suffix(s):
+            x = s.split()
+            if x[-1].lower() in self.valid_suffixes:
+                return x[-1]
+
+
         df['state_fips'] = df['fips'].apply(lambda x: x[:2])
         df['county_fips'] = df['fips'].apply(lambda x: x[2:])
-        df['county_name'] = df['county'].apply(lambda x: ''.join(x.split()[:-1]))\
-                .str.lower()
-        df['county_suffix'] = df['county'].apply(lambda x: x.split()[-1]).str\
-                .lower()
+        df['county_name'] = df['county'].apply(get_name).str.lower()
+        df['county_suffix'] = df['county'].apply(get_suffix).str.lower()
 
         df['county'] = df['county'].str.lower()
         return df

@@ -16,7 +16,8 @@ def test_state():
         assert fipser.get_state(state) == result
     fixtures = {
             'VA': ('51', 'virginia'),
-            'Alabama': ('01', 'alabama')
+            'Alabama': ('01', 'alabama'),
+            'haberdash': (None, None)
             }
 
     for t, r in fixtures.iteritems():
@@ -28,17 +29,47 @@ def test_fips():
 
     fipser = Fipser()
     fixtures = {
+            # city state no punctuation
             'Alexandria VA': {
                 'state_fips': '51',
                 'place': 'alexandria city', 
                 'place_fips': '1000',
                 'county': 'alexandria city',
-                'county_fips': '510'
-                }
+                'county_fips': '510',
+                },
+            # multi-word state
+            'North Dakota': {
+                'state_fips': '38',
+                'place': None, 
+                'place_fips': None,
+                'county': None,
+                'county_fips': None,
+                },
+            # multi-word place, multi-word state
+            'Charles Mix, South Dakota': {
+                'state_fips': '46',
+                'place': None,
+                'place_fips': None,
+                'county': 'charles mix county',
+                'county_fips': '023',
+                },
+            'Clarendon, South Carolina 29042': {
+                'state_fips': '45',
+                'place': None,
+                'place_fips': None,
+                'county': 'clarendon county',
+                'county_fips': '027',
+                },
+            # this doesn't exist
+            'Gibberish, South Carolina': {
+                'state_fips': '45',
+                'place': None,
+                'place_fips': None,
+                'county': None,
+                'county_fips': None,
+                },
             }
 
     for loc, ans in fixtures.iteritems():
         yield run_fips, fipser, loc, ans
 
-if __name__ == '__main__':
-    merge_fips()

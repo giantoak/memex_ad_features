@@ -1,5 +1,5 @@
 fips,county,state_fips,county_fips,county_name,county_suffix
-01000,alabama,01,000,,alabama
+01000,alabama,01,000,,
 01001,autauga county,01,001,autauga,county
 01003,baldwin county,01,003,baldwin,county
 01005,barbour county,01,005,barbour,county
@@ -57,7 +57,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 01109,pike county,01,109,pike,county
 01111,randolph county,01,111,randolph,county
 01113,russell county,01,113,russell,county
-01115,st. clair county,01,115,st.clair,county
+01115,st. clair county,01,115,st. clair,county
 01117,shelby county,01,117,shelby,county
 01119,sumter county,01,119,sumter,county
 01121,talladega county,01,121,talladega,county
@@ -67,52 +67,52 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 01129,washington county,01,129,washington,county
 01131,wilcox county,01,131,wilcox,county
 01133,winston county,01,133,winston,county
-02000,alaska,02,000,,alaska
-02013,aleutians east borough,02,013,aleutianseast,borough
-02016,aleutians west census area,02,016,aleutianswestcensus,area
+02000,alaska,02,000,,
+02013,aleutians east borough,02,013,aleutians east,borough
+02016,aleutians west census area,02,016,aleutians west census,area
 02020,anchorage borough,02,020,anchorage,borough
-02050,bethel census area,02,050,bethelcensus,area
-02060,bristol bay borough,02,060,bristolbay,borough
+02050,bethel census area,02,050,bethel census,area
+02060,bristol bay borough,02,060,bristol bay,borough
 02068,denali borough,02,068,denali,borough
-02070,dillingham census area,02,070,dillinghamcensus,area
-02090,fairbanks north star borough,02,090,fairbanksnorthstar,borough
+02070,dillingham census area,02,070,dillingham census,area
+02090,fairbanks north star borough,02,090,fairbanks north star,borough
 02100,haines borough,02,100,haines,borough
 02110,juneau borough,02,110,juneau,borough
-02122,kenai peninsula borough,02,122,kenaipeninsula,borough
-02130,ketchikan gateway borough,02,130,ketchikangateway,borough
-02150,kodiak island borough,02,150,kodiakisland,borough
-02164,lake and peninsula borough,02,164,lakeandpeninsula,borough
+02122,kenai peninsula borough,02,122,kenai peninsula,borough
+02130,ketchikan gateway borough,02,130,ketchikan gateway,borough
+02150,kodiak island borough,02,150,kodiak island,borough
+02164,lake and peninsula borough,02,164,lake and peninsula,borough
 02170,matanuska-susitna borough,02,170,matanuska-susitna,borough
-02180,nome census area,02,180,nomecensus,area
-02185,north slope borough,02,185,northslope,borough
-02188,northwest arctic borough,02,188,northwestarctic,borough
-02201,prince of wales-outer ketchikan census area,02,201,princeofwales-outerketchikancensus,area
+02180,nome census area,02,180,nome census,area
+02185,north slope borough,02,185,north slope,borough
+02188,northwest arctic borough,02,188,northwest arctic,borough
+02201,prince of wales-outer ketchikan census area,02,201,prince of wales-outer ketchikan census,area
 02220,sitka borough,02,220,sitka,borough
-02231,skagway-yakutat-angoon census area,02,231,skagway-yakutat-angooncensus,area
-02232,skagway-hoonah-angoon census area,02,232,skagway-hoonah-angooncensus,area
-02240,southeast fairbanks census area,02,240,southeastfairbankscensus,area
-02261,valdez-cordova census area,02,261,valdez-cordovacensus,area
-02270,wade hampton census area,02,270,wadehamptoncensus,area
-02280,wrangell-petersburg census area,02,280,wrangell-petersburgcensus,area
+02231,skagway-yakutat-angoon census area,02,231,skagway-yakutat-angoon census,area
+02232,skagway-hoonah-angoon census area,02,232,skagway-hoonah-angoon census,area
+02240,southeast fairbanks census area,02,240,southeast fairbanks census,area
+02261,valdez-cordova census area,02,261,valdez-cordova census,area
+02270,wade hampton census area,02,270,wade hampton census,area
+02280,wrangell-petersburg census area,02,280,wrangell-petersburg census,area
 02282,yakutat borough,02,282,yakutat,borough
-02290,yukon-koyukuk census area,02,290,yukon-koyukukcensus,area
-04000,arizona,04,000,,arizona
+02290,yukon-koyukuk census area,02,290,yukon-koyukuk census,area
+04000,arizona,04,000,,
 04001,apache county,04,001,apache,county
 04003,cochise county,04,003,cochise,county
 04005,coconino county,04,005,coconino,county
 04007,gila county,04,007,gila,county
 04009,graham county,04,009,graham,county
 04011,greenlee county,04,011,greenlee,county
-04012,la paz county,04,012,lapaz,county
+04012,la paz county,04,012,la paz,county
 04013,maricopa county,04,013,maricopa,county
 04015,mohave county,04,015,mohave,county
 04017,navajo county,04,017,navajo,county
 04019,pima county,04,019,pima,county
 04021,pinal county,04,021,pinal,county
-04023,santa cruz county,04,023,santacruz,county
+04023,santa cruz county,04,023,santa cruz,county
 04025,yavapai county,04,025,yavapai,county
 04027,yuma county,04,027,yuma,county
-05000,arkansas,05,000,,arkansas
+05000,arkansas,05,000,,
 05001,arkansas county,05,001,arkansas,county
 05003,ashley county,05,003,ashley,county
 05005,baxter county,05,005,baxter,county
@@ -142,7 +142,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 05053,grant county,05,053,grant,county
 05055,greene county,05,055,greene,county
 05057,hempstead county,05,057,hempstead,county
-05059,hot spring county,05,059,hotspring,county
+05059,hot spring county,05,059,hot spring,county
 05061,howard county,05,061,howard,county
 05063,independence county,05,063,independence,county
 05065,izard county,05,065,izard,county
@@ -153,7 +153,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 05075,lawrence county,05,075,lawrence,county
 05077,lee county,05,077,lee,county
 05079,lincoln county,05,079,lincoln,county
-05081,little river county,05,081,littleriver,county
+05081,little river county,05,081,little river,county
 05083,logan county,05,083,logan,county
 05085,lonoke county,05,085,lonoke,county
 05087,madison county,05,087,madison,county
@@ -174,7 +174,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 05117,prairie county,05,117,prairie,county
 05119,pulaski county,05,119,pulaski,county
 05121,randolph county,05,121,randolph,county
-05123,st. francis county,05,123,st.francis,county
+05123,st. francis county,05,123,st. francis,county
 05125,saline county,05,125,saline,county
 05127,scott county,05,127,scott,county
 05129,searcy county,05,129,searcy,county
@@ -183,21 +183,21 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 05135,sharp county,05,135,sharp,county
 05137,stone county,05,137,stone,county
 05139,union county,05,139,union,county
-05141,van buren county,05,141,vanburen,county
+05141,van buren county,05,141,van buren,county
 05143,washington county,05,143,washington,county
 05145,white county,05,145,white,county
 05147,woodruff county,05,147,woodruff,county
 05149,yell county,05,149,yell,county
-06000,california,06,000,,california
+06000,california,06,000,,
 06001,alameda county,06,001,alameda,county
 06003,alpine county,06,003,alpine,county
 06005,amador county,06,005,amador,county
 06007,butte county,06,007,butte,county
 06009,calaveras county,06,009,calaveras,county
 06011,colusa county,06,011,colusa,county
-06013,contra costa county,06,013,contracosta,county
-06015,del norte county,06,015,delnorte,county
-06017,el dorado county,06,017,eldorado,county
+06013,contra costa county,06,013,contra costa,county
+06015,del norte county,06,015,del norte,county
+06017,el dorado county,06,017,el dorado,county
 06019,fresno county,06,019,fresno,county
 06021,glenn county,06,021,glenn,county
 06023,humboldt county,06,023,humboldt,county
@@ -207,7 +207,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 06031,kings county,06,031,kings,county
 06033,lake county,06,033,lake,county
 06035,lassen county,06,035,lassen,county
-06037,los angeles county,06,037,losangeles,county
+06037,los angeles county,06,037,los angeles,county
 06039,madera county,06,039,madera,county
 06041,marin county,06,041,marin,county
 06043,mariposa county,06,043,mariposa,county
@@ -223,16 +223,16 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 06063,plumas county,06,063,plumas,county
 06065,riverside county,06,065,riverside,county
 06067,sacramento county,06,067,sacramento,county
-06069,san benito county,06,069,sanbenito,county
-06071,san bernardino county,06,071,sanbernardino,county
-06073,san diego county,06,073,sandiego,county
-06075,san francisco county,06,075,sanfrancisco,county
-06077,san joaquin county,06,077,sanjoaquin,county
-06079,san luis obispo county,06,079,sanluisobispo,county
-06081,san mateo county,06,081,sanmateo,county
-06083,santa barbara county,06,083,santabarbara,county
-06085,santa clara county,06,085,santaclara,county
-06087,santa cruz county,06,087,santacruz,county
+06069,san benito county,06,069,san benito,county
+06071,san bernardino county,06,071,san bernardino,county
+06073,san diego county,06,073,san diego,county
+06075,san francisco county,06,075,san francisco,county
+06077,san joaquin county,06,077,san joaquin,county
+06079,san luis obispo county,06,079,san luis obispo,county
+06081,san mateo county,06,081,san mateo,county
+06083,santa barbara county,06,083,santa barbara,county
+06085,santa clara county,06,085,santa clara,county
+06087,santa cruz county,06,087,santa cruz,county
 06089,shasta county,06,089,shasta,county
 06091,sierra county,06,091,sierra,county
 06093,siskiyou county,06,093,siskiyou,county
@@ -247,7 +247,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 06111,ventura county,06,111,ventura,county
 06113,yolo county,06,113,yolo,county
 06115,yuba county,06,115,yuba,county
-08000,colorado,08,000,,colorado
+08000,colorado,08,000,,
 08001,adams county,08,001,adams,county
 08003,alamosa county,08,003,alamosa,county
 08005,arapahoe county,08,005,arapahoe,county
@@ -257,7 +257,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 08013,boulder county,08,013,boulder,county
 08015,chaffee county,08,015,chaffee,county
 08017,cheyenne county,08,017,cheyenne,county
-08019,clear creek county,08,019,clearcreek,county
+08019,clear creek county,08,019,clear creek,county
 08021,conejos county,08,021,conejos,county
 08023,costilla county,08,023,costilla,county
 08025,crowley county,08,025,crowley,county
@@ -268,7 +268,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 08035,douglas county,08,035,douglas,county
 08037,eagle county,08,037,eagle,county
 08039,elbert county,08,039,elbert,county
-08041,el paso county,08,041,elpaso,county
+08041,el paso county,08,041,el paso,county
 08043,fremont county,08,043,fremont,county
 08045,garfield county,08,045,garfield,county
 08047,gilpin county,08,047,gilpin,county
@@ -279,11 +279,11 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 08057,jackson county,08,057,jackson,county
 08059,jefferson county,08,059,jefferson,county
 08061,kiowa county,08,061,kiowa,county
-08063,kit carson county,08,063,kitcarson,county
+08063,kit carson county,08,063,kit carson,county
 08065,lake county,08,065,lake,county
-08067,la plata county,08,067,laplata,county
+08067,la plata county,08,067,la plata,county
 08069,larimer county,08,069,larimer,county
-08071,las animas county,08,071,lasanimas,county
+08071,las animas county,08,071,las animas,county
 08073,lincoln county,08,073,lincoln,county
 08075,logan county,08,075,logan,county
 08077,mesa county,08,077,mesa,county
@@ -299,34 +299,34 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 08097,pitkin county,08,097,pitkin,county
 08099,prowers county,08,099,prowers,county
 08101,pueblo county,08,101,pueblo,county
-08103,rio blanco county,08,103,rioblanco,county
-08105,rio grande county,08,105,riogrande,county
+08103,rio blanco county,08,103,rio blanco,county
+08105,rio grande county,08,105,rio grande,county
 08107,routt county,08,107,routt,county
 08109,saguache county,08,109,saguache,county
-08111,san juan county,08,111,sanjuan,county
-08113,san miguel county,08,113,sanmiguel,county
+08111,san juan county,08,111,san juan,county
+08113,san miguel county,08,113,san miguel,county
 08115,sedgwick county,08,115,sedgwick,county
 08117,summit county,08,117,summit,county
 08119,teller county,08,119,teller,county
 08121,washington county,08,121,washington,county
 08123,weld county,08,123,weld,county
 08125,yuma county,08,125,yuma,county
-09000,connecticut,09,000,,connecticut
+09000,connecticut,09,000,,
 09001,fairfield county,09,001,fairfield,county
 09003,hartford county,09,003,hartford,county
 09005,litchfield county,09,005,litchfield,county
 09007,middlesex county,09,007,middlesex,county
-09009,new haven county,09,009,newhaven,county
-09011,new london county,09,011,newlondon,county
+09009,new haven county,09,009,new haven,county
+09011,new london county,09,011,new london,county
 09013,tolland county,09,013,tolland,county
 09015,windham county,09,015,windham,county
-10000,delaware,10,000,,delaware
+10000,delaware,10,000,,
 10001,kent county,10,001,kent,county
-10003,new castle county,10,003,newcastle,county
+10003,new castle county,10,003,new castle,county
 10005,sussex county,10,005,sussex,county
-11000,district of columbia,11,000,districtof,columbia
-11001,district of columbia,11,001,districtof,columbia
-12000,florida,12,000,,florida
+11000,district of columbia,11,000,,
+11001,district of columbia,11,001,,
+12000,florida,12,000,,
 12001,alachua county,12,001,alachua,county
 12003,baker county,12,003,baker,county
 12005,bay county,12,005,bay,county
@@ -357,7 +357,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 12055,highlands county,12,055,highlands,county
 12057,hillsborough county,12,057,hillsborough,county
 12059,holmes county,12,059,holmes,county
-12061,indian river county,12,061,indianriver,county
+12061,indian river county,12,061,indian river,county
 12063,jackson county,12,063,jackson,county
 12065,jefferson county,12,065,jefferson,county
 12067,lafayette county,12,067,lafayette,county
@@ -376,14 +376,14 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 12093,okeechobee county,12,093,okeechobee,county
 12095,orange county,12,095,orange,county
 12097,osceola county,12,097,osceola,county
-12099,palm beach county,12,099,palmbeach,county
+12099,palm beach county,12,099,palm beach,county
 12101,pasco county,12,101,pasco,county
 12103,pinellas county,12,103,pinellas,county
 12105,polk county,12,105,polk,county
 12107,putnam county,12,107,putnam,county
-12109,st. johns county,12,109,st.johns,county
-12111,st. lucie county,12,111,st.lucie,county
-12113,santa rosa county,12,113,santarosa,county
+12109,st. johns county,12,109,st. johns,county
+12111,st. lucie county,12,111,st. lucie,county
+12113,santa rosa county,12,113,santa rosa,county
 12115,sarasota county,12,115,sarasota,county
 12117,seminole county,12,117,seminole,county
 12119,sumter county,12,119,sumter,county
@@ -394,7 +394,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 12129,wakulla county,12,129,wakulla,county
 12131,walton county,12,131,walton,county
 12133,washington county,12,133,washington,county
-13000,georgia,13,000,,georgia
+13000,georgia,13,000,,
 13001,appling county,13,001,appling,county
 13003,atkinson county,13,003,atkinson,county
 13005,bacon county,13,005,bacon,county
@@ -403,7 +403,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 13011,banks county,13,011,banks,county
 13013,barrow county,13,013,barrow,county
 13015,bartow county,13,015,bartow,county
-13017,ben hill county,13,017,benhill,county
+13017,ben hill county,13,017,ben hill,county
 13019,berrien county,13,019,berrien,county
 13021,bibb county,13,021,bibb,county
 13023,bleckley county,13,023,bleckley,county
@@ -474,7 +474,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 13155,irwin county,13,155,irwin,county
 13157,jackson county,13,157,jackson,county
 13159,jasper county,13,159,jasper,county
-13161,jeff davis county,13,161,jeffdavis,county
+13161,jeff davis county,13,161,jeff davis,county
 13163,jefferson county,13,163,jefferson,county
 13165,jenkins county,13,165,jenkins,county
 13167,johnson county,13,167,johnson,county
@@ -554,17 +554,17 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 13317,wilkes county,13,317,wilkes,county
 13319,wilkinson county,13,319,wilkinson,county
 13321,worth county,13,321,worth,county
-15000,hawaii,15,000,,hawaii
+15000,hawaii,15,000,,
 15001,hawaii county,15,001,hawaii,county
 15003,honolulu county,15,003,honolulu,county
 15005,kalawao county,15,005,kalawao,county
 15007,kauai county,15,007,kauai,county
 15009,maui county,15,009,maui,county
-16000,idaho,16,000,,idaho
+16000,idaho,16,000,,
 16001,ada county,16,001,ada,county
 16003,adams county,16,003,adams,county
 16005,bannock county,16,005,bannock,county
-16007,bear lake county,16,007,bearlake,county
+16007,bear lake county,16,007,bear lake,county
 16009,benewah county,16,009,benewah,county
 16011,bingham county,16,011,bingham,county
 16013,blaine county,16,013,blaine,county
@@ -595,17 +595,17 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 16063,lincoln county,16,063,lincoln,county
 16065,madison county,16,065,madison,county
 16067,minidoka county,16,067,minidoka,county
-16069,nez perce county,16,069,nezperce,county
+16069,nez perce county,16,069,nez perce,county
 16071,oneida county,16,071,oneida,county
 16073,owyhee county,16,073,owyhee,county
 16075,payette county,16,075,payette,county
 16077,power county,16,077,power,county
 16079,shoshone county,16,079,shoshone,county
 16081,teton county,16,081,teton,county
-16083,twin falls county,16,083,twinfalls,county
+16083,twin falls county,16,083,twin falls,county
 16085,valley county,16,085,valley,county
 16087,washington county,16,087,washington,county
-17000,illinois,17,000,,illinois
+17000,illinois,17,000,,
 17001,adams county,17,001,adams,county
 17003,alexander county,17,003,alexander,county
 17005,bond county,17,005,bond,county
@@ -625,7 +625,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 17033,crawford county,17,033,crawford,county
 17035,cumberland county,17,035,cumberland,county
 17037,dekalb county,17,037,dekalb,county
-17039,de witt county,17,039,dewitt,county
+17039,de witt county,17,039,de witt,county
 17041,douglas county,17,041,douglas,county
 17043,dupage county,17,043,dupage,county
 17045,edgar county,17,045,edgar,county
@@ -648,14 +648,14 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 17079,jasper county,17,079,jasper,county
 17081,jefferson county,17,081,jefferson,county
 17083,jersey county,17,083,jersey,county
-17085,jo daviess county,17,085,jodaviess,county
+17085,jo daviess county,17,085,jo daviess,county
 17087,johnson county,17,087,johnson,county
 17089,kane county,17,089,kane,county
 17091,kankakee county,17,091,kankakee,county
 17093,kendall county,17,093,kendall,county
 17095,knox county,17,095,knox,county
 17097,lake county,17,097,lake,county
-17099,la salle county,17,099,lasalle,county
+17099,la salle county,17,099,la salle,county
 17101,lawrence county,17,101,lawrence,county
 17103,lee county,17,103,lee,county
 17105,livingston county,17,105,livingston,county
@@ -686,8 +686,8 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 17155,putnam county,17,155,putnam,county
 17157,randolph county,17,157,randolph,county
 17159,richland county,17,159,richland,county
-17161,rock island county,17,161,rockisland,county
-17163,st. clair county,17,163,st.clair,county
+17161,rock island county,17,161,rock island,county
+17163,st. clair county,17,163,st. clair,county
 17165,saline county,17,165,saline,county
 17167,sangamon county,17,167,sangamon,county
 17169,schuyler county,17,169,schuyler,county
@@ -708,7 +708,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 17199,williamson county,17,199,williamson,county
 17201,winnebago county,17,201,winnebago,county
 17203,woodford county,17,203,woodford,county
-18000,indiana,18,000,,indiana
+18000,indiana,18,000,,
 18001,adams county,18,001,adams,county
 18003,allen county,18,003,allen,county
 18005,bartholomew county,18,005,bartholomew,county
@@ -725,7 +725,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 18027,daviess county,18,027,daviess,county
 18029,dearborn county,18,029,dearborn,county
 18031,decatur county,18,031,decatur,county
-18033,de kalb county,18,033,dekalb,county
+18033,de kalb county,18,033,de kalb,county
 18035,delaware county,18,035,delaware,county
 18037,dubois county,18,037,dubois,county
 18039,elkhart county,18,039,elkhart,county
@@ -754,7 +754,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 18085,kosciusko county,18,085,kosciusko,county
 18087,lagrange county,18,087,lagrange,county
 18089,lake county,18,089,lake,county
-18091,la porte county,18,091,laporte,county
+18091,la porte county,18,091,la porte,county
 18093,lawrence county,18,093,lawrence,county
 18095,madison county,18,095,madison,county
 18097,marion county,18,097,marion,county
@@ -779,7 +779,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 18135,randolph county,18,135,randolph,county
 18137,ripley county,18,137,ripley,county
 18139,rush county,18,139,rush,county
-18141,st. joseph county,18,141,st.joseph,county
+18141,st. joseph county,18,141,st. joseph,county
 18143,scott county,18,143,scott,county
 18145,shelby county,18,145,shelby,county
 18147,spencer county,18,147,spencer,county
@@ -801,24 +801,24 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 18179,wells county,18,179,wells,county
 18181,white county,18,181,white,county
 18183,whitley county,18,183,whitley,county
-19000,iowa,19,000,,iowa
+19000,iowa,19,000,,
 19001,adair county,19,001,adair,county
 19003,adams county,19,003,adams,county
 19005,allamakee county,19,005,allamakee,county
 19007,appanoose county,19,007,appanoose,county
 19009,audubon county,19,009,audubon,county
 19011,benton county,19,011,benton,county
-19013,black hawk county,19,013,blackhawk,county
+19013,black hawk county,19,013,black hawk,county
 19015,boone county,19,015,boone,county
 19017,bremer county,19,017,bremer,county
 19019,buchanan county,19,019,buchanan,county
-19021,buena vista county,19,021,buenavista,county
+19021,buena vista county,19,021,buena vista,county
 19023,butler county,19,023,butler,county
 19025,calhoun county,19,025,calhoun,county
 19027,carroll county,19,027,carroll,county
 19029,cass county,19,029,cass,county
 19031,cedar county,19,031,cedar,county
-19033,cerro gordo county,19,033,cerrogordo,county
+19033,cerro gordo county,19,033,cerro gordo,county
 19035,cherokee county,19,035,cherokee,county
 19037,chickasaw county,19,037,chickasaw,county
 19039,clarke county,19,039,clarke,county
@@ -830,7 +830,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 19051,davis county,19,051,davis,county
 19053,decatur county,19,053,decatur,county
 19055,delaware county,19,055,delaware,county
-19057,des moines county,19,057,desmoines,county
+19057,des moines county,19,057,des moines,county
 19059,dickinson county,19,059,dickinson,county
 19061,dubuque county,19,061,dubuque,county
 19063,emmet county,19,063,emmet,county
@@ -872,10 +872,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 19135,monroe county,19,135,monroe,county
 19137,montgomery county,19,137,montgomery,county
 19139,muscatine county,19,139,muscatine,county
-19141,o,19,141,,o
+19141,o,19,141,,
 19143,osceola county,19,143,osceola,county
 19145,page county,19,145,page,county
-19147,palo alto county,19,147,paloalto,county
+19147,palo alto county,19,147,palo alto,county
 19149,plymouth county,19,149,plymouth,county
 19151,pocahontas county,19,151,pocahontas,county
 19153,polk county,19,153,polk,county
@@ -890,7 +890,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 19171,tama county,19,171,tama,county
 19173,taylor county,19,173,taylor,county
 19175,union county,19,175,union,county
-19177,van buren county,19,177,vanburen,county
+19177,van buren county,19,177,van buren,county
 19179,wapello county,19,179,wapello,county
 19181,warren county,19,181,warren,county
 19183,washington county,19,183,washington,county
@@ -901,7 +901,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 19193,woodbury county,19,193,woodbury,county
 19195,worth county,19,195,worth,county
 19197,wright county,19,197,wright,county
-20000,kansas,20,000,,kansas
+20000,kansas,20,000,,
 20001,allen county,20,001,allen,county
 20003,anderson county,20,003,anderson,county
 20005,atchison county,20,005,atchison,county
@@ -1007,7 +1007,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 20205,wilson county,20,205,wilson,county
 20207,woodson county,20,207,woodson,county
 20209,wyandotte county,20,209,wyandotte,county
-21000,kentucky,21,000,,kentucky
+21000,kentucky,21,000,,
 21001,adair county,21,001,adair,county
 21003,allen county,21,003,allen,county
 21005,anderson county,21,005,anderson,county
@@ -1128,7 +1128,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 21235,whitley county,21,235,whitley,county
 21237,wolfe county,21,237,wolfe,county
 21239,woodford county,21,239,woodford,county
-22000,louisiana,22,000,,louisiana
+22000,louisiana,22,000,,
 22001,acadia parish,22,001,acadia,parish
 22003,allen parish,22,003,allen,parish
 22005,ascension parish,22,005,ascension,parish
@@ -1144,10 +1144,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 22025,catahoula parish,22,025,catahoula,parish
 22027,claiborne parish,22,027,claiborne,parish
 22029,concordia parish,22,029,concordia,parish
-22031,de soto parish,22,031,desoto,parish
-22033,east baton rouge parish,22,033,eastbatonrouge,parish
-22035,east carroll parish,22,035,eastcarroll,parish
-22037,east feliciana parish,22,037,eastfeliciana,parish
+22031,de soto parish,22,031,de soto,parish
+22033,east baton rouge parish,22,033,east baton rouge,parish
+22035,east carroll parish,22,035,east carroll,parish
+22037,east feliciana parish,22,037,east feliciana,parish
 22039,evangeline parish,22,039,evangeline,parish
 22041,franklin parish,22,041,franklin,parish
 22043,grant parish,22,043,grant,parish
@@ -1155,10 +1155,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 22047,iberville parish,22,047,iberville,parish
 22049,jackson parish,22,049,jackson,parish
 22051,jefferson parish,22,051,jefferson,parish
-22053,jefferson davis parish,22,053,jeffersondavis,parish
+22053,jefferson davis parish,22,053,jefferson davis,parish
 22055,lafayette parish,22,055,lafayette,parish
 22057,lafourche parish,22,057,lafourche,parish
-22059,la salle parish,22,059,lasalle,parish
+22059,la salle parish,22,059,la salle,parish
 22061,lincoln parish,22,061,lincoln,parish
 22063,livingston parish,22,063,livingston,parish
 22065,madison parish,22,065,madison,parish
@@ -1167,20 +1167,20 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 22071,orleans parish,22,071,orleans,parish
 22073,ouachita parish,22,073,ouachita,parish
 22075,plaquemines parish,22,075,plaquemines,parish
-22077,pointe coupee parish,22,077,pointecoupee,parish
+22077,pointe coupee parish,22,077,pointe coupee,parish
 22079,rapides parish,22,079,rapides,parish
-22081,red river parish,22,081,redriver,parish
+22081,red river parish,22,081,red river,parish
 22083,richland parish,22,083,richland,parish
 22085,sabine parish,22,085,sabine,parish
-22087,st. bernard parish,22,087,st.bernard,parish
-22089,st. charles parish,22,089,st.charles,parish
-22091,st. helena parish,22,091,st.helena,parish
-22093,st. james parish,22,093,st.james,parish
-22095,st. john the baptist parish,22,095,st.johnthebaptist,parish
-22097,st. landry parish,22,097,st.landry,parish
-22099,st. martin parish,22,099,st.martin,parish
-22101,st. mary parish,22,101,st.mary,parish
-22103,st. tammany parish,22,103,st.tammany,parish
+22087,st. bernard parish,22,087,st. bernard,parish
+22089,st. charles parish,22,089,st. charles,parish
+22091,st. helena parish,22,091,st. helena,parish
+22093,st. james parish,22,093,st. james,parish
+22095,st. john the baptist parish,22,095,st. john the baptist,parish
+22097,st. landry parish,22,097,st. landry,parish
+22099,st. martin parish,22,099,st. martin,parish
+22101,st. mary parish,22,101,st. mary,parish
+22103,st. tammany parish,22,103,st. tammany,parish
 22105,tangipahoa parish,22,105,tangipahoa,parish
 22107,tensas parish,22,107,tensas,parish
 22109,terrebonne parish,22,109,terrebonne,parish
@@ -1189,11 +1189,11 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 22115,vernon parish,22,115,vernon,parish
 22117,washington parish,22,117,washington,parish
 22119,webster parish,22,119,webster,parish
-22121,west baton rouge parish,22,121,westbatonrouge,parish
-22123,west carroll parish,22,123,westcarroll,parish
-22125,west feliciana parish,22,125,westfeliciana,parish
+22121,west baton rouge parish,22,121,west baton rouge,parish
+22123,west carroll parish,22,123,west carroll,parish
+22125,west feliciana parish,22,125,west feliciana,parish
 22127,winn parish,22,127,winn,parish
-23000,maine,23,000,,maine
+23000,maine,23,000,,
 23001,androscoggin county,23,001,androscoggin,county
 23003,aroostook county,23,003,aroostook,county
 23005,cumberland county,23,005,cumberland,county
@@ -1210,9 +1210,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 23027,waldo county,23,027,waldo,county
 23029,washington county,23,029,washington,county
 23031,york county,23,031,york,county
-24000,maryland,24,000,,maryland
+24000,maryland,24,000,,
 24001,allegany county,24,001,allegany,county
-24003,anne arundel county,24,003,annearundel,county
+24003,anne arundel county,24,003,anne arundel,county
 24005,baltimore county,24,005,baltimore,county
 24009,calvert county,24,009,calvert,county
 24011,caroline county,24,011,caroline,county
@@ -1226,16 +1226,16 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 24027,howard county,24,027,howard,county
 24029,kent county,24,029,kent,county
 24031,montgomery county,24,031,montgomery,county
-24033,prince george,24,033,prince,george
-24035,queen anne,24,035,queen,anne
-24037,st. mary,24,037,st.,mary
+24033,prince george,24,033,,
+24035,queen anne,24,035,,
+24037,st. mary,24,037,,
 24039,somerset county,24,039,somerset,county
 24041,talbot county,24,041,talbot,county
 24043,washington county,24,043,washington,county
 24045,wicomico county,24,045,wicomico,county
 24047,worcester county,24,047,worcester,county
 24510,baltimore city,24,510,baltimore,city
-25000,massachusetts,25,000,,massachusetts
+25000,massachusetts,25,000,,
 25001,barnstable county,25,001,barnstable,county
 25003,berkshire county,25,003,berkshire,county
 25005,bristol county,25,005,bristol,county
@@ -1250,7 +1250,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 25023,plymouth county,25,023,plymouth,county
 25025,suffolk county,25,025,suffolk,county
 25027,worcester county,25,027,worcester,county
-26000,michigan,26,000,,michigan
+26000,michigan,26,000,,
 26001,alcona county,26,001,alcona,county
 26003,alger county,26,003,alger,county
 26005,allegan county,26,005,allegan,county
@@ -1278,7 +1278,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 26049,genesee county,26,049,genesee,county
 26051,gladwin county,26,051,gladwin,county
 26053,gogebic county,26,053,gogebic,county
-26055,grand traverse county,26,055,grandtraverse,county
+26055,grand traverse county,26,055,grand traverse,county
 26057,gratiot county,26,057,gratiot,county
 26059,hillsdale county,26,059,hillsdale,county
 26061,houghton county,26,061,houghton,county
@@ -1321,27 +1321,27 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 26135,oscoda county,26,135,oscoda,county
 26137,otsego county,26,137,otsego,county
 26139,ottawa county,26,139,ottawa,county
-26141,presque isle county,26,141,presqueisle,county
+26141,presque isle county,26,141,presque isle,county
 26143,roscommon county,26,143,roscommon,county
 26145,saginaw county,26,145,saginaw,county
-26147,st. clair county,26,147,st.clair,county
-26149,st. joseph county,26,149,st.joseph,county
+26147,st. clair county,26,147,st. clair,county
+26149,st. joseph county,26,149,st. joseph,county
 26151,sanilac county,26,151,sanilac,county
 26153,schoolcraft county,26,153,schoolcraft,county
 26155,shiawassee county,26,155,shiawassee,county
 26157,tuscola county,26,157,tuscola,county
-26159,van buren county,26,159,vanburen,county
+26159,van buren county,26,159,van buren,county
 26161,washtenaw county,26,161,washtenaw,county
 26163,wayne county,26,163,wayne,county
 26165,wexford county,26,165,wexford,county
-27000,minnesota,27,000,,minnesota
+27000,minnesota,27,000,,
 27001,aitkin county,27,001,aitkin,county
 27003,anoka county,27,003,anoka,county
 27005,becker county,27,005,becker,county
 27007,beltrami county,27,007,beltrami,county
 27009,benton county,27,009,benton,county
-27011,big stone county,27,011,bigstone,county
-27013,blue earth county,27,013,blueearth,county
+27011,big stone county,27,011,big stone,county
+27013,blue earth county,27,013,blue earth,county
 27015,brown county,27,015,brown,county
 27017,carlton county,27,017,carlton,county
 27019,carver county,27,019,carver,county
@@ -1352,7 +1352,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 27029,clearwater county,27,029,clearwater,county
 27031,cook county,27,031,cook,county
 27033,cottonwood county,27,033,cottonwood,county
-27035,crow wing county,27,035,crowwing,county
+27035,crow wing county,27,035,crow wing,county
 27037,dakota county,27,037,dakota,county
 27039,dodge county,27,039,dodge,county
 27041,douglas county,27,041,douglas,county
@@ -1371,10 +1371,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 27067,kandiyohi county,27,067,kandiyohi,county
 27069,kittson county,27,069,kittson,county
 27071,koochiching county,27,071,koochiching,county
-27073,lac qui parle county,27,073,lacquiparle,county
+27073,lac qui parle county,27,073,lac qui parle,county
 27075,lake county,27,075,lake,county
-27077,lake of the woods county,27,077,lakeofthewoods,county
-27079,le sueur county,27,079,lesueur,county
+27077,lake of the woods county,27,077,lake of the woods,county
+27079,le sueur county,27,079,le sueur,county
 27081,lincoln county,27,081,lincoln,county
 27083,lyon county,27,083,lyon,county
 27085,mcleod county,27,085,mcleod,county
@@ -1382,7 +1382,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 27089,marshall county,27,089,marshall,county
 27091,martin county,27,091,martin,county
 27093,meeker county,27,093,meeker,county
-27095,mille lacs county,27,095,millelacs,county
+27095,mille lacs county,27,095,mille lacs,county
 27097,morrison county,27,097,morrison,county
 27099,mower county,27,099,mower,county
 27101,murray county,27,101,murray,county
@@ -1390,20 +1390,20 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 27105,nobles county,27,105,nobles,county
 27107,norman county,27,107,norman,county
 27109,olmsted county,27,109,olmsted,county
-27111,otter tail county,27,111,ottertail,county
+27111,otter tail county,27,111,otter tail,county
 27113,pennington county,27,113,pennington,county
 27115,pine county,27,115,pine,county
 27117,pipestone county,27,117,pipestone,county
 27119,polk county,27,119,polk,county
 27121,pope county,27,121,pope,county
 27123,ramsey county,27,123,ramsey,county
-27125,red lake county,27,125,redlake,county
+27125,red lake county,27,125,red lake,county
 27127,redwood county,27,127,redwood,county
 27129,renville county,27,129,renville,county
 27131,rice county,27,131,rice,county
 27133,rock county,27,133,rock,county
 27135,roseau county,27,135,roseau,county
-27137,st. louis county,27,137,st.louis,county
+27137,st. louis county,27,137,st. louis,county
 27139,scott county,27,139,scott,county
 27141,sherburne county,27,141,sherburne,county
 27143,sibley county,27,143,sibley,county
@@ -1421,8 +1421,8 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 27167,wilkin county,27,167,wilkin,county
 27169,winona county,27,169,winona,county
 27171,wright county,27,171,wright,county
-27173,yellow medicine county,27,173,yellowmedicine,county
-28000,mississippi,28,000,,mississippi
+27173,yellow medicine county,27,173,yellow medicine,county
+28000,mississippi,28,000,,
 28001,adams county,28,001,adams,county
 28003,alcorn county,28,003,alcorn,county
 28005,amite county,28,005,amite,county
@@ -1455,7 +1455,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 28059,jackson county,28,059,jackson,county
 28061,jasper county,28,061,jasper,county
 28063,jefferson county,28,063,jefferson,county
-28065,jefferson davis county,28,065,jeffersondavis,county
+28065,jefferson davis county,28,065,jefferson davis,county
 28067,jones county,28,067,jones,county
 28069,kemper county,28,069,kemper,county
 28071,lafayette county,28,071,lafayette,county
@@ -1477,7 +1477,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 28103,noxubee county,28,103,noxubee,county
 28105,oktibbeha county,28,105,oktibbeha,county
 28107,panola county,28,107,panola,county
-28109,pearl river county,28,109,pearlriver,county
+28109,pearl river county,28,109,pearl river,county
 28111,perry county,28,111,perry,county
 28113,pike county,28,113,pike,county
 28115,pontotoc county,28,115,pontotoc,county
@@ -1505,7 +1505,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 28159,winston county,28,159,winston,county
 28161,yalobusha county,28,161,yalobusha,county
 28163,yazoo county,28,163,yazoo,county
-29000,missouri,29,000,,missouri
+29000,missouri,29,000,,
 29001,adair county,29,001,adair,county
 29003,andrew county,29,003,andrew,county
 29005,atchison county,29,005,atchison,county
@@ -1521,7 +1521,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 29025,caldwell county,29,025,caldwell,county
 29027,callaway county,29,027,callaway,county
 29029,camden county,29,029,camden,county
-29031,cape girardeau county,29,031,capegirardeau,county
+29031,cape girardeau county,29,031,cape girardeau,county
 29033,carroll county,29,033,carroll,county
 29035,carter county,29,035,carter,county
 29037,cass county,29,037,cass,county
@@ -1577,7 +1577,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 29137,monroe county,29,137,monroe,county
 29139,montgomery county,29,139,montgomery,county
 29141,morgan county,29,141,morgan,county
-29143,new madrid county,29,143,newmadrid,county
+29143,new madrid county,29,143,new madrid,county
 29145,newton county,29,145,newton,county
 29147,nodaway county,29,147,nodaway,county
 29149,oregon county,29,149,oregon,county
@@ -1597,11 +1597,11 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 29177,ray county,29,177,ray,county
 29179,reynolds county,29,179,reynolds,county
 29181,ripley county,29,181,ripley,county
-29183,st. charles county,29,183,st.charles,county
-29185,st. clair county,29,185,st.clair,county
-29186,ste. genevieve county,29,186,ste.genevieve,county
-29187,st. francois county,29,187,st.francois,county
-29189,st. louis county,29,189,st.louis,county
+29183,st. charles county,29,183,st. charles,county
+29185,st. clair county,29,185,st. clair,county
+29186,ste. genevieve county,29,186,ste. genevieve,county
+29187,st. francois county,29,187,st. francois,county
+29189,st. louis county,29,189,st. louis,county
 29195,saline county,29,195,saline,county
 29197,schuyler county,29,197,schuyler,county
 29199,scotland county,29,199,scotland,county
@@ -1620,10 +1620,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 29225,webster county,29,225,webster,county
 29227,worth county,29,227,worth,county
 29229,wright county,29,229,wright,county
-29510,st. louis city,29,510,st.louis,city
-30000,montana,30,000,,montana
+29510,st. louis city,29,510,st. louis,city
+30000,montana,30,000,,
 30001,beaverhead county,30,001,beaverhead,county
-30003,big horn county,30,003,bighorn,county
+30003,big horn county,30,003,big horn,county
 30005,blaine county,30,005,blaine,county
 30007,broadwater county,30,007,broadwater,county
 30009,carbon county,30,009,carbon,county
@@ -1633,20 +1633,20 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 30017,custer county,30,017,custer,county
 30019,daniels county,30,019,daniels,county
 30021,dawson county,30,021,dawson,county
-30023,deer lodge county,30,023,deerlodge,county
+30023,deer lodge county,30,023,deer lodge,county
 30025,fallon county,30,025,fallon,county
 30027,fergus county,30,027,fergus,county
 30029,flathead county,30,029,flathead,county
 30031,gallatin county,30,031,gallatin,county
 30033,garfield county,30,033,garfield,county
 30035,glacier county,30,035,glacier,county
-30037,golden valley county,30,037,goldenvalley,county
+30037,golden valley county,30,037,golden valley,county
 30039,granite county,30,039,granite,county
 30041,hill county,30,041,hill,county
 30043,jefferson county,30,043,jefferson,county
-30045,judith basin county,30,045,judithbasin,county
+30045,judith basin county,30,045,judith basin,county
 30047,lake county,30,047,lake,county
-30049,lewis and clark county,30,049,lewisandclark,county
+30049,lewis and clark county,30,049,lewis and clark,county
 30051,liberty county,30,051,liberty,county
 30053,lincoln county,30,053,lincoln,county
 30055,mccone county,30,055,mccone,county
@@ -1659,7 +1659,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 30069,petroleum county,30,069,petroleum,county
 30071,phillips county,30,071,phillips,county
 30073,pondera county,30,073,pondera,county
-30075,powder river county,30,075,powderriver,county
+30075,powder river county,30,075,powder river,county
 30077,powell county,30,077,powell,county
 30079,prairie county,30,079,prairie,county
 30081,ravalli county,30,081,ravalli,county
@@ -1668,9 +1668,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 30087,rosebud county,30,087,rosebud,county
 30089,sanders county,30,089,sanders,county
 30091,sheridan county,30,091,sheridan,county
-30093,silver bow county,30,093,silverbow,county
+30093,silver bow county,30,093,silver bow,county
 30095,stillwater county,30,095,stillwater,county
-30097,sweet grass county,30,097,sweetgrass,county
+30097,sweet grass county,30,097,sweet grass,county
 30099,teton county,30,099,teton,county
 30101,toole county,30,101,toole,county
 30103,treasure county,30,103,treasure,county
@@ -1678,15 +1678,15 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 30107,wheatland county,30,107,wheatland,county
 30109,wibaux county,30,109,wibaux,county
 30111,yellowstone county,30,111,yellowstone,county
-30113,yellowstone national park,30,113,yellowstonenational,park
-31000,nebraska,31,000,,nebraska
+30113,yellowstone national park,30,113,,
+31000,nebraska,31,000,,
 31001,adams county,31,001,adams,county
 31003,antelope county,31,003,antelope,county
 31005,arthur county,31,005,arthur,county
 31007,banner county,31,007,banner,county
 31009,blaine county,31,009,blaine,county
 31011,boone county,31,011,boone,county
-31013,box butte county,31,013,boxbutte,county
+31013,box butte county,31,013,box butte,county
 31015,boyd county,31,015,boyd,county
 31017,brown county,31,017,brown,county
 31019,buffalo county,31,019,buffalo,county
@@ -1731,7 +1731,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 31097,johnson county,31,097,johnson,county
 31099,kearney county,31,099,kearney,county
 31101,keith county,31,101,keith,county
-31103,keya paha county,31,103,keyapaha,county
+31103,keya paha county,31,103,keya paha,county
 31105,kimball county,31,105,kimball,county
 31107,knox county,31,107,knox,county
 31109,lancaster county,31,109,lancaster,county
@@ -1752,13 +1752,13 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 31139,pierce county,31,139,pierce,county
 31141,platte county,31,141,platte,county
 31143,polk county,31,143,polk,county
-31145,red willow county,31,145,redwillow,county
+31145,red willow county,31,145,red willow,county
 31147,richardson county,31,147,richardson,county
 31149,rock county,31,149,rock,county
 31151,saline county,31,151,saline,county
 31153,sarpy county,31,153,sarpy,county
 31155,saunders county,31,155,saunders,county
-31157,scotts bluff county,31,157,scottsbluff,county
+31157,scotts bluff county,31,157,scotts bluff,county
 31159,seward county,31,159,seward,county
 31161,sheridan county,31,161,sheridan,county
 31163,sherman county,31,163,sherman,county
@@ -1773,7 +1773,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 31181,webster county,31,181,webster,county
 31183,wheeler county,31,183,wheeler,county
 31185,york county,31,185,york,county
-32000,nevada,32,000,,nevada
+32000,nevada,32,000,,
 32001,churchill county,32,001,churchill,county
 32003,clark county,32,003,clark,county
 32005,douglas county,32,005,douglas,county
@@ -1789,9 +1789,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 32027,pershing county,32,027,pershing,county
 32029,storey county,32,029,storey,county
 32031,washoe county,32,031,washoe,county
-32033,white pine county,32,033,whitepine,county
+32033,white pine county,32,033,white pine,county
 32510,carson city,32,510,carson,city
-33000,new hampshire,33,000,new,hampshire
+33000,new hampshire,33,000,,
 33001,belknap county,33,001,belknap,county
 33003,carroll county,33,003,carroll,county
 33005,cheshire county,33,005,cheshire,county
@@ -1802,12 +1802,12 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 33015,rockingham county,33,015,rockingham,county
 33017,strafford county,33,017,strafford,county
 33019,sullivan county,33,019,sullivan,county
-34000,new jersey,34,000,new,jersey
+34000,new jersey,34,000,,
 34001,atlantic county,34,001,atlantic,county
 34003,bergen county,34,003,bergen,county
 34005,burlington county,34,005,burlington,county
 34007,camden county,34,007,camden,county
-34009,cape may county,34,009,capemay,county
+34009,cape may county,34,009,cape may,county
 34011,cumberland county,34,011,cumberland,county
 34013,essex county,34,013,essex,county
 34015,gloucester county,34,015,gloucester,county
@@ -1824,7 +1824,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 34037,sussex county,34,037,sussex,county
 34039,union county,34,039,union,county
 34041,warren county,34,041,warren,county
-35000,new mexico,35,000,new,mexico
+35000,new mexico,35,000,,
 35001,bernalillo county,35,001,bernalillo,county
 35003,catron county,35,003,catron,county
 35005,chaves county,35,005,chaves,county
@@ -1832,7 +1832,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 35007,colfax county,35,007,colfax,county
 35009,curry county,35,009,curry,county
 35011,debaca county,35,011,debaca,county
-35013,dona ana county,35,013,donaana,county
+35013,dona ana county,35,013,dona ana,county
 35015,eddy county,35,015,eddy,county
 35017,grant county,35,017,grant,county
 35019,guadalupe county,35,019,guadalupe,county
@@ -1840,25 +1840,25 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 35023,hidalgo county,35,023,hidalgo,county
 35025,lea county,35,025,lea,county
 35027,lincoln county,35,027,lincoln,county
-35028,los alamos county,35,028,losalamos,county
+35028,los alamos county,35,028,los alamos,county
 35029,luna county,35,029,luna,county
 35031,mckinley county,35,031,mckinley,county
 35033,mora county,35,033,mora,county
 35035,otero county,35,035,otero,county
 35037,quay county,35,037,quay,county
-35039,rio arriba county,35,039,rioarriba,county
+35039,rio arriba county,35,039,rio arriba,county
 35041,roosevelt county,35,041,roosevelt,county
 35043,sandoval county,35,043,sandoval,county
-35045,san juan county,35,045,sanjuan,county
-35047,san miguel county,35,047,sanmiguel,county
-35049,santa fe county,35,049,santafe,county
+35045,san juan county,35,045,san juan,county
+35047,san miguel county,35,047,san miguel,county
+35049,santa fe county,35,049,santa fe,county
 35051,sierra county,35,051,sierra,county
 35053,socorro county,35,053,socorro,county
 35055,taos county,35,055,taos,county
 35057,torrance county,35,057,torrance,county
 35059,union county,35,059,union,county
 35061,valencia county,35,061,valencia,county
-36000,new york,36,000,new,york
+36000,new york,36,000,,
 36001,albany county,36,001,albany,county
 36003,allegany county,36,003,allegany,county
 36005,bronx county,36,005,bronx,county
@@ -1889,7 +1889,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 36055,monroe county,36,055,monroe,county
 36057,montgomery county,36,057,montgomery,county
 36059,nassau county,36,059,nassau,county
-36061,new york county,36,061,newyork,county
+36061,new york county,36,061,new york,county
 36063,niagara county,36,063,niagara,county
 36065,oneida county,36,065,oneida,county
 36067,onondaga county,36,067,onondaga,county
@@ -1903,7 +1903,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 36083,rensselaer county,36,083,rensselaer,county
 36085,richmond county,36,085,richmond,county
 36087,rockland county,36,087,rockland,county
-36089,st. lawrence county,36,089,st.lawrence,county
+36089,st. lawrence county,36,089,st. lawrence,county
 36091,saratoga county,36,091,saratoga,county
 36093,schenectady county,36,093,schenectady,county
 36095,schoharie county,36,095,schoharie,county
@@ -1921,7 +1921,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 36119,westchester county,36,119,westchester,county
 36121,wyoming county,36,121,wyoming,county
 36123,yates county,36,123,yates,county
-37000,north carolina,37,000,north,carolina
+37000,north carolina,37,000,,
 37001,alamance county,37,001,alamance,county
 37003,alexander county,37,003,alexander,county
 37005,alleghany county,37,005,alleghany,county
@@ -1986,7 +1986,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 37123,montgomery county,37,123,montgomery,county
 37125,moore county,37,125,moore,county
 37127,nash county,37,127,nash,county
-37129,new hanover county,37,129,newhanover,county
+37129,new hanover county,37,129,new hanover,county
 37131,northampton county,37,131,northampton,county
 37133,onslow county,37,133,onslow,county
 37135,orange county,37,135,orange,county
@@ -2022,7 +2022,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 37195,wilson county,37,195,wilson,county
 37197,yadkin county,37,197,yadkin,county
 37199,yancey county,37,199,yancey,county
-38000,north dakota,38,000,north,dakota
+38000,north dakota,38,000,,
 38001,adams county,38,001,adams,county
 38003,barnes county,38,003,barnes,county
 38005,benson county,38,005,benson,county
@@ -2039,8 +2039,8 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 38027,eddy county,38,027,eddy,county
 38029,emmons county,38,029,emmons,county
 38031,foster county,38,031,foster,county
-38033,golden valley county,38,033,goldenvalley,county
-38035,grand forks county,38,035,grandforks,county
+38033,golden valley county,38,033,golden valley,county
+38035,grand forks county,38,035,grand forks,county
 38037,grant county,38,037,grant,county
 38039,griggs county,38,039,griggs,county
 38041,hettinger county,38,041,hettinger,county
@@ -2076,7 +2076,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 38101,ward county,38,101,ward,county
 38103,wells county,38,103,wells,county
 38105,williams county,38,105,williams,county
-39000,ohio,39,000,,ohio
+39000,ohio,39,000,,
 39001,adams county,39,001,adams,county
 39003,allen county,39,003,allen,county
 39005,ashland county,39,005,ashland,county
@@ -2157,7 +2157,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 39155,trumbull county,39,155,trumbull,county
 39157,tuscarawas county,39,157,tuscarawas,county
 39159,union county,39,159,union,county
-39161,van wert county,39,161,vanwert,county
+39161,van wert county,39,161,van wert,county
 39163,vinton county,39,163,vinton,county
 39165,warren county,39,165,warren,county
 39167,washington county,39,167,washington,county
@@ -2165,7 +2165,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 39171,williams county,39,171,williams,county
 39173,wood county,39,173,wood,county
 39175,wyandot county,39,175,wyandot,county
-40000,oklahoma,40,000,,oklahoma
+40000,oklahoma,40,000,,
 40001,adair county,40,001,adair,county
 40003,alfalfa county,40,003,alfalfa,county
 40005,atoka county,40,005,atoka,county
@@ -2205,7 +2205,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 40073,kingfisher county,40,073,kingfisher,county
 40075,kiowa county,40,075,kiowa,county
 40077,latimer county,40,077,latimer,county
-40079,le flore county,40,079,leflore,county
+40079,le flore county,40,079,le flore,county
 40081,lincoln county,40,081,lincoln,county
 40083,logan county,40,083,logan,county
 40085,love county,40,085,love,county
@@ -2230,7 +2230,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 40123,pontotoc county,40,123,pontotoc,county
 40125,pottawatomie county,40,125,pottawatomie,county
 40127,pushmataha county,40,127,pushmataha,county
-40129,roger mills county,40,129,rogermills,county
+40129,roger mills county,40,129,roger mills,county
 40131,rogers county,40,131,rogers,county
 40133,seminole county,40,133,seminole,county
 40135,sequoyah county,40,135,sequoyah,county
@@ -2243,7 +2243,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 40149,washita county,40,149,washita,county
 40151,woods county,40,151,woods,county
 40153,woodward county,40,153,woodward,county
-41000,oregon,41,000,,oregon
+41000,oregon,41,000,,
 41001,baker county,41,001,baker,county
 41003,benton county,41,003,benton,county
 41005,clackamas county,41,005,clackamas,county
@@ -2257,7 +2257,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 41021,gilliam county,41,021,gilliam,county
 41023,grant county,41,023,grant,county
 41025,harney county,41,025,harney,county
-41027,hood river county,41,027,hoodriver,county
+41027,hood river county,41,027,hood river,county
 41029,jackson county,41,029,jackson,county
 41031,jefferson county,41,031,jefferson,county
 41033,josephine county,41,033,josephine,county
@@ -2280,7 +2280,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 41067,washington county,41,067,washington,county
 41069,wheeler county,41,069,wheeler,county
 41071,yamhill county,41,071,yamhill,county
-42000,pennsylvania,42,000,,pennsylvania
+42000,pennsylvania,42,000,,
 42001,adams county,42,001,adams,county
 42003,allegheny county,42,003,allegheny,county
 42005,armstrong county,42,005,armstrong,county
@@ -2322,7 +2322,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 42077,lehigh county,42,077,lehigh,county
 42079,luzerne county,42,079,luzerne,county
 42081,lycoming county,42,081,lycoming,county
-42083,mc kean county,42,083,mckean,county
+42083,mc kean county,42,083,mc kean,county
 42085,mercer county,42,085,mercer,county
 42087,mifflin county,42,087,mifflin,county
 42089,monroe county,42,089,monroe,county
@@ -2348,13 +2348,13 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 42129,westmoreland county,42,129,westmoreland,county
 42131,wyoming county,42,131,wyoming,county
 42133,york county,42,133,york,county
-44000,rhode island,44,000,rhode,island
+44000,rhode island,44,000,,
 44001,bristol county,44,001,bristol,county
 44003,kent county,44,003,kent,county
 44005,newport county,44,005,newport,county
 44007,providence county,44,007,providence,county
 44009,washington county,44,009,washington,county
-45000,south carolina,45,000,south,carolina
+45000,south carolina,45,000,,
 45001,abbeville county,45,001,abbeville,county
 45003,aiken county,45,003,aiken,county
 45005,allendale county,45,005,allendale,county
@@ -2401,18 +2401,18 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 45087,union county,45,087,union,county
 45089,williamsburg county,45,089,williamsburg,county
 45091,york county,45,091,york,county
-46000,south dakota,46,000,south,dakota
+46000,south dakota,46,000,,
 46003,aurora county,46,003,aurora,county
 46005,beadle county,46,005,beadle,county
 46007,bennett county,46,007,bennett,county
-46009,bon homme county,46,009,bonhomme,county
+46009,bon homme county,46,009,bon homme,county
 46011,brookings county,46,011,brookings,county
 46013,brown county,46,013,brown,county
 46015,brule county,46,015,brule,county
 46017,buffalo county,46,017,buffalo,county
 46019,butte county,46,019,butte,county
 46021,campbell county,46,021,campbell,county
-46023,charles mix county,46,023,charlesmix,county
+46023,charles mix county,46,023,charles mix,county
 46025,clark county,46,025,clark,county
 46027,clay county,46,027,clay,county
 46029,codington county,46,029,codington,county
@@ -2424,7 +2424,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 46041,dewey county,46,041,dewey,county
 46043,douglas county,46,043,douglas,county
 46045,edmunds county,46,045,edmunds,county
-46047,fall river county,46,047,fallriver,county
+46047,fall river county,46,047,fall river,county
 46049,faulk county,46,049,faulk,county
 46051,grant county,46,051,grant,county
 46053,gregory county,46,053,gregory,county
@@ -2468,7 +2468,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 46129,walworth county,46,129,walworth,county
 46135,yankton county,46,135,yankton,county
 46137,ziebach county,46,137,ziebach,county
-47000,tennessee,47,000,,tennessee
+47000,tennessee,47,000,,
 47001,anderson county,47,001,anderson,county
 47003,bedford county,47,003,bedford,county
 47005,benton county,47,005,benton,county
@@ -2556,7 +2556,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 47169,trousdale county,47,169,trousdale,county
 47171,unicoi county,47,171,unicoi,county
 47173,union county,47,173,union,county
-47175,van buren county,47,175,vanburen,county
+47175,van buren county,47,175,van buren,county
 47177,warren county,47,177,warren,county
 47179,washington county,47,179,washington,county
 47181,wayne county,47,181,wayne,county
@@ -2564,7 +2564,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 47185,white county,47,185,white,county
 47187,williamson county,47,187,williamson,county
 47189,wilson county,47,189,wilson,county
-48000,texas,48,000,,texas
+48000,texas,48,000,,
 48001,anderson county,48,001,anderson,county
 48003,andrews county,48,003,andrews,county
 48005,angelina county,48,005,angelina,county
@@ -2623,7 +2623,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48111,dallam county,48,111,dallam,county
 48113,dallas county,48,113,dallas,county
 48115,dawson county,48,115,dawson,county
-48117,deaf smith county,48,117,deafsmith,county
+48117,deaf smith county,48,117,deaf smith,county
 48119,delta county,48,119,delta,county
 48121,denton county,48,121,denton,county
 48123,dewitt county,48,123,dewitt,county
@@ -2635,7 +2635,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48135,ector county,48,135,ector,county
 48137,edwards county,48,137,edwards,county
 48139,ellis county,48,139,ellis,county
-48141,el paso county,48,141,elpaso,county
+48141,el paso county,48,141,el paso,county
 48143,erath county,48,143,erath,county
 48145,falls county,48,145,falls,county
 48147,fannin county,48,147,fannin,county
@@ -2643,7 +2643,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48151,fisher county,48,151,fisher,county
 48153,floyd county,48,153,floyd,county
 48155,foard county,48,155,foard,county
-48157,fort bend county,48,157,fortbend,county
+48157,fort bend county,48,157,fort bend,county
 48159,franklin county,48,159,franklin,county
 48161,freestone county,48,161,freestone,county
 48163,frio county,48,163,frio,county
@@ -2686,10 +2686,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48237,jack county,48,237,jack,county
 48239,jackson county,48,239,jackson,county
 48241,jasper county,48,241,jasper,county
-48243,jeff davis county,48,243,jeffdavis,county
+48243,jeff davis county,48,243,jeff davis,county
 48245,jefferson county,48,245,jefferson,county
-48247,jim hogg county,48,247,jimhogg,county
-48249,jim wells county,48,249,jimwells,county
+48247,jim hogg county,48,247,jim hogg,county
+48249,jim wells county,48,249,jim wells,county
 48251,johnson county,48,251,johnson,county
 48253,jones county,48,253,jones,county
 48255,karnes county,48,255,karnes,county
@@ -2706,14 +2706,14 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48277,lamar county,48,277,lamar,county
 48279,lamb county,48,279,lamb,county
 48281,lampasas county,48,281,lampasas,county
-48283,la salle county,48,283,lasalle,county
+48283,la salle county,48,283,la salle,county
 48285,lavaca county,48,285,lavaca,county
 48287,lee county,48,287,lee,county
 48289,leon county,48,289,leon,county
 48291,liberty county,48,291,liberty,county
 48293,limestone county,48,293,limestone,county
 48295,lipscomb county,48,295,lipscomb,county
-48297,live oak county,48,297,liveoak,county
+48297,live oak county,48,297,live oak,county
 48299,llano county,48,299,llano,county
 48301,loving county,48,301,loving,county
 48303,lubbock county,48,303,lubbock,county
@@ -2746,7 +2746,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48357,ochiltree county,48,357,ochiltree,county
 48359,oldham county,48,359,oldham,county
 48361,orange county,48,361,orange,county
-48363,palo pinto county,48,363,palopinto,county
+48363,palo pinto county,48,363,palo pinto,county
 48365,panola county,48,365,panola,county
 48367,parker county,48,367,parker,county
 48369,parmer county,48,369,parmer,county
@@ -2758,7 +2758,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48381,randall county,48,381,randall,county
 48383,reagan county,48,383,reagan,county
 48385,real county,48,385,real,county
-48387,red river county,48,387,redriver,county
+48387,red river county,48,387,red river,county
 48389,reeves county,48,389,reeves,county
 48391,refugio county,48,391,refugio,county
 48393,roberts county,48,393,roberts,county
@@ -2767,10 +2767,10 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48399,runnels county,48,399,runnels,county
 48401,rusk county,48,401,rusk,county
 48403,sabine county,48,403,sabine,county
-48405,san augustine county,48,405,sanaugustine,county
-48407,san jacinto county,48,407,sanjacinto,county
-48409,san patricio county,48,409,sanpatricio,county
-48411,san saba county,48,411,sansaba,county
+48405,san augustine county,48,405,san augustine,county
+48407,san jacinto county,48,407,san jacinto,county
+48409,san patricio county,48,409,san patricio,county
+48411,san saba county,48,411,san saba,county
 48413,schleicher county,48,413,schleicher,county
 48415,scurry county,48,415,scurry,county
 48417,shackelford county,48,417,shackelford,county
@@ -2790,15 +2790,15 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48445,terry county,48,445,terry,county
 48447,throckmorton county,48,447,throckmorton,county
 48449,titus county,48,449,titus,county
-48451,tom green county,48,451,tomgreen,county
+48451,tom green county,48,451,tom green,county
 48453,travis county,48,453,travis,county
 48455,trinity county,48,455,trinity,county
 48457,tyler county,48,457,tyler,county
 48459,upshur county,48,459,upshur,county
 48461,upton county,48,461,upton,county
 48463,uvalde county,48,463,uvalde,county
-48465,val verde county,48,465,valverde,county
-48467,van zandt county,48,467,vanzandt,county
+48465,val verde county,48,465,val verde,county
+48467,van zandt county,48,467,van zandt,county
 48469,victoria county,48,469,victoria,county
 48471,walker county,48,471,walker,county
 48473,waller county,48,473,waller,county
@@ -2819,9 +2819,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 48503,young county,48,503,young,county
 48505,zapata county,48,505,zapata,county
 48507,zavala county,48,507,zavala,county
-49000,utah,49,000,,utah
+49000,utah,49,000,,
 49001,beaver county,49,001,beaver,county
-49003,box elder county,49,003,boxelder,county
+49003,box elder county,49,003,box elder,county
 49005,cache county,49,005,cache,county
 49007,carbon county,49,007,carbon,county
 49009,daggett county,49,009,daggett,county
@@ -2837,8 +2837,8 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 49029,morgan county,49,029,morgan,county
 49031,piute county,49,031,piute,county
 49033,rich county,49,033,rich,county
-49035,salt lake county,49,035,saltlake,county
-49037,san juan county,49,037,sanjuan,county
+49035,salt lake county,49,035,salt lake,county
+49037,san juan county,49,037,san juan,county
 49039,sanpete county,49,039,sanpete,county
 49041,sevier county,49,041,sevier,county
 49043,summit county,49,043,summit,county
@@ -2849,14 +2849,14 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 49053,washington county,49,053,washington,county
 49055,wayne county,49,055,wayne,county
 49057,weber county,49,057,weber,county
-50000,vermont,50,000,,vermont
+50000,vermont,50,000,,
 50001,addison county,50,001,addison,county
 50003,bennington county,50,003,bennington,county
 50005,caledonia county,50,005,caledonia,county
 50007,chittenden county,50,007,chittenden,county
 50009,essex county,50,009,essex,county
 50011,franklin county,50,011,franklin,county
-50013,grand isle county,50,013,grandisle,county
+50013,grand isle county,50,013,grand isle,county
 50015,lamoille county,50,015,lamoille,county
 50017,orange county,50,017,orange,county
 50019,orleans county,50,019,orleans,county
@@ -2864,7 +2864,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 50023,washington county,50,023,washington,county
 50025,windham county,50,025,windham,county
 50027,windsor county,50,027,windsor,county
-51000,virginia,51,000,,virginia
+51000,virginia,51,000,,
 51001,accomack county,51,001,accomack,county
 51003,albemarle county,51,003,albemarle,county
 51005,alleghany county,51,005,alleghany,county
@@ -2883,7 +2883,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51031,campbell county,51,031,campbell,county
 51033,caroline county,51,033,caroline,county
 51035,carroll county,51,035,carroll,county
-51036,charles city county,51,036,charlescity,county
+51036,charles city county,51,036,charles city,county
 51037,charlotte county,51,037,charlotte,county
 51041,chesterfield county,51,041,chesterfield,county
 51043,clarke county,51,043,clarke,county
@@ -2910,11 +2910,11 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51087,henrico county,51,087,henrico,county
 51089,henry county,51,089,henry,county
 51091,highland county,51,091,highland,county
-51093,isle of wight county,51,093,isleofwight,county
-51095,james city county,51,095,jamescity,county
-51097,king and queen county,51,097,kingandqueen,county
-51099,king george county,51,099,kinggeorge,county
-51101,king william county,51,101,kingwilliam,county
+51093,isle of wight county,51,093,isle of wight,county
+51095,james city county,51,095,james city,county
+51097,king and queen county,51,097,king and queen,county
+51099,king george county,51,099,king george,county
+51101,king william county,51,101,king william,county
 51103,lancaster county,51,103,lancaster,county
 51105,lee county,51,105,lee,county
 51107,loudoun county,51,107,loudoun,county
@@ -2926,7 +2926,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51119,middlesex county,51,119,middlesex,county
 51121,montgomery county,51,121,montgomery,county
 51125,nelson county,51,125,nelson,county
-51127,new kent county,51,127,newkent,county
+51127,new kent county,51,127,new kent,county
 51131,northampton county,51,131,northampton,county
 51133,northumberland county,51,133,northumberland,county
 51135,nottoway county,51,135,nottoway,county
@@ -2935,9 +2935,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51141,patrick county,51,141,patrick,county
 51143,pittsylvania county,51,143,pittsylvania,county
 51145,powhatan county,51,145,powhatan,county
-51147,prince edward county,51,147,princeedward,county
-51149,prince george county,51,149,princegeorge,county
-51153,prince william county,51,153,princewilliam,county
+51147,prince edward county,51,147,prince edward,county
+51149,prince george county,51,149,prince george,county
+51153,prince william county,51,153,prince william,county
 51155,pulaski county,51,155,pulaski,county
 51157,rappahannock county,51,157,rappahannock,county
 51159,richmond county,51,159,richmond,county
@@ -2963,16 +2963,16 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51510,alexandria city,51,510,alexandria,city
 51515,bedford city,51,515,bedford,city
 51520,bristol city,51,520,bristol,city
-51530,buena vista city,51,530,buenavista,city
+51530,buena vista city,51,530,buena vista,city
 51540,charlottesville city,51,540,charlottesville,city
 51550,chesapeake city,51,550,chesapeake,city
-51560,clifton forge city,51,560,cliftonforge,city
-51570,colonial heights city,51,570,colonialheights,city
+51560,clifton forge city,51,560,clifton forge,city
+51570,colonial heights city,51,570,colonial heights,city
 51580,covington city,51,580,covington,city
 51590,danville city,51,590,danville,city
 51595,emporia city,51,595,emporia,city
 51600,fairfax city,51,600,fairfax,city
-51610,falls church city,51,610,fallschurch,city
+51610,falls church city,51,610,falls church,city
 51620,franklin city,51,620,franklin,city
 51630,fredericksburg city,51,630,fredericksburg,city
 51640,galax city,51,640,galax,city
@@ -2982,9 +2982,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51678,lexington city,51,678,lexington,city
 51680,lynchburg city,51,680,lynchburg,city
 51683,manassas city,51,683,manassas,city
-51685,manassas park city,51,685,manassaspark,city
+51685,manassas park city,51,685,manassas park,city
 51690,martinsville city,51,690,martinsville,city
-51700,newport news city,51,700,newportnews,city
+51700,newport news city,51,700,newport news,city
 51710,norfolk city,51,710,norfolk,city
 51720,norton city,51,720,norton,city
 51730,petersburg city,51,730,petersburg,city
@@ -2994,14 +2994,14 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 51760,richmond city,51,760,richmond,city
 51770,roanoke city,51,770,roanoke,city
 51775,salem city,51,775,salem,city
-51780,south boston city,51,780,southboston,city
+51780,south boston city,51,780,south boston,city
 51790,staunton city,51,790,staunton,city
 51800,suffolk city,51,800,suffolk,city
-51810,virginia beach city,51,810,virginiabeach,city
+51810,virginia beach city,51,810,virginia beach,city
 51820,waynesboro city,51,820,waynesboro,city
 51830,williamsburg city,51,830,williamsburg,city
 51840,winchester city,51,840,winchester,city
-53000,washington,53,000,,washington
+53000,washington,53,000,,
 53001,adams county,53,001,adams,county
 53003,asotin county,53,003,asotin,county
 53005,benton county,53,005,benton,county
@@ -3015,7 +3015,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 53021,franklin county,53,021,franklin,county
 53023,garfield county,53,023,garfield,county
 53025,grant county,53,025,grant,county
-53027,grays harbor county,53,027,graysharbor,county
+53027,grays harbor county,53,027,grays harbor,county
 53029,island county,53,029,island,county
 53031,jefferson county,53,031,jefferson,county
 53033,king county,53,033,king,county
@@ -3027,9 +3027,9 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 53045,mason county,53,045,mason,county
 53047,okanogan county,53,047,okanogan,county
 53049,pacific county,53,049,pacific,county
-53051,pend oreille county,53,051,pendoreille,county
+53051,pend oreille county,53,051,pend oreille,county
 53053,pierce county,53,053,pierce,county
-53055,san juan county,53,055,sanjuan,county
+53055,san juan county,53,055,san juan,county
 53057,skagit county,53,057,skagit,county
 53059,skamania county,53,059,skamania,county
 53061,snohomish county,53,061,snohomish,county
@@ -3037,11 +3037,11 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 53065,stevens county,53,065,stevens,county
 53067,thurston county,53,067,thurston,county
 53069,wahkiakum county,53,069,wahkiakum,county
-53071,walla walla county,53,071,wallawalla,county
+53071,walla walla county,53,071,walla walla,county
 53073,whatcom county,53,073,whatcom,county
 53075,whitman county,53,075,whitman,county
 53077,yakima county,53,077,yakima,county
-54000,west virginia,54,000,west,virginia
+54000,west virginia,54,000,,
 54001,barbour county,54,001,barbour,county
 54003,berkeley county,54,003,berkeley,county
 54005,boone county,54,005,boone,county
@@ -3097,7 +3097,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 54105,wirt county,54,105,wirt,county
 54107,wood county,54,107,wood,county
 54109,wyoming county,54,109,wyoming,county
-55000,wisconsin,55,000,,wisconsin
+55000,wisconsin,55,000,,
 55001,adams county,55,001,adams,county
 55003,ashland county,55,003,ashland,county
 55005,barron county,55,005,barron,county
@@ -3115,13 +3115,13 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 55029,door county,55,029,door,county
 55031,douglas county,55,031,douglas,county
 55033,dunn county,55,033,dunn,county
-55035,eau claire county,55,035,eauclaire,county
+55035,eau claire county,55,035,eau claire,county
 55037,florence county,55,037,florence,county
-55039,fond du lac county,55,039,fonddulac,county
+55039,fond du lac county,55,039,fond du lac,county
 55041,forest county,55,041,forest,county
 55043,grant county,55,043,grant,county
 55045,green county,55,045,green,county
-55047,green lake county,55,047,greenlake,county
+55047,green lake county,55,047,green lake,county
 55049,iowa county,55,049,iowa,county
 55051,iron county,55,051,iron,county
 55053,jackson county,55,053,jackson,county
@@ -3129,7 +3129,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 55057,juneau county,55,057,juneau,county
 55059,kenosha county,55,059,kenosha,county
 55061,kewaunee county,55,061,kewaunee,county
-55063,la crosse county,55,063,lacrosse,county
+55063,la crosse county,55,063,la crosse,county
 55065,lafayette county,55,065,lafayette,county
 55067,langlade county,55,067,langlade,county
 55069,lincoln county,55,069,lincoln,county
@@ -3153,7 +3153,7 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 55103,richland county,55,103,richland,county
 55105,rock county,55,105,rock,county
 55107,rusk county,55,107,rusk,county
-55109,st. croix county,55,109,st.croix,county
+55109,st. croix county,55,109,st. croix,county
 55111,sauk county,55,111,sauk,county
 55113,sawyer county,55,113,sawyer,county
 55115,shawano county,55,115,shawano,county
@@ -3170,16 +3170,16 @@ fips,county,state_fips,county_fips,county_name,county_suffix
 55137,waushara county,55,137,waushara,county
 55139,winnebago county,55,139,winnebago,county
 55141,wood county,55,141,wood,county
-56000,wyoming,56,000,,wyoming
+56000,wyoming,56,000,,
 56001,albany county,56,001,albany,county
-56003,big horn county,56,003,bighorn,county
+56003,big horn county,56,003,big horn,county
 56005,campbell county,56,005,campbell,county
 56007,carbon county,56,007,carbon,county
 56009,converse county,56,009,converse,county
 56011,crook county,56,011,crook,county
 56013,fremont county,56,013,fremont,county
 56015,goshen county,56,015,goshen,county
-56017,hot springs county,56,017,hotsprings,county
+56017,hot springs county,56,017,hot springs,county
 56019,johnson county,56,019,johnson,county
 56021,laramie county,56,021,laramie,county
 56023,lincoln county,56,023,lincoln,county
