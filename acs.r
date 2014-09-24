@@ -1,19 +1,24 @@
 library(acs)
 api.key.install(key='51504d0250247cb7836ed67cc5e80ce9b122b8d1')
+# Install the Giant Oak Census API 
+# The process to use the acs API is to create a "geography" with geo.make,
+# and then bring back the data with acs.fetch
 #cook <- geo.make(county='Cook', state='IL')
 #output <- acs.fetch(geography=cook, table.number="B01001")
+
+# If you aren't sure about the location, you can do a 'lookup' which will
+# return any geographies that match
 #geo.lookup(place='Brooklyn') # Search for multiple geographical results
 
-reg <- read.csv('regions.csv')
-reg$US <- grepl(" USA", reg$location)
+reg <- read.csv('regions.csv') 
+reg$US <- grepl(" USA", reg$location) # strip country
 # Determine which addresses are in the US
+
 reg <- reg[reg$US,] # Keep only the american addresses
 reg$location<-gsub(", USA","",reg$location)  # Remove the USA piece
-reg$state<-gsub('.*, ','', reg$location, perl=T) 
-reg$state<-gsub(' $','', reg$state, perl=T) 
-reg$city<-gsub(', .*','', reg$location, perl=T)
-# put city and state into columns, based on what's before or after the ', '
-# delimiter
+reg$state<-gsub('.*, ','', reg$location, perl=T) # the state is the piece after the comma, so remove the stuff before the comma
+reg$state<-gsub(' $','', reg$state, perl=T)  # But state has a little blank space at the end
+reg$city<-gsub(', .*','', reg$location, perl=T) # The "city" is the piece to the left of the comman
 
 a<-geo.make(state=reg[2,'state'], place=reg[2,'city'])
 me<-acs.fetch(geography=a, table.number="B01001")
@@ -23,7 +28,7 @@ me2 <- acs.fetch(geography=cook, variable="B01001_001")
 # brings an entire report table, with like all the combinations of
 # male/female/age or whatever displayed
 # You can get more than one variable with: variable=c("B16001_058", "B16001_059")
-numrows <- 500
+numrows <- 7000
 reg<-reg[1:numrows,]
 look <- function(x){
     if (x[1,'state'] == x[1,'city']) {
