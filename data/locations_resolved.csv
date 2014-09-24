@@ -13,7 +13,7 @@ anchorage borough,020,anchorage municipality,3000,02,Anchorage,ganchorage,alaska
 juneau borough,110,,,02,Juneau,gjuneau,alaska
 kenai peninsula borough,122,,,02,Kenai Peninsula,gkenaipeninsula,alaska
 ,,,,04,Flagstaff/Sedona,gflagstaff,arizona
-,,,,04,Mohave County,gmohave,arizona
+mohave county,015,,,04,Mohave County,gmohave,arizona
 ,,phoenix city,55000,04,Phoenix,gphoenix,arizona
 ,,prescott city,57380,04,Prescott,gprescott,arizona
 ,,show low city,66470,04,Show Low,gshowlow,arizona
@@ -27,8 +27,8 @@ yuma county,027,yuma city,85540,04,Yuma,gyuma,arizona
 ,,bakersfield city,3526,06,Bakersfield,gbakersfield,california
 ,,chico city,13014,06,Chico,gchico,california
 fresno county,019,fresno city,27000,06,Fresno,gfresno,california
-,,,,06,Humboldt County,ghumboldt,california
-,,,,06,Imperial County,gimperial,california
+humboldt county,023,,,06,Humboldt County,ghumboldt,california
+imperial county,025,,,06,Imperial County,gimperial,california
 ,,,,06,Inland Empire,ginlandempire,california
 ,,long beach city,43000,06,Long Beach,glongbeach,california
 los angeles county,037,los angeles city,44000,06,Los Angeles,glosangeles,california
@@ -116,7 +116,7 @@ twin falls county,083,twin falls city,82810,16,Twin Falls,gtwinfalls,idaho
 ,,,,17,Chambana,gchambana,illinois
 ,,chicago city,14000,17,Chicago,gchicago,illinois
 ,,decatur city,18823,17,Decatur,gdecatur,illinois
-,,,,17,La Salle County,glasalle,illinois
+la salle county,099,,,17,La Salle County,glasalle,illinois
 ,,mattoon city,47553,17,Mattoon,gmattoon,illinois
 peoria county,143,peoria city,59000,17,Peoria,gpeoria,illinois
 ,,rockford city,65000,17,Rockford,grockford,illinois
@@ -291,7 +291,7 @@ athens county,009,athens city,2736,39,Athens,gathensoh,ohio
 ,,mansfield city,47138,39,Mansfield,gmansfield,ohio
 sandusky county,143,sandusky city,70380,39,Sandusky,gsandusky,ohio
 ,,toledo city,77000,39,Toledo,gtoledo,ohio
-,,,,39,Tuscarawas County,gtuscarawas,ohio
+tuscarawas county,157,,,39,Tuscarawas County,gtuscarawas,ohio
 ,,youngstown city,88000,39,Youngstown,gyoungstown,ohio
 ,,,,39,Zanesville/Cambridge,gzanesville,ohio
 ,,lawton city,41850,40,Lawton,glawton,oklahoma

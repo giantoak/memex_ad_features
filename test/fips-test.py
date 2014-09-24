@@ -25,7 +25,8 @@ def test_state():
 
 def test_fips():
     def run_fips(f, loc, ans):
-        assert f.resolve(loc) == ans
+        r = f.resolve(loc)
+        assert r == ans
 
     fipser = Fipser()
     fixtures = {
@@ -65,6 +66,22 @@ def test_fips():
                 'state_fips': '45',
                 'place': None,
                 'place_fips': None,
+                'county': None,
+                'county_fips': None,
+                },
+            # accept "county" as suffix
+            'Humboldt County, California': {
+                'state_fips': '06',
+                'place': None,
+                'place_fips': None,
+                'county': 'humboldt county',
+                'county_fips': '023',
+                },
+            # daytona beach is encoded as daytona in census
+            'Daytona, Florida': {
+                'state_fips': '12',
+                'place': 'daytona beach city',
+                'place_fips': '16525',
                 'county': None,
                 'county_fips': None,
                 },

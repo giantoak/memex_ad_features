@@ -156,22 +156,33 @@ class Fipser(object):
         return fips, state
 
     def get_county(self, loc, statefp=None):
+
+        # empty strings
         if loc == '':
             return None, None
-
+        
+        # narrow down by state, if we have that information
         if statefp:
             county_dfs = self.county[self.county.state_fips == statefp]
         else:
             county_dfs = self.county
-
+        
+        # 
         try:
             fips  = county_dfs.ix[loc.lower(), 'county_fips']
             county = county_dfs.ix[loc.lower(), 'county']
             if not isinstance(fips, basestring):
                 fips = fips.iloc[0]
                 county= county.iloc[0]
+
         except KeyError:
-            fips, county = None, None
+            try:
+                county_dfs2 = county_dfs[county_dfs.county == loc.lower()]
+                fips  = county_dfs2.ix[0, 'county_fips']
+                county = county_dfs2.ix[0, 'county']
+
+            except (KeyError, IndexError) as e:
+                fips, county = None, None
 
         return fips, county
 
@@ -196,9 +207,21 @@ class Fipser(object):
             if not isinstance(fips, basestring):
                 fips = fips.iloc[0]
                 place= place.iloc[0]
-
+            
         except KeyError:
-            fips, place = None, None
+            # attempt to match place name to entire placename rather than name
+            
+            try:
+                place_dfs2 = place_dfs[place_dfs.placename == loc.lower()]
+                fips  = place_dfs2.ix[0, 'placefp']
+                place = place_dfs2.ix[0, 'placename']
+
+            except (KeyError, IndexError) as e:
+                fips, place = None, None
         
         return fips, place
+
+
+
+
 
