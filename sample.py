@@ -95,6 +95,18 @@ out = out[~out.city.isnull()]
 out.state = out.state.apply(lambda x: x.strip())
 g = out.groupby(['date','region'])
 
+all=out.groupby('state').size()
+all.to_csv('sample_counts.csv')
+
+out.Cup_mean[out.Cup_mean < 0] = np.nan
+nocup=out[~(out.Cup_mean.isnull())].groupby('state').size()
+nocup = nocup/all.astype('float')
+nocup.to_csv('nocupsize.csv')
+
+out.Age_mean[out.Age_mean < 0] = np.nan
+age=out[~(out.Age_mean.isnull())].groupby('state').size()
+age = age/all.astype('float')
+age.to_csv('age_counts.csv')
 sample = random.sample(out.index, 100000)
 rs = out.ix[sample]
 out.to_csv('cleaned.csv')
