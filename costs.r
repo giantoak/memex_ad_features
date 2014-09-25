@@ -39,8 +39,6 @@ names(sums) <- c("state","avg_cost", "sd_cost", "se_cost", "avg_age",
                  "sd_age", "se_age", "n")
 
 b <- read.csv('frac_with_price.csv', header=FALSE, col.names=c('state', 'frac'))
-d<-merge(sums, b)
-# Merge in the fraction data
 
 states<-read.csv('states.txt', stringsAsFactors=FALSE)
 series<-paste("FRBC/UNEMP_ST_", states$abbrev, sep='') # create unemp series names
@@ -52,10 +50,51 @@ names(avg.unemp)<-gsub(' - Value','',gsub('FRBC.UNEMP_ST_','',names(avg.unemp)))
 # replace the names with column names that will merge in
 avg.unemp<-avg.unemp[2:51] # remove PR and the date column
 
-d$unemp<-NA
+data<-merge(sums, b)
+# Merge in the fraction data
+data$unemp<-NA
 for (i in names(avg.unemp)){
-    print(i)
-    print(sum(d$state == i))
     state.name <- states[states$abbrev == i,'state']
-    d$unemp[as.character(d$state) == state.name] <- avg.unemp[i]
+    data$unemp[as.character(data$state) == state.name] <- avg.unemp[i]
 }
+
+features <- c(
+              "B01001_001", # Total population
+              "B19013_001", # Median Income
+              "B01001A_001", # Total White Population
+              "B01001B_001", # Total Black Population
+              "B15002_003", # Male: No schooling completed 
+              "B15002_004", #  Male: Nursery to 4th grade 5     
+              "B15002_005", # Male: 5th and 6th grade 
+              "B15002_006", #  Male: 7th and 8th grade 7     
+              "B15002_007", # Male: 9th grade 
+              "B15002_008", #  Male: 10th grade 9     
+              "B15002_009", # Male: 11th grade 10    
+              "B15002_010", # Male: 12th grade, no diploma 
+              "B15002_011", # Male: High school graduate, GED, or alternative 
+              "B15002_012", # Male: Some college, less than 1 year 
+              "B15002_013", # Male: Some college, 1 or more years, no degree 
+              "B15002_014", # Male: Associate's degree 15    
+              "B15002_015", # Male: Bachelor's degree 
+              "B15002_016", # Male: Master's degree 
+              "B15002_017", # Male: Professional school degree 
+              "B15002_018" # Male: Doctorate degree 
+              )
+out <- data.frame(matrix(ncol = 1+length(features), nrow = 10))
+names(out) <- c("state", features)
+errored.indexes <- NULL
+for (i in seq(states$state)){
+    d <- NA
+    a <- acs.fetch(geography=geo.make(state=states$state[i]), variable=features)
+    d<-a@estimate[1,]
+    out[i,features] <- d
+    out[i,'state'] <- states$state[i]
+}
+
+data <- merge(data,out)
+data$lths <- (data$B15002_003 + data$B15002_004 + data$B15002_005 +
+              data$B15002_006 + data$B15002_007 + data$B15002_008 +
+              data$B15002_009 + data$B15002_010)/data$B01001_001
+data$hs <- data$B15002_011/data$B01001_001
+data$sc <- (data$B15002_012 + data$B15002_013 + data$B15002_014)/data$B01001_001
+data$coll.plus <- 1 - data$lths - data$hs - data$sc
