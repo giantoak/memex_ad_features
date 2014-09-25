@@ -45,6 +45,8 @@ price <- read.csv('frac_with_price.csv', header=FALSE, col.names=c('state', 'fra
 counts <- read.csv('sample_counts.csv', header=FALSE, col.names=c('state', 'ad_count'))
 no.cup.size <- read.csv('nocupsize.csv', header=FALSE, col.names=c('state', 'frac_with_cup'))
 age.counts <- read.csv('age_counts.csv', header=FALSE, col.names=c('state', 'age_count'))
+completeness <- read.csv('completeness.csv', header=FALSE, col.names=c('state', 'completeness'), stringsAsFactors=FALSE)
+completeness$completeness <- as.numeric(completeness$completeness)
 
 states<-read.csv('states.txt', stringsAsFactors=FALSE)
 series<-paste("FRBC/UNEMP_ST_", states$abbrev, sep='') # create unemp series names
@@ -109,6 +111,7 @@ data$ads.with.price.rate<-data$n/data$B01001_001
 data$ads.with.price.rate<-data$frac_with_price
 data<-merge(data, no.cup.size)
 data<-merge(data, age.counts)
+data<-merge(data, completeness)
 #data$ads.with.cup.rate<-data$frac_with_cup/data$B01001_001
 data$ads.with.cup.rate<-data$frac_with_cup
 data$ads.with.age.rate<-data$age_count/data$B01001_001
@@ -129,4 +132,10 @@ summary(lm(unemp ~ median.income + ads.with.price.rate + ads.with.cup.rate
 summary(lm(unemp ~ ads.with.price.rate , data=data))
 summary(lm(unemp ~ ads.with.cup.rate , data=data))
 summary(lm(unemp ~ ads.with.age.rate , data=data))
+summary(lm(completeness ~ unemp + hs + sc + coll.plus, data=data))
 sink()
+
+b<-lm(completeness ~ unemp + hs + sc + coll.plus + median.income, data=data)
+data$partial<- resid(b) + coef(b)['unemp'] * data$unemp
+p<-ggplot(data=data, aes(x=unemp, y=partial)) + geom <- point()
+ggsave(p, 'partial.png')

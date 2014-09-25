@@ -110,3 +110,12 @@ age.to_csv('age_counts.csv')
 sample = random.sample(out.index, 100000)
 rs = out.ix[sample]
 out.to_csv('cleaned.csv')
+
+# Compute 'completeness' which gets a point for every value we're able to
+# parse
+out['completeness']=pandas.Series(0,index=out.index)
+out['completeness'][out.Cost_hour_mean > 0] += 1
+out['completeness'][out.Age_mean > 0] += 1
+out['completeness'][out.Cup_mean > 0] += 1
+completeness = out[['state','completeness']].groupby('state').mean()
+completeness.to_csv('completeness.csv')
