@@ -58,7 +58,24 @@ STATES = (
 ("WY","Wyoming"),
 ("PR","Puerto Rico")
 )
-out = pandas.read_csv('norm_US_Canadaaa.csv.price')
+header = open('norm_US_Canadaa_header.csv','r').read().split(',')
+header = [i.strip() for i in header]
+h = ['rownum']
+h.extend(header)
+out = pandas.DataFrame(columns=header)
+files=glob.glob('norm_US_Canadaa[a-z].csv') 
+for i in files:
+    try:
+        a = pandas.read_csv(i, names=header)
+        a.index = range(len(a))
+        sample = random.sample(a.index, int(float(len(a))/20))
+        rs = a.ix[sample]
+        out = pandas.concat([out, rs], axis=0)
+        #ipdb.set_trace()
+        out.index = range(len(out))
+    except:
+        pass
+#out = pandas.read_csv('norm_US_Canadaaa.csv.price')
 out = out[~(out.country == 'Canada')]
 out=out[~out.state.isnull()]
 out.state=out.state.apply(lambda x: x.strip())
@@ -74,5 +91,6 @@ out.Cost_hour_mean[out.Cost_hour_mean < 0] = np.nan
 out=out.reindex(range(len(out)))  
 out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.title()) # title-case all city names
 
-acs = pandas.read_csv('~/bp_acs.csv')
+acs = pandas.read_csv('bp_acs.csv')
 new = pandas.merge(out, acs, left_on='region', right_on='place') 
+new.to_csv('coded.csv')
