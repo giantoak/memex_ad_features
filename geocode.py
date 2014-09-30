@@ -68,7 +68,7 @@ for i in files:
     try:
         a = pandas.read_csv(i, names=header)
         a.index = range(len(a))
-        sample = random.sample(a.index, int(float(len(a))/20))
+        sample = random.sample(a.index, int(float(len(a))/5))
         rs = a.ix[sample]
         out = pandas.concat([out, rs], axis=0)
         #ipdb.set_trace()
@@ -94,3 +94,28 @@ out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.titl
 acs = pandas.read_csv('bp_acs.csv')
 new = pandas.merge(out, acs, left_on='region', right_on='place') 
 new.to_csv('coded.csv')
+
+all=new.groupby('region').size()
+all.to_csv('sample_counts_region.csv')
+
+new.Cup_mean[new.Cup_mean < 0] = np.nan
+nocup=new[~(new.Cup_mean.isnull())].groupby('region').size()
+nocup = nocup/all.astype('float')
+nocup.to_csv('nocupsize_region.csv')
+
+new.Age_mean[new.Age_mean < 0] = np.nan
+age=new[~(new.Age_mean.isnull())].groupby('region').size()
+age = age/all.astype('float')
+age.to_csv('age_counts_region.csv')
+sample = random.sample(new.index, 100000)
+rs = new.ix[sample]
+new.to_csv('cleaned_region.csv')
+
+# Compute 'completeness' which gets a point for every value we're able to
+# parse
+new['completeness']=pandas.Series(0,index=new.index)
+new['completeness'][new.Cost_hour_mean > 0] += 1
+new['completeness'][new.Age_mean > 0] += 1
+new['completeness'][new.Cup_mean > 0] += 1
+completeness = new[['region','completeness']].groupby('region').mean()
+completeness.to_csv('completeness_region.csv')
