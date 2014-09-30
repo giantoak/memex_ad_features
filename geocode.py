@@ -73,3 +73,6 @@ out = out[~(out.state == 'Uk')]
 out.Cost_hour_mean[out.Cost_hour_mean < 0] = np.nan
 out=out.reindex(range(len(out)))  
 out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.title()) # title-case all city names
+
+acs = pandas.read_csv('~/bp_acs.csv')
+new = pandas.merge(out, acs, left_on='region', right_on='place') 
