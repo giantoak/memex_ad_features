@@ -3,6 +3,7 @@ import random
 import ipdb
 import numpy as np
 import glob
+import bls
 
 STATES = (
     ("AL","Alabama"),
@@ -90,9 +91,31 @@ out = out[~(out.state == 'Uk')]
 out.Cost_hour_mean[out.Cost_hour_mean < 0] = np.nan
 out=out.reindex(range(len(out)))  
 out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.title()) # title-case all city names
+def bls_code(x):
+    try:
+        out = 'LAUCT%02d%05d00000003' % ( x['state_fips'], x['place_fips'])
+        return out 
+    except TypeError:
+        return np.nan
 
+def get_LAU(x):
+    try: 
+        if np.isnan(x['bls_code']):
+            return np.nan
+    except TypeError:
+        out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
+        return out.mean()[0]
+    #except:
+        #return np.nan
+
+out.to_csv('all.csv')
 acs = pandas.read_csv('bp_acs.csv')
 new = pandas.merge(out, acs, left_on='region', right_on='place') 
+fips = pandas.read_csv('locations_resolved.csv')
+fips.url=fips.url.str[1:]
+fips['bls_code'] = fips.apply(bls_code, axis=1)
+fips['unemployment'] = fips.apply(get_LAU, axis=1)
+new = pandas.merge(new, fips, left_on='region', right_on='url') 
 new.to_csv('coded.csv')
 
 all=new.groupby('region').size()
