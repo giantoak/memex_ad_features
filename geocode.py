@@ -66,7 +66,7 @@ if True:
     h = ['rownum']
     h.extend(header)
     out = pandas.DataFrame(columns=header)
-    files=glob.glob('norm_US_Canadaa[a-b].csv') 
+    files=glob.glob('norm_US_Canadaa[a-z].csv') 
     for i in files:
         try:
             a = pandas.read_csv(i, names=header)
@@ -137,6 +137,7 @@ Cup_mean = new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts
 Age_mean = new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts
 Cost_hour_mean = new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts
 means = pandas.concat([Cup_mean, Age_mean, Cost_hour_mean], axis=1)
+#acs = pandas.concat([acs, means], axis=1).shape     
 acs = pandas.concat([new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts, acs], axis=1)
 acs.rename(columns={0:'cup_exists'}, inplace=True)
 acs = pandas.concat([new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
