@@ -145,6 +145,9 @@ acs = pandas.concat([new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_me
 acs.rename(columns={0:'cost_exists'}, inplace=True)
 acs['completeness'] = new.groupby('region')['completeness'].mean()
 acs['completeness_std'] = new.groupby('region')['completeness'].std()
+aggs = new.groupby('region').agg({'Age_mean':['mean','std'], 'Cup_mean':['mean','std'], 'Cost_hour_mean':['mean','std']})
+aggs.columns = [' '.join(col).strip() for col in aggs.columns.values]
+acs = pandas.concat([acs, aggs], axis=1)
 acs.to_csv('region_level_all.csv')
 
 #acs = pandas.concat([new[~(new.Age_mean.isnull())].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
