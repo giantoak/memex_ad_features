@@ -107,21 +107,21 @@ data$sc <- (data$b15002012 + data$b15002013 + data$b15002014)/data$b01001001
 data$coll.plus <- 1 - data$lths - data$hs - data$sc
 data$ads.per.capita <- data$counts/data$b01001001
 #data$ads.with.price.rate<-data$n/data$b01001001
-data$ads.with.price.rate<-data$fracwithprice
-data<-merge(data, no.cup.size)
-data<-merge(data, age.counts)
-data<-merge(data, completeness)
+data$ads.with.price.rate<-data$cost_exists
+#data<-merge(data, no.cup.size)
+#data<-merge(data, age.counts)
+#data<-merge(data, completeness)
 #data$ads.with.cup.rate<-data$frac_with_cup/data$b01001001
-data$ads.with.cup.rate<-data$frac_with_cup
-data$ads.with.age.rate<-data$age_count/data$b01001001
+data$ads.with.cup.rate<-data$cup_exists
+data$ads.with.age.rate<-data$age_exists
 #data$ads.with.age.rate<-data$age_count/data$b01001001
-data$ads.with.age.rate<-data$age_count
 data$median.income <- data$b19013001
-browser()
+
+data<-data[!is.na(data$counts),]
 
 #sink('log.txt')
 cat('Raw correlations:\n')
-cor(data[,c('unemp','ads.per.capita', 'ads.with.price.rate', 'ads.with.cup.rate', 'ads.with.age.rate','median.income')])
+cor(data[,c('unemp','ads.per.capita', 'ads.with.price.rate', 'ads.with.cup.rate', 'ads.with.age.rate','median.income')], use='pairwise.complete.obs')
 
 cat('Some regressions:')
 summary(lm(unemp ~ ads.per.capita + ads.with.price.rate + ads.with.cup.rate + ads.with.age.rate , data=data))
@@ -133,7 +133,6 @@ summary(lm(unemp ~ ads.with.price.rate , data=data))
 summary(lm(unemp ~ ads.with.cup.rate , data=data))
 summary(lm(unemp ~ ads.with.age.rate , data=data))
 summary(lm(completeness ~ unemp + hs + sc + coll.plus, data=data))
-#sink()
 with.pc <- lm(unemp ~ ads.per.capita + ads.with.price.rate + ads.with.cup.rate + ads.with.age.rate , data=data)
 no.pc <- lm(unemp ~ ads.with.price.rate + ads.with.cup.rate + ads.with.age.rate , data=data)
 with.income <- lm(unemp ~ median.income + ads.with.price.rate + ads.with.cup.rate + ads.with.age.rate , data=data)
@@ -158,4 +157,4 @@ p <- p + theme(legend.text = element_text(size=18))
 p <- p + theme(axis.title = element_text(size=18)) 
 p <- p + theme(legend.title = element_text()) 
 p <- p + labs(x="Unemployment (Percentage Points)", y="Feature Extraction Rate")
-ggsave('partial.png',p)
+ggsave('partial_region.png',p)
