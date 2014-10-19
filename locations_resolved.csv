@@ -1,0 +1,426 @@
+county_fips,place_fips,state_fips,place,url,state
+,03076,01,Auburn,gauburn,alabama
+,07000,01,Birmingham,gbirmingham,alabama
+,21184,01,Dothan,gdothan,alabama
+,28696,01,Gadsden,ggadsden,alabama
+,37000,01,Huntsville,ghuntsville,alabama
+097,50000,01,Mobile,gmobile,alabama
+101,51000,01,Montgomery,gmontgomery,alabama
+,53016,01,Muscle Shoals,gshoals,alabama
+125,77256,01,Tuscaloosa,gtuscaloosa,alabama
+020,03000,02,Anchorage,ganchorage,alaska
+,24230,02,Fairbanks,gfairbanks,alaska
+110,,02,Juneau,gjuneau,alaska
+122,,02,Kenai Peninsula,gkenaipeninsula,alaska
+,,04,Flagstaff/Sedona,gflagstaff,arizona
+015,,04,Mohave County,gmohave,arizona
+,55000,04,Phoenix,gphoenix,arizona
+,57380,04,Prescott,gprescott,arizona
+,66470,04,Show Low,gshowlow,arizona
+,66820,04,Sierra Vista,gsierravista,arizona
+,77000,04,Tucson,gtucson,arizona
+027,85540,04,Yuma,gyuma,arizona
+,23290,05,Fayetteville,gfayetteville,arkansas
+,24550,05,Fort Smith,gfortsmith,arkansas
+,35710,05,Jonesboro,gjonesboro,arkansas
+,41000,05,Little Rock,glittlerock,arkansas
+,03526,06,Bakersfield,gbakersfield,california
+,13014,06,Chico,gchico,california
+019,27000,06,Fresno,gfresno,california
+023,,06,Humboldt County,ghumboldt,california
+025,,06,Imperial County,gimperial,california
+,,06,Inland Empire,ginlandempire,california
+,43000,06,Long Beach,glongbeach,california
+037,44000,06,Los Angeles,glosangeles,california
+045,46814,06,Mendocino,gmendocino,california
+047,46898,06,Merced,gmerced,california
+,48354,06,Modesto,gmodesto,california
+053,48872,06,Monterey,gmonterey,california
+,,06,North Bay,gnorthbay,california
+,,06,O.C.,gorangecounty,california
+,53000,06,Oakland,geastbay,california
+,55254,06,Palm Springs,gpalmsprings,california
+,55156,06,Palmdale,gpalmdale,california
+,59920,06,Redding,gredding,california
+067,64000,06,Sacramento,gsacramento,california
+073,66000,06,San Diego,gsandiego,california
+,,06,San Fernando Valley,gsanfernandovalley,california
+075,67000,06,San Francisco,gsf,california
+,,06,San Gabriel Valley,gsangabrielvalley,california
+,68000,06,San Jose,gsanjose,california
+079,68154,06,San Luis Obispo,gsanluisobispo,california
+081,68252,06,San Mateo,gsanmateo,california
+083,69070,06,Santa Barbara,gsantabarbara,california
+087,69112,06,Santa Cruz,gsantacruz,california
+,69196,06,Santa Maria,gsantamaria,california
+093,,06,Siskiyou,gsiskiyou,california
+,75000,06,Stockton,gstockton,california
+,77364,06,Susanville,gsusanville,california
+111,,06,Ventura,gventura,california
+,82954,06,Visalia,gvisalia,california
+013,07850,08,Boulder,gboulder,colorado
+,16000,08,Colorado Springs,gcoloradosprings,colorado
+031,20000,08,Denver,gdenver,colorado
+,27425,08,Fort Collins,gfortcollins,colorado
+101,62000,08,Pueblo,gpueblo,colorado
+,,08,Rockies,grockies,colorado
+,,08,Western Slope,gwestslope,colorado
+,,09,Eastern Connecticut,gnewlondon,connecticut
+003,37000,09,Hartford,ghartford,connecticut
+009,52000,09,New Haven,gnewhaven,connecticut
+,,09,Northwest Connecticut,gnwct,connecticut
+,,11,Northern Virginia,gnova,district of columbia
+,,11,Southern Maryland,gsouthernmaryland,district of columbia
+,,11,Washington D.C.,gdc,district of columbia
+,,12,Daytona,gdaytona,florida
+,24125,12,Fort Myers,gfortmyers,florida
+,,12,Ft Lauderdale,gftlauderdale,florida
+,25175,12,Gainesville,ggainesville,florida
+,35000,12,Jacksonville,gjacksonville,florida
+,,12,Keys,gkeys,florida
+,38250,12,Lakeland,glakeland,florida
+,45000,12,Miami,gmiami,florida
+,50750,12,Ocala,gocala,florida
+091,,12,Okaloosa,gokaloosa,florida
+,53000,12,Orlando,gorlando,florida
+,54700,12,Panama City,gpanamacity,florida
+,55925,12,Pensacola,gpensacola,florida
+115,64175,12,Sarasota,gsarasota,florida
+,,12,Space Coast,gspacecoast,florida
+,62500,12,St. Augustine,gstaugustine,florida
+,70600,12,Tallahassee,gtallahassee,florida
+,71000,12,Tampa,gtampa,florida
+,,12,Treasure Coast,gtreasurecoast,florida
+,76600,12,West Palm Beach,gwestpalmbeach,florida
+,01052,13,Albany,galbanyga,georgia
+,,13,Athens,gathensga,georgia
+,04000,13,Atlanta,gatlanta,georgia
+,,13,Augusta,gaugusta,georgia
+,11560,13,Brunswick,gbrunswick,georgia
+,19000,13,Columbus,gcolumbusga,georgia
+193,49000,13,Macon,gmacon,georgia
+,,13,Northwest Georgia,gnwga,georgia
+,69000,13,Savannah,gsavannah,georgia
+,73256,13,Statesboro,gstatesboro,georgia
+,78800,13,Valdosta,gvaldosta,georgia
+,,15,Big Island,gbigisland,hawaii
+003,,15,Honolulu,ghonolulu,hawaii
+007,,15,Kauai,gkauai,hawaii
+009,,15,Maui,gmaui,hawaii
+015,,16,Boise,gboise,idaho
+,,16,East Idaho,geastidaho,idaho
+,46540,16,Lewiston,glewiston,idaho
+083,82810,16,Twin Falls,gtwinfalls,idaho
+,06613,17,Bloomington,gbloomington,illinois
+,11163,17,Carbondale,gcarbondale,illinois
+,,17,Chambana,gchambana,illinois
+,14000,17,Chicago,gchicago,illinois
+,18823,17,Decatur,gdecatur,illinois
+099,,17,La Salle County,glasalle,illinois
+,47553,17,Mattoon,gmattoon,illinois
+143,59000,17,Peoria,gpeoria,illinois
+,65000,17,Rockford,grockford,illinois
+,72000,17,Springfield,gspringfieldil,illinois
+,,17,Western Illinois,gquincy,illinois
+,05860,18,Bloomington,gbloomingtonin,indiana
+,22000,18,Evansville,gevansville,indiana
+,,18,Ft Wayne,gfortwayne,indiana
+,,18,Indianapolis,gindianapolis,indiana
+,40392,18,Kokomo,gkokomo,indiana
+,40788,18,Lafayette,gtippecanoe,indiana
+,51876,18,Muncie,gmuncie,indiana
+,64260,18,Richmond,grichmondin,indiana
+,71000,18,South Bend,gsouthbend,indiana
+,75428,18,Terre Haute,gterrehaute,indiana
+,01855,19,Ames,games,iowa
+,12000,19,Cedar Rapids,gcedarrapids,iowa
+057,21000,19,Des Moines,gdesmoines,iowa
+061,22395,19,Dubuque,gdubuque,iowa
+,28515,19,Fort Dodge,gfortdodge,iowa
+,38595,19,Iowa City,giowacity,iowa
+,50160,19,Mason City,gmasoncity,iowa
+,60465,19,Ottumwa,gottumwa,iowa
+,,19,Quad Cities,gquadcities,iowa
+,73335,19,Sioux City,gsiouxcity,iowa
+,82425,19,Waterloo,gwaterloo,iowa
+,38900,20,Lawrence,glawrence,kansas
+,44250,20,Manhattan,gmanhattanks,kansas
+,62700,20,Salina,gsalina,kansas
+,71000,20,Topeka,gtopeka,kansas
+203,79000,20,Wichita,gwichita,kansas
+,08902,21,Bowling Green,gbowlinggreen,kentucky
+,,21,Eastern Kentucky,geastky,kentucky
+,,21,Lexington,glexington,kentucky
+,,21,Louisville,glouisville,kentucky
+,58620,21,Owensboro,gowensboro,kentucky
+,,21,Western Kentucky,gwestky,kentucky
+,00975,22,Alexandria,galexandria,louisiana
+,05000,22,Baton Rouge,gbatonrouge,louisiana
+,36255,22,Houma,ghouma,louisiana
+055,40735,22,Lafayette,glafayette,louisiana
+,41155,22,Lake Charles,glakecharles,louisiana
+,51410,22,Monroe,gmonroe,louisiana
+,55000,22,New Orleans,gneworleans,louisiana
+,70000,22,Shreveport,gshreveport,louisiana
+,01600,24,Annapolis,gannapolis,maryland
+005,04000,24,Baltimore,gbaltimore,maryland
+,,24,Cumberland Valley,gcumberlandvalley,maryland
+,,24,Eastern Shore,geasternshore,maryland
+021,30325,24,Frederick,gfrederick,maryland
+,,24,Western Maryland,gwesternmaryland,maryland
+,09460,,Boston,gboston,massachasutts
+,,,Cape Cod,gcapecod,massachasutts
+,,,South Coast,gsouthcoast,massachasutts
+,73330,,Springfield,gspringfield,massachasutts
+047,82000,,Worcester,gworcester,massachasutts
+,03000,26,Ann Arbor,gannarbor,michigan
+,05920,26,Battle Creek,gbattlecreek,michigan
+,,26,Central Michigan,gcentralmich,michigan
+,22000,26,Detroit,gdetroit,michigan
+,29000,26,Flint,gflint,michigan
+,34000,26,Grand Rapids,ggrandrapids,michigan
+,38620,26,Holland,gholland,michigan
+075,41420,26,Jackson,gjacksonmi,michigan
+077,42160,26,Kalamazoo,gkalamazoo,michigan
+,46000,26,Lansing,glansing,michigan
+115,55020,26,Monroe,gmonroemi,michigan
+121,56320,26,Muskegon,gmuskegon,michigan
+,,26,Northern Michigan,gnorthernmichigan,michigan
+,65820,26,Port Huron,gporthuron,michigan
+145,70520,26,Saginaw,gsaginaw,michigan
+,,26,Southwest Michigan,gswmi,michigan
+,,26,Upper Peninsula,gup,michigan
+,05068,27,Bemidji,gbemidji,minnesota
+,07300,27,Brainerd,gbrainerd,minnesota
+,17000,27,Duluth,gduluth,minnesota
+,39878,27,Mankato,gmankato,minnesota
+,,27,Minneapolis / St Paul,gminneapolis,minnesota
+,54880,27,Rochester,grochestermn,minnesota
+,56896,27,St. Cloud,gstcloud,minnesota
+,06220,28,Biloxi,gbiloxi,mississippi
+,31020,28,Hattiesburg,ghattiesburg,mississippi
+059,36000,28,Jackson,gjackson,mississippi
+,46640,28,Meridian,gmeridian,mississippi
+,50440,28,Natchez,gnatchez,mississippi
+,,28,North Mississippi,gnorthmiss,mississippi
+,,29,Columbia/Jeff City,gcolumbiamo,missouri
+,37592,29,Joplin,gjoplin,missouri
+,38000,29,Kansas City,gkc,missouri
+,39026,29,Kirksville,gkirksville,missouri
+,,29,Lake of the Ozarks,gloz,missouri
+,,29,Southeast Missouri,gsemo,missouri
+,70000,29,Springfield,gspringfieldmo,missouri
+,64550,29,St. Joseph,gstjoseph,missouri
+189,65000,29,St. Louis,gstlouis,missouri
+,06550,30,Billings,gbillings,montana
+,08950,30,Bozeman,gbozeman,montana
+,,30,Butte,gbutte,montana
+,32800,30,Great Falls,ggreatfalls,montana
+,35600,30,Helena,ghelena,montana
+,40075,30,Kalispell,gkalispell,montana
+063,50200,30,Missoula,gmissoula,montana
+,19595,31,Grand Island,ggrandisland,nebraska
+111,28000,31,Lincoln,glincoln,nebraska
+,35000,31,North Platte,gnorthplatte,nebraska
+,37000,31,Omaha,gomaha,nebraska
+,44245,31,Scottsbluff,gscottsbluff,nebraska
+007,22500,32,Elko,gelko,nevada
+,40000,32,Las Vegas,glasvegas,nevada
+,60600,32,Reno,greno,nevada
+,,34,Central Jersey,gcentraljersey,new jersey
+,,34,Jersey Shore,gjerseyshore,new jersey
+,,34,North Jersey,gnorthjersey,new jersey
+,,34,South Jersey,gsouthjersey,new jersey
+,02000,35,Albuquerque,galbuquerque,new mexico
+,,35,Clovis / Portales,gclovis,new mexico
+,25800,35,Farmington,gfarmington,new mexico
+,39380,35,Las Cruces,glascruces,new mexico
+,,35,Roswell / Carlsbad,groswell,new mexico
+049,70500,35,Santa Fe,gsantafe,new mexico
+001,01000,36,Albany,galbany,new york
+,06607,36,Binghamton,gbinghamton,new york
+005,08510,36,Bronx,gbronx,new york
+,10022,36,Brooklyn,gbrooklyn,new york
+,11000,36,Buffalo,gbuffalo,new york
+,,36,Catskills,gcatskills,new york
+013,14058,36,Chautauqua,gchautauqua,new york
+,24229,36,Elmira,gelmira,new york
+,24933,36,Fairfield,gfairfield,new york
+,,36,Finger Lakes,gfingerlakes,new york
+,29333,36,Glens Falls,gglensfalls,new york
+,,36,Hudson Valley,ghudsonvalley,new york
+,38077,36,Ithaca,githaca,new york
+,,36,Long Island,glongisland,new york
+,44919,36,Manhattan,gmanhattan,new york
+,54881,36,Oneonta,goneonta,new york
+,58574,36,Plattsburgh,gplattsburgh,new york
+,59564,36,Potsdam,gpotsdam,new york
+081,60323,36,Queens,gqueens,new york
+,63000,36,Rochester,grochester,new york
+,70915,36,Staten Island,gstatenisland,new york
+,73000,36,Syracuse,gsyracuse,new york
+,,36,Twin Tiers,gtwintiers,new york
+,76540,36,Utica,gutica,new york
+,78608,36,Watertown,gwatertown,new york
+119,,36,Westchester,gwestchester,new york
+,02140,37,Asheville,gasheville,north carolina
+,07080,37,Boone,gboone,north carolina
+,12000,37,Charlotte,gcharlotte,north carolina
+,,37,Eastern,geasternnc,north carolina
+,22920,37,Fayetteville,gfayettevillenc,north carolina
+,28000,37,Greensboro,ggreensboro,north carolina
+,31060,37,Hickory,ghickory,north carolina
+,,37,Outer Banks,gouterbanks,north carolina
+,55000,37,Raleigh,graleigh,north carolina
+,74440,37,Wilmington,gwilmington,north carolina
+,,37,Winston Salem,gwinstonsalem,north carolina
+,07200,38,Bismarck,gbismarck,north dakota
+,25700,38,Fargo,gfargo,north dakota
+035,32060,38,Grand Forks,ggrandforks,north dakota
+,53380,38,Minot,gminot,north dakota
+,,39,Akron/Canton,gakroncanton,ohio
+007,02638,39,Ashtabula,gashtabula,ohio
+009,02736,39,Athens,gathensoh,ohio
+,14184,39,Chillicothe,gchillicothe,ohio
+,15000,39,Cincinnati,gcincinnati,ohio
+,16000,39,Cleveland,gcleveland,ohio
+,18000,39,Columbus,gcolumbus,ohio
+,21000,39,Dayton,gdayton,ohio
+,,39,Huntington/Ashland,ghuntingtonoh,ohio
+,,39,Lima/Findlay,glimaoh,ohio
+,47138,39,Mansfield,gmansfield,ohio
+143,70380,39,Sandusky,gsandusky,ohio
+,77000,39,Toledo,gtoledo,ohio
+157,,39,Tuscarawas County,gtuscarawas,ohio
+,88000,39,Youngstown,gyoungstown,ohio
+,,39,Zanesville/Cambridge,gzanesville,ohio
+,41850,40,Lawton,glawton,oklahoma
+,55000,40,Oklahoma City,goklahomacity,oklahoma
+,70300,40,Stillwater,gstillwater,oklahoma
+143,75000,40,Tulsa,gtulsa,oklahoma
+,05800,41,Bend,gbend,oregon
+,15800,41,Corvallis,gcorvallis,oregon
+,,41,East Oregon,geastoregon,oregon
+,23850,41,Eugene,geugene,oregon
+,39700,41,Klamath Falls,gklamath,oregon
+,47000,41,Medford,gmedford,oregon
+,,41,Oregon Coast,goregoncoast,oregon
+,59000,41,Portland,gportland,oregon
+,63650,41,Roseburg,groseburg,oregon
+,64900,41,Salem,gsalem,oregon
+,02000,42,Allentown,gallentown,pennsylvania
+,02184,42,Altoona,galtoona,pennsylvania
+,17664,42,Cumberland Valley,gchambersburg,pennsylvania
+049,24000,42,Erie,gerie,pennsylvania
+,32800,42,Harrisburg,gharrisburg,pennsylvania
+071,41208,42,Lancaster,glancaster,pennsylvania
+,48360,42,Meadville,gmeadville,pennsylvania
+101,60000,42,Philadelphia,gphiladelphia,pennsylvania
+,61000,42,Pittsburgh,gpittsburgh,pennsylvania
+,,42,Poconos,gpoconos,pennsylvania
+,63616,42,Reading,greading,pennsylvania
+,69000,42,Scranton,gscranton,pennsylvania
+,73808,42,State College,gpennstate,pennsylvania
+,85312,42,Williamsport,gwilliamsport,pennsylvania
+133,87048,42,York,gyork,pennsylvania
+019,13330,45,Charleston,gcharleston,south carolina
+,16000,45,Columbia,gcolumbia,south carolina
+041,25810,45,Florence,gflorence,south carolina
+045,30850,45,Greenville,ggreenville,south carolina
+,,45,Hilton Head,ghiltonhead,south carolina
+,49075,45,Myrtle Beach,gmyrtlebeach,south carolina
+,00100,46,Aberdeen,gaberdeen-sd,south dakota
+,49600,46,Pierre,gpierre,south dakota
+,52980,46,Rapid City,grapidcity,south dakota
+,59020,46,Sioux Falls,gsiouxfalls,south dakota
+,14000,47,Chattanooga,gchattanooga,tennessee
+,15160,47,Clarksville,gclarksville,tennessee
+,16920,47,Cookeville,gcookeville,tennessee
+,40000,47,Knoxville,gknoxville,tennessee
+,48000,47,Memphis,gmemphis,tennessee
+,,47,Nashville,gnashville,tennessee
+,,47,Tri-cities,gtricities,tennessee
+,01000,48,Abilene,gabilene,texas
+,03000,48,Amarillo,gamarillo,texas
+015,05000,48,Austin,gaustin,texas
+,07000,48,Beaumont,gbeaumont,texas
+,10768,48,Brownsville,gbrownsville,texas
+,15976,48,College Station,gcollegestation,texas
+,17000,48,Corpus Christi,gcorpuschristi,texas
+113,19000,48,Dallas,gdallas,texas
+,19792,48,Del Rio,gdelrio,texas
+121,19972,48,Denton,gdenton,texas
+141,24000,48,El Paso,gelpaso,texas
+,27000,48,Fort Worth,gfortworth,texas
+167,28068,48,Galveston,ggalveston,texas
+225,35000,48,Houston,ghouston,texas
+,35528,48,Huntsville,ghuntsvilletx,texas
+,39148,48,Killeen,gkilleen,texas
+,41464,48,Laredo,glaredo,texas
+303,45000,48,Lubbock,glubbock,texas
+,45384,48,Mcallen,gmcallen,texas
+,,48,mid cities,garlington,texas
+,53388,48,Odessa,godessa,texas
+,65000,48,San Antonio,gsanantonio,texas
+,65600,48,San Marcos,gsanmarcos,texas
+,72368,48,Texarkana,gtexarkana,texas
+,,48,Texoma,gtexoma,texas
+457,74144,48,Tyler,gtyler,texas
+469,75428,48,Victoria,gvictoriatx,texas
+,76000,48,Waco,gwaco,texas
+,79000,48,Wichita Falls,gwichitafalls,texas
+,45860,49,Logan,glogan,utah
+,55980,49,Ogden,gogden,utah
+,62470,49,Provo,gprovo,utah
+,67000,49,Salt Lake City,gsaltlakecity,utah
+,65330,49,St. George,gstgeorge,utah
+540,14968,51,Charlottesville,gcharlottesville,virginia
+550,16000,51,Chesapeake,gchesapeake,virginia
+590,21344,51,Danville,gdanville,virginia
+630,29744,51,Fredericksburg,gfredericksburg,virginia
+650,35000,51,Hampton,ghampton,virginia
+660,35624,51,Harrisonburg,gharrisonburg,virginia
+680,47672,51,Lynchburg,glynchburg,virginia
+,,51,New River Valley,gblacksburg,virginia
+700,56000,51,Newport News,gnewportnews,virginia
+710,57000,51,Norfolk,gnorfolk,virginia
+740,64000,51,Portsmouth,gportsmouth,virginia
+159,67000,51,Richmond,grichmond,virginia
+161,68000,51,Roanoke,groanoke,virginia
+,,51,Southwest Virginia,gswva,virginia
+800,76432,51,Suffolk,gsuffolk,virginia
+810,82000,51,Virginia Beach,gvirginiabeach,virginia
+,05280,53,Bellingham,gbellingham,washington
+,22640,53,Everett,geverett,washington
+,47245,53,Moses Lake,gmoseslake,washington
+,,53,Mt. Vernon,gmtvernon,washington
+,51300,53,Olympia,golympia,washington
+,56625,53,Pullman,gpullman,washington
+,63000,53,Seattle,gseattle,washington
+,,53,Spokane / Coeur d'Alene,gspokane,washington
+,70000,53,Tacoma,gtacoma,washington
+,,53,Tri-cities,gtricitieswa,washington
+,77105,53,Wenatchee,gwenatchee,washington
+077,80010,53,Yakima,gyakima,washington
+,14600,54,Charleston,gcharlestonwv,west virginia
+,39460,54,Huntington,ghuntington,west virginia
+,52060,54,Martinsburg,gmartinsburg,west virginia
+,55756,54,Morgantown,gmorgantown,west virginia
+,62140,54,Parkersburg,gparkersburg,west virginia
+,,51,Southern West Virginia,gsouthernwestvirginia,west virginia
+,86452,54,Wheeling,gwheeling,west virginia
+,02375,55,Appleton,gappleton,wisconsin
+035,22300,55,Eau Claire,geauclaire,wisconsin
+,31000,55,Green Bay,ggreenbay,wisconsin
+,37825,55,Janesville,gjanesville,wisconsin
+063,40775,55,La Crosse,glacrosse,wisconsin
+,48000,55,Madison,gmadison,wisconsin
+079,53000,55,Milwaukee,gmilwaukee,wisconsin
+101,66000,55,Racine,gracine,wisconsin
+117,72975,55,Sheboygan,gsheboygan,wisconsin
+,84475,55,Wausau,gwausau,wisconsin
+000,,56,Wyoming,wyoming,wyoming
+000,,33,New Hampshire, newhampshire, new hampshire
+000,,50,Vermont, burlington, vermont
+000,,10,Delaware, delaware, delaware
+000,,44,Rhode Island, providence, rhode island
