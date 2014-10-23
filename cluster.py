@@ -188,3 +188,4 @@ out['cluster'] = np.random.randint(0,5,out.shape[0])
 aggregated = out.groupby(['cluster','state'])['Cost_hour_mean'].agg({'median':np.median, 'mean':np.mean, 'count':len, 'std':np.std})
 weights.dot(aggregated.xs('Alabama', level=1))
 aggregated.groupby(level='state')['mean'].apply(lambda x: np.dot(cweights, x)[0]) # This command computes city level weighted indexes
+aggregated['score'] = aggregated.groupby(level='state')['mean'].transform(lambda x: np.dot(cweights, x)[0]) # This command actually assignes the weights to the correct place in aggregated
