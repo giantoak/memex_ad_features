@@ -185,7 +185,10 @@ new.to_csv('features.csv')
 #new['cluster'] = fitted.labels_
 weights = pandas.DataFrame({0:.1, 1:.2, 2:.3, 3:.2, 4:.2}, index=[0])  
 out['cluster'] = np.random.randint(0,5,out.shape[0]) 
-aggregated = out.groupby(['cluster','state'])['Cost_hour_mean'].agg({'median':np.median, 'mean':np.mean, 'count':len, 'std':np.std})
+out['month'] = pandas.to_datetime(out.date.apply(lambda x: x[0:7])) 
+ipdb.set_trace()
+aggregated = out.groupby(['cluster','state', 'month'])['Cost_hour_mean'].agg({'median':np.median, 'mean':np.mean, 'count':len, 'std':np.std})
+#aggregated.xs(['Texas','2011-08-01'], level=['state','month'])  # look at texas august 2011
 weights.dot(aggregated.xs('Alabama', level=1))
 aggregated.groupby(level='state')['mean'].apply(lambda x: np.dot(cweights, x)[0]) # This command computes city level weighted indexes
 aggregated['score'] = aggregated.groupby(level='state')['mean'].transform(lambda x: np.dot(cweights, x)[0]) # This command actually assignes the weights to the correct place in aggregated
