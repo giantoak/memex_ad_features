@@ -6,7 +6,7 @@ import random
 import ipdb
 import numpy as np
 import glob
-import bls
+#import bls
 np.random.seed(1)
 
 STATES = (
@@ -71,18 +71,20 @@ if True:
     h.extend(header)
     out = pandas.DataFrame(columns=header)
     files=glob.glob('norm_US_Canadaa[a-z].csv') 
-    files=glob.glob('norm_US_Canadaaa.csv') 
     for i in files:
         try:
             print(i)
             a = pandas.read_csv(i, names=header)
+            print('initial size for %s: %s' % (i, a.shape[0]))
             a.index = range(len(a))
             a = a[~a.Cost_hour_mean.isnull()]
-            a = a[~a.Age_mean.isnull()]
-            a = a[~a.Cup_mean.isnull()]
+            #a = a[~a.Age_mean.isnull()]
+            #a = a[~a.Cup_mean.isnull()]
+            print('size for %s after null removal: %s' % (i, a.shape[0]))
             a = a[a.Cost_hour_mean > 0]
-            a = a[a.Age_mean > 0]
-            a = a[a.Cup_mean > 0]
+            #a = a[a.Age_mean > 0]
+            #a = a[a.Cup_mean > 0]
+            print('size for %s after negative removal: %s' % (i, a.shape[0]))
             #sample = random.sample(a.index, int(float(len(a))/5))
             #rs = a.ix[sample]
             rs = a
@@ -105,27 +107,6 @@ if True:
     out.Cost_hour_mean[out.Cost_hour_mean < 0] = np.nan
     out=out.reindex(range(len(out)))  
     out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.title()) # title-case all city names
-    def bls_code(x):
-        try:
-    	    out = 'LAUCT%02d%05d00000003' % ( x['state_fips'], x['place_fips'])
-    	    return out 
-        except TypeError:
-    	    return np.nan
-
-    def get_LAU(x):
-        try: 
-    	    if np.isnan(x['bls_code']):
-    	        return np.nan
-        except TypeError:
-            try:
-                out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
-            except KeyError as e:
-                print('Error: %s processing %s' % (str(e), x['place'] ))
-                ipdb.set_trace()
-                return np.nan
-    	return out.mean()[0]
-        #except:
-    	#return np.nan
 
     out.to_csv('all.csv')
     acs = pandas.read_csv('bp_acs.csv')
@@ -202,5 +183,8 @@ new.to_csv('features.csv')
 #k=cluster.KMeans(n_clusters=4)
 #fitted = k.fit(sub)
 #new['cluster'] = fitted.labels_
+weights = pandas.DataFrame({0:.1, 1:.2, 2:.3, 3:.2, 4:.2}, index=[0])  
 out['cluster'] = np.random.randint(0,5,out.shape[0]) 
 aggregated = out.groupby(['cluster','state'])['Cost_hour_mean'].agg({'median':np.median, 'mean':np.mean, 'count':len, 'std':np.std})
+weights.dot(aggregated.xs('Alabama', level=1))
+aggregated.groupby(level='state')['mean'].apply(lambda x: np.dot(cweights, x)[0]) # This command computes city level weighted indexes
