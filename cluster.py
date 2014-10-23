@@ -1,9 +1,13 @@
 import pandas
+#from pandas.io import parser
+from pandas.parser import CParserError
+from sklearn import cluster
 import random
 import ipdb
 import numpy as np
 import glob
 import bls
+np.random.seed(1)
 
 STATES = (
     ("AL","Alabama"),
@@ -67,15 +71,24 @@ if True:
     h.extend(header)
     out = pandas.DataFrame(columns=header)
     files=glob.glob('norm_US_Canadaa[a-z].csv') 
+    files=glob.glob('norm_US_Canadaaa.csv') 
     for i in files:
         try:
+            print(i)
             a = pandas.read_csv(i, names=header)
             a.index = range(len(a))
-            sample = random.sample(a.index, int(float(len(a))/5))
-            rs = a.ix[sample]
+            a = a[~a.Cost_hour_mean.isnull()]
+            a = a[~a.Age_mean.isnull()]
+            a = a[~a.Cup_mean.isnull()]
+            a = a[a.Cost_hour_mean > 0]
+            a = a[a.Age_mean > 0]
+            a = a[a.Cup_mean > 0]
+            #sample = random.sample(a.index, int(float(len(a))/5))
+            #rs = a.ix[sample]
+            rs = a
             out = pandas.concat([out, rs], axis=0)
             out.index = range(len(out))
-        except:
+        except CParserError:
             pass
     #out = pandas.read_csv('norm_US_Canadaaa.csv.price')
     out = out[~(out.country == 'Canada')]
@@ -134,27 +147,27 @@ if True:
 else:
     new = pandas.read_csv('coded.csv')
 
-all=new.groupby('region').size()
-all.to_csv('sample_counts_region.csv')
+#all=new.groupby('region').size()
+#all.to_csv('sample_counts_region.csv')
 
-acs['counts'] = new.groupby('region').size()
-Cup_mean = new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts
-Age_mean = new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts
-Cost_hour_mean = new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts
-means = pandas.concat([Cup_mean, Age_mean, Cost_hour_mean], axis=1)
-#acs = pandas.concat([acs, means], axis=1).shape     
-acs = pandas.concat([new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'cup_exists'}, inplace=True)
-acs = pandas.concat([new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'age_exists'}, inplace=True)
-acs = pandas.concat([new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'cost_exists'}, inplace=True)
-acs['completeness'] = new.groupby('region')['completeness'].mean()
-acs['completeness_std'] = new.groupby('region')['completeness'].std()
-aggs = new.groupby('region').agg({'Age_mean':['mean','std'], 'Cup_mean':['mean','std'], 'Cost_hour_mean':['mean','std']})
-aggs.columns = [' '.join(col).strip() for col in aggs.columns.values]
-acs = pandas.concat([acs, aggs], axis=1)
-acs.to_csv('region_level_all.csv')
+#acs['counts'] = new.groupby('region').size()
+#Cup_mean = new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts
+#Age_mean = new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts
+#Cost_hour_mean = new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts
+#means = pandas.concat([Cup_mean, Age_mean, Cost_hour_mean], axis=1)
+##acs = pandas.concat([acs, means], axis=1).shape     
+#acs = pandas.concat([new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts, acs], axis=1)
+#acs.rename(columns={0:'cup_exists'}, inplace=True)
+#acs = pandas.concat([new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
+#acs.rename(columns={0:'age_exists'}, inplace=True)
+#acs = pandas.concat([new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
+#acs.rename(columns={0:'cost_exists'}, inplace=True)
+#acs['completeness'] = new.groupby('region')['completeness'].mean()
+#acs['completeness_std'] = new.groupby('region')['completeness'].std()
+#aggs = new.groupby('region').agg({'Age_mean':['mean','std'], 'Cup_mean':['mean','std'], 'Cost_hour_mean':['mean','std']})
+#aggs.columns = [' '.join(col).strip() for col in aggs.columns.values]
+#acs = pandas.concat([acs, aggs], axis=1)
+#acs.to_csv('region_level_all.csv')
 
 #acs = pandas.concat([new[~(new.Age_mean.isnull())].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
 #acs = pandas.concat([new[~(new.Cost_hour_mean.isnull())].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
@@ -180,14 +193,14 @@ new['completeness']=pandas.Series(0,index=new.index)
 new['completeness'][new.Cost_hour_mean > 0] += 1
 new['completeness'][new.Age_mean > 0] += 1
 new['completeness'][new.Cup_mean > 0] += 1
-new = new[~new.Cost_hour_mean.isnull()]
-new = new[~new.Age_hour_mean.isnull()]
-new = new[~new.Cup_hour_mean.isnull()]
 new.to_csv('features.csv')
 #completeness = new[['region','completeness']].groupby('region').mean()
 #completeness.to_csv('completeness_region.csv')
 
-sub = new[['Cost_hour_mean','Age_mean', 'Cup_mean']]
-k=cluster.KMeans(n_clusters=6)
-fitted = k.fit(sub)
-new['cluster'] = fitted.labels_
+## Do actual clustering on extracted features
+#sub = new[['Cost_hour_mean','Age_mean', 'Cup_mean']]
+#k=cluster.KMeans(n_clusters=4)
+#fitted = k.fit(sub)
+#new['cluster'] = fitted.labels_
+out['cluster'] = np.random.randint(0,5,out.shape[0]) 
+aggregated = out.groupby(['cluster','state'])['Cost_hour_mean'].agg({'median':np.median, 'mean':np.mean, 'count':len, 'std':np.std})
