@@ -189,6 +189,12 @@ out['month'] = pandas.to_datetime(out.date.apply(lambda x: x[0:7]))
 ipdb.set_trace()
 aggregated = out.groupby(['cluster','state', 'month'])['Cost_hour_mean'].agg({'median':np.median, 'mean':np.mean, 'count':len, 'std':np.std})
 #aggregated.xs(['Texas','2011-08-01'], level=['state','month'])  # look at texas august 2011
-weights.dot(aggregated.xs('Alabama', level=1))
-aggregated.groupby(level='state')['mean'].apply(lambda x: np.dot(cweights, x)[0]) # This command computes city level weighted indexes
-aggregated['score'] = aggregated.groupby(level='state')['mean'].transform(lambda x: np.dot(cweights, x)[0]) # This command actually assignes the weights to the correct place in aggregated
+#weights.dot(aggregated.xs('Alabama', level=1))
+def f(x):
+    conformweights = cweights[x.index.get_level_values(0)] 
+    conformweights = conformweights/np.sum(conformweights) # normalize weights if we're missing some groups
+    return np.dot(conformweights[x.index.get_level_values(0)] , x)[0]
+    
+aggregated.groupby(level=['state','month'])['mean'].apply(f) # This command computes city level weighted indexes
+aggregated['index'] = aggregated.groupby(level='state')['mean'].transform(lambda x: np.dot(cweights, x)[0]) # This command actually assignes the weights to the correct place in aggregated
+prices = aggregated.loc[0]
