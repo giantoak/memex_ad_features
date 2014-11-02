@@ -117,7 +117,7 @@ if True:
     fips.url=fips.url.str[1:]
     fips.index = fips.url
     fips['bls_code'] = fips.apply(bls_code, axis=1)
-    fips['unemployment'] = fips.apply(get_LAU, axis=1)
+    #fips['unemployment'] = fips.apply(get_LAU, axis=1)
     acs = pandas.concat([fips, acs], axis=1)
     acs['region'] = acs.url
     new = pandas.merge(new, fips, left_on='region', right_on='url') 
