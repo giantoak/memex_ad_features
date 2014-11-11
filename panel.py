@@ -12,6 +12,12 @@ def mtime(datestr):
         return datetime.datetime.strptime(datetime.datetime.strftime(d, '%Y-%m'), '%Y-%m')
     except TypeError:
         return np.nan
+def mday(datestr):
+    try:
+        d = datetime.datetime.strptime(datestr, '%Y-%m-%d')
+        return datetime.date.fromordinal(datetime.datetime.strptime(datetime.datetime.strftime(d, '%Y-%m'), '%Y-%m').toordinal())
+    except TypeError:
+        return np.nan
 def ptime(datestr):
     try:
         return datetime.datetime.strptime(datestr, '%Y-%m-%d')
@@ -79,6 +85,7 @@ if True:
     h.extend(header)
     out = pandas.DataFrame(columns=header)
     files=glob.glob('norm_US_Canadaa[a-z].csv') 
+    files=glob.glob('norm_US_Canadaaa.csv') 
     for i in files:
         try:
             a = pandas.read_csv(i, names=header)
