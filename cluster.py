@@ -1,4 +1,5 @@
 import pandas
+import datetime
 #from pandas.io import parser
 from pandas.parser import CParserError
 from sklearn import cluster
@@ -70,7 +71,7 @@ if True:
     h = ['rownum']
     h.extend(header)
     out = pandas.DataFrame(columns=header)
-    files=glob.glob('norm_US_Canadaa[a-z].csv') 
+    files=glob.glob('norm_US_Canadaam.csv') 
     for i in files:
         try:
             print(i)
@@ -93,6 +94,9 @@ if True:
         except CParserError:
             pass
     #out = pandas.read_csv('norm_US_Canadaaa.csv.price')
+    out['Date'] = out.date[~out.date.isnull()].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d')) 
+    print(out.Date.describe())
+    ipdb.set_trace()
     out = out[~(out.country == 'Canada')]
     out=out[~out.state.isnull()]
     out.state=out.state.apply(lambda x: x.strip())

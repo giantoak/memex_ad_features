@@ -98,17 +98,22 @@ if True:
     	    return out 
         except TypeError:
     	    return np.nan
-    
+
     def get_LAU(x):
         try: 
     	    if np.isnan(x['bls_code']):
     	        return np.nan
         except TypeError:
-    	    out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
+            try:
+                out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
+            except KeyError as e:
+                print('Error: %s processing %s' % (str(e), x['place'] ))
+                ipdb.set_trace()
+                return np.nan
     	return out.mean()[0]
         #except:
     	#return np.nan
-    
+
     out.to_csv('all.csv')
     acs = pandas.read_csv('bp_acs.csv')
     acs.index=acs.place
