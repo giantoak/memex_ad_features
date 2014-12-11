@@ -1,10 +1,28 @@
 import pandas
+import datetime
 import random
 import ipdb
 import numpy as np
 import glob
 import bls
 
+def mtime(datestr):
+    try:
+        d = datetime.datetime.strptime(datestr, '%Y-%m-%d')
+        return datetime.datetime.strptime(datetime.datetime.strftime(d, '%Y-%m'), '%Y-%m')
+    except TypeError:
+        return np.nan
+def mday(datestr):
+    try:
+        d = datetime.datetime.strptime(datestr, '%Y-%m-%d')
+        return datetime.date.fromordinal(datetime.datetime.strptime(datetime.datetime.strftime(d, '%Y-%m'), '%Y-%m').toordinal())
+    except TypeError:
+        return np.nan
+def ptime(datestr):
+    try:
+        return datetime.datetime.strptime(datestr, '%Y-%m-%d')
+    except TypeError:
+        return np.nan
 STATES = (
     ("AL","Alabama"),
     ("AK","Alaska"),
@@ -67,6 +85,7 @@ if True:
     h.extend(header)
     out = pandas.DataFrame(columns=header)
     files=glob.glob('norm_US_Canadaa[a-z].csv') 
+    files=glob.glob('norm_US_Canadaaa.csv') 
     for i in files:
         try:
             a = pandas.read_csv(i, names=header)
@@ -89,31 +108,26 @@ if True:
     out = out[~(out.state == 'Guam')]
     out.state[out.state == 'Lousiana'] = 'Louisiana'
     out = out[~(out.state == 'Uk')]
-    out.Cost_hour_mean[out.Cost_hour_mean < 0] = np.nan
+    #out.Cost_hour_mean[out.Cost_hour_mean < 0] = np.nan
     out=out.reindex(range(len(out)))  
-    out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.title()) # title-case all city names
+    #out.city[~out.city.isnull()]=out.city[~out.city.isnull()].apply(lambda x: x.title()) # title-case all city names
     def bls_code(x):
         try:
     	    out = 'LAUCT%02d%05d00000003' % ( x['state_fips'], x['place_fips'])
     	    return out 
         except TypeError:
     	    return np.nan
-
+    
     def get_LAU(x):
         try: 
     	    if np.isnan(x['bls_code']):
     	        return np.nan
         except TypeError:
-            try:
-                out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
-            except KeyError as e:
-                print('Error: %s processing %s' % (str(e), x['place'] ))
-                ipdb.set_trace()
-                return np.nan
+    	    out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
     	return out.mean()[0]
         #except:
     	#return np.nan
-
+    
     out.to_csv('all.csv')
     acs = pandas.read_csv('bp_acs.csv')
     acs.index=acs.place
@@ -126,59 +140,24 @@ if True:
     acs = pandas.concat([fips, acs], axis=1)
     acs['region'] = acs.url
     new = pandas.merge(new, fips, left_on='region', right_on='url') 
-    new['completeness']=pandas.Series(0,index=new.index)
-    new['completeness'][new.Cost_hour_mean > 0] += 1
-    new['completeness'][new.Age_mean > 0] += 1
-    new['completeness'][new.Cup_mean > 0] += 1
+    #new['completeness']=pandas.Series(0,index=new.index)
+    #new['completeness'][new.Cost_hour_mean > 0] += 1
+    #new['completeness'][new.Age_mean > 0] += 1
+    #new['completeness'][new.Cup_mean > 0] += 1
     new.to_csv('coded.csv')
 else:
     new = pandas.read_csv('coded.csv')
 
-all=new.groupby('region').size()
+new['Date'] = new.date.apply(ptime)
+new['MonthDate'] = new.date.apply(mtime)
+#new['Week'] = new.Date.dt.week
+new['Year'] = new.Date.dt.year
+new['Month'] = new.Date.dt.month
+#all=new.groupby(['region','Week']).size()
+#all=new.groupby(['region','Year','Week']).size()
+#all=new.groupby(['region','Year','Month']).size()
+all=new.groupby(['region','MonthDate']).size()
+df = pandas.DataFrame(all, columns=['counts'])
+df.to_csv('counts.csv')
 all.to_csv('sample_counts_region.csv')
-
-acs['counts'] = new.groupby('region').size()
-Cup_mean = new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts
-Age_mean = new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts
-Cost_hour_mean = new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts
-means = pandas.concat([Cup_mean, Age_mean, Cost_hour_mean], axis=1)
-#acs = pandas.concat([acs, means], axis=1).shape     
-acs = pandas.concat([new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'cup_exists'}, inplace=True)
-acs = pandas.concat([new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'age_exists'}, inplace=True)
-acs = pandas.concat([new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'cost_exists'}, inplace=True)
-acs['completeness'] = new.groupby('region')['completeness'].mean()
-acs['completeness_std'] = new.groupby('region')['completeness'].std()
-aggs = new.groupby('region').agg({'Age_mean':['mean','std'], 'Cup_mean':['mean','std'], 'Cost_hour_mean':['mean','std']})
-aggs.columns = [' '.join(col).strip() for col in aggs.columns.values]
-acs = pandas.concat([acs, aggs], axis=1)
-acs.to_csv('region_level_all.csv')
-
-#acs = pandas.concat([new[~(new.Age_mean.isnull())].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
-#acs = pandas.concat([new[~(new.Cost_hour_mean.isnull())].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
-#new.Cup_mean[new.Cup_mean < 0] = np.nan
-#nocup=new[~(new.Cup_mean.isnull())].groupby('region').size()
-#nocup = nocup/all.astype('float')
-#nocup.to_csv('nocupsize_region.csv')
-
-#new.Age_mean[new.Age_mean < 0] = np.nan
-#age=new[~(new.Age_mean.isnull())].groupby('region').size()
-#age = age/all.astype('float')
-#age.to_csv('age_counts_region.csv')
-#sample = random.sample(new.index, 100000)
-#rs = new.ix[sample]
-#new.to_csv('cleaned_region.csv')
-#cost = new[~(new.Cost_hour_mean.isnull())].groupby('region').size()
-#cost = cost/all.astype('float')
-#cost.to_csv('frac_with_price_region.csv')
-
-# Compute 'completeness' which gets a point for every value we're able to
-# parse
-new['completeness']=pandas.Series(0,index=new.index)
-new['completeness'][new.Cost_hour_mean > 0] += 1
-new['completeness'][new.Age_mean > 0] += 1
-new['completeness'][new.Cup_mean > 0] += 1
-completeness = new[['region','completeness']].groupby('region').mean()
-completeness.to_csv('completeness_region.csv')
+ipdb.set_trace()

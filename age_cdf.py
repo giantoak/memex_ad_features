@@ -1,3 +1,8 @@
+#This code loads in data from the memex CMU extracted features. It then looks at
+#posts of people with reasonable ages, and then computes the pdf/CDF of age
+
+#2014-11-01
+#Jeff Borowitz
 import pandas
 import random
 import ipdb
@@ -98,22 +103,17 @@ if True:
     	    return out 
         except TypeError:
     	    return np.nan
-
+    
     def get_LAU(x):
         try: 
     	    if np.isnan(x['bls_code']):
     	        return np.nan
         except TypeError:
-            try:
-                out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
-            except KeyError as e:
-                print('Error: %s processing %s' % (str(e), x['place'] ))
-                ipdb.set_trace()
-                return np.nan
+    	    out = bls.get_series(x['bls_code'], startyear=2013, endyear=2013)
     	return out.mean()[0]
         #except:
     	#return np.nan
-
+    
     out.to_csv('all.csv')
     acs = pandas.read_csv('bp_acs.csv')
     acs.index=acs.place
@@ -134,51 +134,13 @@ if True:
 else:
     new = pandas.read_csv('coded.csv')
 
-all=new.groupby('region').size()
-all.to_csv('sample_counts_region.csv')
-
-acs['counts'] = new.groupby('region').size()
-Cup_mean = new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts
-Age_mean = new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts
-Cost_hour_mean = new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts
-means = pandas.concat([Cup_mean, Age_mean, Cost_hour_mean], axis=1)
-#acs = pandas.concat([acs, means], axis=1).shape     
-acs = pandas.concat([new[new.Cup_mean > 0].groupby('region')['Cup_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'cup_exists'}, inplace=True)
-acs = pandas.concat([new[new.Age_mean > 0].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'age_exists'}, inplace=True)
-acs = pandas.concat([new[new.Cost_hour_mean > 0].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
-acs.rename(columns={0:'cost_exists'}, inplace=True)
-acs['completeness'] = new.groupby('region')['completeness'].mean()
-acs['completeness_std'] = new.groupby('region')['completeness'].std()
-aggs = new.groupby('region').agg({'Age_mean':['mean','std'], 'Cup_mean':['mean','std'], 'Cost_hour_mean':['mean','std']})
-aggs.columns = [' '.join(col).strip() for col in aggs.columns.values]
-acs = pandas.concat([acs, aggs], axis=1)
-acs.to_csv('region_level_all.csv')
-
-#acs = pandas.concat([new[~(new.Age_mean.isnull())].groupby('region')['Age_mean'].size()/acs.counts, acs], axis=1)
-#acs = pandas.concat([new[~(new.Cost_hour_mean.isnull())].groupby('region')['Cost_hour_mean'].size()/acs.counts, acs], axis=1)
-#new.Cup_mean[new.Cup_mean < 0] = np.nan
-#nocup=new[~(new.Cup_mean.isnull())].groupby('region').size()
-#nocup = nocup/all.astype('float')
-#nocup.to_csv('nocupsize_region.csv')
-
-#new.Age_mean[new.Age_mean < 0] = np.nan
-#age=new[~(new.Age_mean.isnull())].groupby('region').size()
-#age = age/all.astype('float')
-#age.to_csv('age_counts_region.csv')
-#sample = random.sample(new.index, 100000)
-#rs = new.ix[sample]
-#new.to_csv('cleaned_region.csv')
-#cost = new[~(new.Cost_hour_mean.isnull())].groupby('region').size()
-#cost = cost/all.astype('float')
-#cost.to_csv('frac_with_price_region.csv')
-
-# Compute 'completeness' which gets a point for every value we're able to
-# parse
-new['completeness']=pandas.Series(0,index=new.index)
-new['completeness'][new.Cost_hour_mean > 0] += 1
-new['completeness'][new.Age_mean > 0] += 1
-new['completeness'][new.Cup_mean > 0] += 1
-completeness = new[['region','completeness']].groupby('region').mean()
-completeness.to_csv('completeness_region.csv')
+ages = pandas.Series(np.asarray(range(18,50,1))
+cdf = ages.apply(lambda x: (age < x).sum()/float(len(age))) 
+cdf.index = ages
+pdf = cdf.diff()
+pdf.index = ages
+age = new.Age_mean[new.Age_mean > 0] 
+dist = pandas.concat([pdf, cdf], axis=1)
+dist.rename(columns={0:'pdf',1:'cdf'}, inplace=True)
+dist['age'] = dist.index
+dist.to_csv('ages.csv')
