@@ -23,7 +23,6 @@ reg$city<-gsub(', .*','', reg$location, perl=T) # The "city" is the piece to the
 a<-geo.make(state=reg[2,'state'], place=reg[2,'city'])
 me<-acs.fetch(geography=a, table.number="B01001")
 # get data for auburn
-me2 <- acs.fetch(geography=cook, variable="B01001_001")
 # Note: using 'variable' is more like what we really want: table.number
 # brings an entire report table, with like all the combinations of
 # male/female/age or whatever displayed
@@ -85,6 +84,19 @@ features <- c(
               "B15002_017", # Male: Professional school degree 
               "B15002_018" # Male: Doctorate degree 
               )
+bronx.geo <- geo.make(state=36, county=5)
+bronx <- acs.fetch(geography=bronx.geo, variable=features)
+write.csv(bronx@estimate, 'bronx.csv')
+brooklyn.geo <- geo.make(state=36, county=47)
+brooklyn <- acs.fetch(geography=brooklyn.geo, variable=features)
+write.csv(brooklyn@estimate, 'brooklyn.csv')
+queens.geo <- geo.make(state=36, county=81)
+queens <- acs.fetch(geography=queens.geo, variable=features)
+write.csv(queens@estimate, 'queens.csv')
+statenisland.geo <- geo.make(state=36, county=85)
+statenisland <- acs.fetch(geography=statenisland.geo, variable=features)
+write.csv(statenisland@estimate, 'statenisland.csv')
+me2 <- acs.fetch(geography=cook, variable="B01001_001")
 out <- data.frame(matrix(ncol = 3+length(features), nrow = 10))
 names(out) <- c("location", "City", "State", features)
 errored.indexes <- NULL
@@ -102,3 +114,18 @@ for (i in seq(numrows)){
                   print(reg[i,])
               })
 }
+
+# NY FIPS come from
+# http://library.columbia.edu/locations/dssc/data/nycounty_fips.html
+bronx.geo <- geo.make(state=36, county=5)
+bronx <- geo.fetch(geography=bronx.geo, variable=features)
+write.csv(bronx@estimate, 'bronx.csv')
+brooklyn.geo <- geo.make(state=36, county=47)
+brooklyn <- geo.fetch(geography=brooklyn.geo, variable=features)
+write.csv(brooklyn@estimate, 'brooklyn.csv')
+queens.geo <- geo.make(state=36, county=81)
+queens <- geo.fetch(geography=queens.geo, variable=features)
+write.csv(queens@estimate, 'queens.csv')
+statenisland.geo <- geo.make(state=36, county=81)
+statenisland <- geo.fetch(geography=statenisland.geo, variable=features)
+write.csv(statenisland@estimate, 'statenisland.csv')
