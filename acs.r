@@ -67,22 +67,22 @@ features <- c(
               "B19013_001", # Median Income
               "B01001A_001", # Total White Population
               "B01001B_001", # Total Black Population
-              "B15002_003", # Male: No schooling completed 
-              "B15002_004", #  Male: Nursery to 4th grade 5     
-              "B15002_005", # Male: 5th and 6th grade 
-              "B15002_006", #  Male: 7th and 8th grade 7     
-              "B15002_007", # Male: 9th grade 
-              "B15002_008", #  Male: 10th grade 9     
-              "B15002_009", # Male: 11th grade 10    
-              "B15002_010", # Male: 12th grade, no diploma 
-              "B15002_011", # Male: High school graduate, GED, or alternative 
-              "B15002_012", # Male: Some college, less than 1 year 
-              "B15002_013", # Male: Some college, 1 or more years, no degree 
-              "B15002_014", # Male: Associate's degree 15    
-              "B15002_015", # Male: Bachelor's degree 
-              "B15002_016", # Male: Master's degree 
-              "B15002_017", # Male: Professional school degree 
-              "B15002_018" # Male: Doctorate degree 
+              "B15003_003", # Male: No schooling completed 
+              "B15003_004", #  Male: Nursery to 4th grade 5     
+              "B15003_005", # Male: 5th and 6th grade 
+              "B15003_006", #  Male: 7th and 8th grade 7     
+              "B15003_007", # Male: 9th grade 
+              "B15003_008", #  Male: 10th grade 9     
+              "B15003_009", # Male: 11th grade 10    
+              "B15003_010", # Male: 12th grade, no diploma 
+              "B15003_011", # Male: High school graduate, GED, or alternative 
+              "B15003_012", # Male: Some college, less than 1 year 
+              "B15003_013", # Male: Some college, 1 or more years, no degree 
+              "B15003_014", # Male: Associate's degree 15    
+              "B15003_015", # Male: Bachelor's degree 
+              "B15003_016", # Male: Master's degree 
+              "B15003_017", # Male: Professional school degree 
+              "B15003_018" # Male: Doctorate degree 
               )
 bronx.geo <- geo.make(state=36, county=5)
 bronx <- acs.fetch(geography=bronx.geo, variable=features)
