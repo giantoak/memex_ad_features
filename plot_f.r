@@ -1,4 +1,5 @@
 library(reshape)
+library(RColorBrewer)
 library(ggplot2)
 data<-read.csv('intercept.csv')
 data<-data[!is.na(data$f),] # Remove rows without fixed cost
@@ -12,8 +13,13 @@ data$unemp.quartile<-cut(data$unemployment, breaks=quantile(data$unemployment, p
 # Create a variable with the quartiles of unemployment rate, weighted by ads
 
 df.m <-melt(data[,c('f','unemp.quartile')])
-ggplot(df.m) + geom_density(aes(x = value, colour = unemp.quartile), adjust=5) + 
-  labs(x = NULL, title='Estimated Fixed Cost by Unemployment Rate Quartile') + scale_x_continuous(limits=c(0, 200))+ xlab('Price ($)')
+ggplot(df.m) + geom_density(aes(x = value, colour = unemp.quartile), adjust=5, size=2) + 
+  labs(x = NULL, title='Estimated Fixed Cost by\n Unemployment Rate Quartile') + scale_x_continuous(limits=c(0, 200))+ xlab('Price ($)') + ylab('Density') + 
+  theme(plot.title = element_text(size = rel(3)), 
+        axis.title.x =  element_text(size = rel(2)),
+        axis.title.y =  element_text(size = rel(2)),
+        legend.title = element_text(size = rel(2))) + 
+  scale_colour_manual(name="Unemp.\nRate", values = rev(brewer.pal(4,"RdYlGn")))
 ggsave('fixed_by_unemployment.pdf')
 
 data$hs.dropout.quartile<-cut(data$lt_highschool, breaks=quantile(data$lt_highschool, probs=c(0,.25,.5,.75,1), include.lowest=TRUE))
@@ -64,12 +70,24 @@ sub<-data
 sub<-sub[!(sub$location %in% "Garden Grove, CA, USA"),] # remove garden grove, ca
 df.m <-melt(sub[sub$loc.count > 150,c('f','location')])
 
-ggplot(df.m) + geom_density(aes(x = value), adjust=2) + 
+ggplot(df.m) + geom_density(aes(x = value), adjust=2, size=2) + 
   labs(x = NULL, title='Estimated Fixed Price ($)') + 
+  xlab('Price ($)') + ylab('Density') + 
   scale_x_continuous(limits=c(0, 100)) + facet_wrap(~location, nrow=4) + 
-  scale_y_continuous(limits=c(0,.25)) 
-ggsave('fixed_price_multiples.pdf', width=22, height=17, units='in')
+  scale_y_continuous(limits=c(0,.25)) +
+  theme(plot.title = element_text(size = rel(3)), 
+        axis.title.x =  element_text(size = rel(2)),
+        axis.title.y =  element_text(size = rel(2)),
+        strip.text.x = element_text(size=rel(2)))
+ggsave('fixed_price_multiples.pdf', width=11, height=8.5, units='in')
 
+ggplot(df.m) + geom_density(aes(x = value, colour = unemp.quartile), adjust=5, size=2) + 
+  labs(x = NULL, title='Estimated Fixed Cost by\n Unemployment Rate Quartile') + scale_x_continuous(limits=c(0, 200))+ xlab('Price ($)') + ylab('Density') + 
+  theme(plot.title = element_text(size = rel(3)), 
+        axis.title.x =  element_text(size = rel(2)),
+        axis.title.y =  element_text(size = rel(2)),
+        legend.title = element_text(size = rel(2))) + 
+ggsave('fixed_by_unemployment.pdf')
 sub<-data
 sub<-sub[!(sub$location %in% "Garden Grove, CA, USA"),] # remove garden grove, ca
 df.m <-melt(sub[sub$loc.count > 150,c('price_per_hour','location')])
