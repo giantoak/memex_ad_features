@@ -9,9 +9,34 @@ header = FALSE,
 col.names=cn,
 n = 50000,
 buffersize = 2000 )
+
 a$hhwt<-a$hhwt / 100
 a$perwt<-a$perwt / 100
+a$strata <- 100000*a$statefip + a$puma  
+a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
+# Note: incwage is in dollars
+a<-a[a$uhrswork > 30,] # Restrict to only full time workers
+# a<-a[a$wkswork2 >= 5,] # Restrict to year round workers
 
+a$incwage<-a$incwage / 2000 # A stand-in for doing the FT/year round selection
+
+a$naicschars<-as.character(a$indnaics)
+a$naics2<-as.factor(unlist(lapply(a$naicschars, FUN=function(x){return(substring(x,1,2))}))) # get 2 digit industries)
+# Can recode these back and forth using the IPUMS industry crosswalk here:
+# https://usa.ipums.org/usa/volii/indcross03.shtml
+a$naicschars<-NULL
+require(survey)
+ipums.design <- svydesign(id=~a$serial, strata=~a$strata, data=a, weights=a$perwt)
+
+#b<-svytable(incwage ~ occsoc + indnaics + statefip + puma, ipums.design) 
+b<-svyby(~incwage, ~naics2 + occsoc, ipums.design, svymean) 
+write.csv(b, file='wage_means.csv', row.names=FALSE)
+
+d<-svyby(~incwage, ~naics2, ipums.design, svyquantile, quantiles=c(.1,.9))
+# This command would do .1 and .9 quantiles, but appears to choke on empty
+# cells
+
+# Create cross-tabulation at the state-puma-ind-occ level
 # a$region<-as.factor(a$region)
 # revalue(a$region,c(
 # "11"= "New England Division",
