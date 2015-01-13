@@ -7,7 +7,7 @@ file='usa_00013.dat',
 widths=wid,
 header = FALSE,
 col.names=cn,
-n = 50000,
+n = 5000,
 buffersize = 2000 )
 
 a$hhwt<-a$hhwt / 100
@@ -25,14 +25,20 @@ a$naics2<-as.factor(unlist(lapply(a$naicschars, FUN=function(x){return(substring
 # Can recode these back and forth using the IPUMS industry crosswalk here:
 # https://usa.ipums.org/usa/volii/indcross03.shtml
 a$naicschars<-NULL
+
+a$occchars<-as.character(a$occsoc)
+a$occ2<-as.factor(unlist(lapply(a$occchars, FUN=function(x){return(substring(x,1,2))}))) # get 2 digit industries)
+# Can recode these back and forth using the IPUMS industry crosswalk here:
+# https://usa.ipums.org/usa/volii/indcross03.shtml
+a$occchars<-NULL
 require(survey)
 ipums.design <- svydesign(id=~a$serial, strata=~a$strata, data=a, weights=a$perwt)
 
 #b<-svytable(incwage ~ occsoc + indnaics + statefip + puma, ipums.design) 
-b<-svyby(~incwage, ~naics2 + occsoc, ipums.design, svymean) 
+b<-svyby(~incwage, ~naics2 + occ2 + puma + statefip, ipums.design, svymean) 
 write.csv(b, file='wage_means.csv', row.names=FALSE)
 
-d<-svyby(~incwage, ~naics2, ipums.design, svyquantile, quantiles=c(.1,.9))
+#d<-svyby(~incwage, ~naics2, ipums.design, svyquantile, quantiles=c(.1,.9))
 # This command would do .1 and .9 quantiles, but appears to choke on empty
 # cells
 
