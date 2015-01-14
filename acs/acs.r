@@ -24,7 +24,7 @@ cat('data read to mem\n')
 #header = FALSE,
 #col.names=cn,
 #colClasses=column_types,
-#n = 277170
+#n = 2771
 #)
 
 print('data loaded!!!')
@@ -36,7 +36,7 @@ a$strata <- 100000*a$statefip + a$puma
 a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
 # Note: incwage is in dollars
 a<-a[a$uhrswork > 30,] # Restrict to only full time workers
-cat('subsetting done!')
+cat('subsetting done!\n')
 # a<-a[a$wkswork2 >= 5,] # Restrict to year round workers
 
 a$incwage<-a$incwage / 2000 # A stand-in for doing the FT/year round selection
@@ -54,6 +54,7 @@ a$occ2<-as.factor(unlist(lapply(a$occchars, FUN=function(x){return(substring(x,1
 a$occchars<-NULL
 require(survey)
 
+names<-c('mean.wage','var.wage','p05','p10','p25','p50','p75','p90','p95','N','sum.wght')
 computes<-function(x){
     x$mean.wage<-wtd.mean(x$incwage, weights=x$perwt)
     x$var.wage<-wtd.var(x$incwage, weights=x$perwt)
@@ -68,11 +69,13 @@ computes<-function(x){
     x$p95<-quantile.results[7]
     x$N<-dim(x)[1]
     x$sum.wght<-sum(x$perwt)
-    return(x[1,])
+    #print(x[1,names])
+    return(x[1,c('occ2','naics2','puma','statefip',names)])
 }
 
 cat('doing ddply\n')
 b<-ddply(.data=a, .variables=.(occ2, naics2, puma, statefip), .fun=computes)
+write.csv(b, file='wage_bins.csv', row.names=FALSE)
 
 cat('creating counts\n')
 counts<-as.data.frame(table(a$naics2, a$occ2, a$puma, a$statefip))
