@@ -3,29 +3,29 @@ cn<-c("year","datanum","serial","hhwt","region","stateicp","statefip","county","
 wid<-c(4,2,8,10,2,2,2,4,4,5,1,4,10,4,4,6,8,2,6)
 column_types<-c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer')
 
-library(LaF)
-library(ffbase)
-large<-laf_open_fwf('usa_00013.dat',
-                column_widths=wid,
-column_types=c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer'),
-column_names=cn
-                )
-cat('laf read complete\n')
+#library(LaF)
+#library(ffbase)
+#large<-laf_open_fwf('usa_00013.dat',
+                #column_widths=wid,
+#column_types=c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer'),
+#column_names=cn
+                #)
+#cat('laf read complete\n')
                  
-mem.frame<-laf_to_ffdf(large, nrows=27717893)
-cat('disk frame complete\n')
-a<-as.data.frame(mem.frame)
-cat('data read to mem\n')
+#mem.frame<-laf_to_ffdf(large, nrows=27717893)
+#cat('disk frame complete\n')
+#a<-as.data.frame(mem.frame)
+#cat('data read to mem\n')
 
-#a<-read.fwf(
-##file='temp.dat',
-#file='usa_00013.dat',
-#widths=wid,
-#header = FALSE,
-#col.names=cn,
-#colClasses=column_types,
-#n = 27717893
-#)
+a<-read.fwf(
+#file='temp.dat',
+file='usa_00013.dat',
+widths=wid,
+header = FALSE,
+col.names=cn,
+colClasses=column_types,
+n = 277170
+)
 print('adata loaded!!!')
 #buffersize = 2000 )
 
@@ -35,6 +35,7 @@ a$strata <- 100000*a$statefip + a$puma
 a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
 # Note: incwage is in dollars
 a<-a[a$uhrswork > 30,] # Restrict to only full time workers
+cat('subsetting done!')
 # a<-a[a$wkswork2 >= 5,] # Restrict to year round workers
 
 a$incwage<-a$incwage / 2000 # A stand-in for doing the FT/year round selection
@@ -52,6 +53,13 @@ a$occ2<-as.factor(unlist(lapply(a$occchars, FUN=function(x){return(substring(x,1
 a$occchars<-NULL
 require(survey)
 cat('loading survey design\n')
+
+#counts<-as.data.frame(table(a$naics2, a$occ2, a$puma, a$statefip))
+#names(counts)<-c('naics2','occ2','puma','statefip','Freq')
+#a<-merge(a,counts)
+#print(dim(a))
+#a<-a[a$Freq > 10,]
+#print(dim(a))
 ipums.design <- svydesign(id=~a$serial, strata=~a$strata, data=a, weights=a$perwt)
 cat('survey design compelted...\n')
 
@@ -60,7 +68,7 @@ b<-svyby(~incwage, ~naics2 + occ2 + puma + statefip, ipums.design, svymean)
 cat('survey by compelted...\n')
 write.csv(b, file='wage_means.csv', row.names=FALSE)
 
-#d<-svyby(~incwage, ~naics2, ipums.design, svyquantile, quantiles=c(.1,.9))
+d<-svyby(~incwage, ~naics2 + occ2 + puma + statefip, ipums.design, svyquantile, quantiles=c(.1,.9))
 # This command would do .1 and .9 quantiles, but appears to choke on empty
 # cells
 
