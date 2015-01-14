@@ -1,14 +1,33 @@
 library(plyr)
 cn<-c("year","datanum","serial","hhwt","region","stateicp","statefip","county","city","puma","gq","pernum","perwt","occ","ind","occsoc","indnaics","uhrswork","incwage")
 wid<-c(4,2,8,10,2,2,2,4,4,5,1,4,10,4,4,6,8,2,6)
-a<-read.fwf(
-#file='temp.dat',
-file='usa_00013.dat',
-widths=wid,
-header = FALSE,
-col.names=cn,
-n = 5000,
-buffersize = 2000 )
+column_types<-c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer')
+
+library(LaF)
+library(ffbase)
+large<-laf_open_fwf('usa_00013.dat',
+                column_widths=wid,
+column_types=c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer'),
+column_names=cn
+                )
+cat('laf read complete\n')
+                 
+mem.frame<-laf_to_ffdf(large, nrows=27717893)
+cat('disk frame complete\n')
+a<-as.data.frame(mem.frame)
+cat('data read to mem\n')
+
+#a<-read.fwf(
+##file='temp.dat',
+#file='usa_00013.dat',
+#widths=wid,
+#header = FALSE,
+#col.names=cn,
+#colClasses=column_types,
+#n = 27717893
+#)
+print('adata loaded!!!')
+#buffersize = 2000 )
 
 a$hhwt<-a$hhwt / 100
 a$perwt<-a$perwt / 100
@@ -32,10 +51,13 @@ a$occ2<-as.factor(unlist(lapply(a$occchars, FUN=function(x){return(substring(x,1
 # https://usa.ipums.org/usa/volii/indcross03.shtml
 a$occchars<-NULL
 require(survey)
+cat('loading survey design\n')
 ipums.design <- svydesign(id=~a$serial, strata=~a$strata, data=a, weights=a$perwt)
+cat('survey design compelted...\n')
 
 #b<-svytable(incwage ~ occsoc + indnaics + statefip + puma, ipums.design) 
 b<-svyby(~incwage, ~naics2 + occ2 + puma + statefip, ipums.design, svymean) 
+cat('survey by compelted...\n')
 write.csv(b, file='wage_means.csv', row.names=FALSE)
 
 #d<-svyby(~incwage, ~naics2, ipums.design, svyquantile, quantiles=c(.1,.9))
@@ -82,4 +104,3 @@ write.csv(b, file='wage_means.csv', row.names=FALSE)
 #label var indnaics `"Industry, NAICS classification"'*/
 #label var uhrswork `"Usual hours worked per week"'*/
 #label var incwage  `"Wage and salary income"'*/
-
