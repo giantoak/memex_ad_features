@@ -3,30 +3,31 @@ cn<-c("year","datanum","serial","hhwt","region","stateicp","statefip","county","
 wid<-c(4,2,8,10,2,2,2,4,4,5,1,4,10,4,4,6,8,2,6)
 column_types<-c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer')
 
-#library(LaF)
-#library(ffbase)
-#large<-laf_open_fwf('usa_00013.dat',
-                #column_widths=wid,
-#column_types=c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer'),
-#column_names=cn
-                #)
-#cat('laf read complete\n')
+library(LaF)
+library(ffbase)
+large<-laf_open_fwf('usa_00013.dat',
+                column_widths=wid,
+column_types=c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer'),
+column_names=cn
+                )
+cat('laf read complete\n')
                  
-#mem.frame<-laf_to_ffdf(large, nrows=27717893)
-#cat('disk frame complete\n')
-#a<-as.data.frame(mem.frame)
-#cat('data read to mem\n')
+mem.frame<-laf_to_ffdf(large, nrows=27717893)
+cat('disk frame complete\n')
+a<-as.data.frame(mem.frame)
+cat('data read to mem\n')
 
-a<-read.fwf(
-#file='temp.dat',
-file='usa_00013.dat',
-widths=wid,
-header = FALSE,
-col.names=cn,
-colClasses=column_types,
-n = 277170
-)
-print('adata loaded!!!')
+#a<-read.fwf(
+##file='temp.dat',
+#file='usa_00013.dat',
+#widths=wid,
+#header = FALSE,
+#col.names=cn,
+#colClasses=column_types,
+#n = 277170
+#)
+
+print('data loaded!!!')
 #buffersize = 2000 )
 
 a$hhwt<-a$hhwt / 100
@@ -52,14 +53,35 @@ a$occ2<-as.factor(unlist(lapply(a$occchars, FUN=function(x){return(substring(x,1
 # https://usa.ipums.org/usa/volii/indcross03.shtml
 a$occchars<-NULL
 require(survey)
-cat('loading survey design\n')
 
-#counts<-as.data.frame(table(a$naics2, a$occ2, a$puma, a$statefip))
-#names(counts)<-c('naics2','occ2','puma','statefip','Freq')
-#a<-merge(a,counts)
+computes<-function(x){
+    x$mean.wage<-wtd.mean(x$incwage, weights=x$perwt)
+    x$var.wage<-wtd.var(x$incwage, weights=x$perwt)
+    quantiles<-c(.05,.1, .25, .5, .75, .9,.95)
+    quantile.results<-wtd.quantile(x$incwage, weights=x$perwt, probs=quantiles)
+    x$p05<-quantile.results[1]
+    x$p10<-quantile.results[2]
+    x$p25<-quantile.results[3]
+    x$p50<-quantile.results[4]
+    x$p75<-quantile.results[5]
+    x$p90<-quantile.results[6]
+    x$p95<-quantile.results[7]
+    x$N<-dim(x)[1]
+    x$sum.wght<-sum(x$perwt)
+    return(x[1,])
+}
+
+cat('doing ddply\n')
+b<-ddply(.data=a, .variables=.(occ2, naics2, puma, statefip), .fun=computes)
+
+cat('creating counts\n')
+counts<-as.data.frame(table(a$naics2, a$occ2, a$puma, a$statefip))
+names(counts)<-c('naics2','occ2','puma','statefip','Freq')
+a<-merge(a,counts)
 #print(dim(a))
 #a<-a[a$Freq > 10,]
 #print(dim(a))
+cat('loading survey design\n')
 ipums.design <- svydesign(id=~a$serial, strata=~a$strata, data=a, weights=a$perwt)
 cat('survey design compelted...\n')
 
