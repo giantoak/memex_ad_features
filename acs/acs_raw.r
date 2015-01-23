@@ -69,13 +69,31 @@ cat('subsetting done!\n')
 #SOCP10: 2010/2011 occupation based on 2010 SOC
 #SOCP12: 2012 occupation based on 2010 SOC
 
-a$incwage<-a$incwage / 2000 # A stand-in for doing the FT/year round selection
+#a$incwage<-a$incwage / 2000 # A stand-in for doing the FT/year round selection
 
-a$naicschars<-as.character(a$indnaics)
-a$naics2<-as.factor(unlist(lapply(a$naicschars, FUN=function(x){return(substring(x,1,2))}))) # get 2 digit industries)
-# Can recode these back and forth using the IPUMS industry crosswalk here:
-# https://usa.ipums.org/usa/volii/indcross03.shtml
-a$naicschars<-NULL
+#a$naicschars<-as.character(a$indnaics)
+#a$naics2<-as.factor(unlist(lapply(a$naicschars, FUN=function(x){return(substring(x,1,2))}))) # get 2 digit industries)
+## Can recode these back and forth using the IPUMS industry crosswalk here:
+## https://usa.ipums.org/usa/volii/indcross03.shtml
+#a$naicschars<-NULL
+
+a$full.time<-a$WKHP > 30 # Full time workers work more then 30 hours
+a$year.round <- a$WKW == 1 | a$WKW == 2 # Year round workers work 48 weeks or more
+a$full.time.year.round <-a$full.time & a$year.round
+a<-a[a$full.time.year.round,]
+
+a$ADJINC<-a$ADJINC/1e6 # This is a translation factor to weight dollars in 2013 units
+a$wage <- a$WAGP / (a$WKHP * 50) * a$ADJINC
+
+a$SOC <- a$SOCP00
+a$SOC[a$SOC=="N.A."]<-a$SOCP10
+a$SOC[a$SOC=="N.A."]<-a$SOCP12
+# Recode all occupations to 2000 levels TODO: fix this!
+
+a$OCC <- a$OCCP00
+a$OCC[a$OCC=="N.A.//"]<-a$OCCP10
+a$OCC[a$OCC=="N.A.//"]<-a$OCCP12
+# Recode all occupations to 2000 levels TODO: fix this!
 
 a$occchars<-as.character(a$occsoc)
 a$occ2<-as.factor(unlist(lapply(a$occchars, FUN=function(x){return(substring(x,1,2))}))) # get 2 digit industries)
