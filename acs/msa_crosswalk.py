@@ -85,6 +85,7 @@ out.loc[out.ipums_code==884,'qcew_code'] = 'C4790' # Washington, DC
 out.loc[out.ipums_code==896,'qcew_code'] = 'C3310' # West Palm Beach, FL (Again)
 out.loc[out.ipums_code==916,'qcew_code'] = 'C3798' # Wilmington, DE (now Philadelphia)
 
-out.loc[out.qcew_code.isnull(),'ipums_code']
 out[out.ipums_code.isnull()]
 out[out.qcew_code.isnull()]
+out=out[~out.qcew_code.isnull() & ~out.ipums_code.isnull()] # Restrict to coded locations
+out.to_csv('msa_crosswalk.csv', index=False)
