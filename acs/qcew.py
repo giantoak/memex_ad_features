@@ -20,10 +20,43 @@ e['month'] = (e['qtr'] - 1) * 3 + e['sub_month'] # Create month of year var
 del e['sub_month']
 del e['qtr']
 
+
+
 cw = pandas.read_csv('msa_crosswalk.csv')
 wages=pandas.read_csv('metro_level.csv')
+industry_remap={
+# This dictionary maps naics2 from IPUMS to the QCEW format
+'11':'11',
+'21':'21',
+'22':'22',
+'23':'23',
+'31':'31-33',
+'32':'31-33',
+'33':'31-33',
+'3M':'31-33',
+'42':'42',
+'44':'44-45',
+'45':'44-45',
+'48':'48-89',
+'49':'48-89',
+'49':'48-89',
+'4M':'44-45',
+'51':'51',
+'52':'52',
+'53':'53',
+'54':'54',
+'55':'55',
+'56':'56',
+'61':'61',
+'62':'62',
+'71':'71',
+'72':'72',
+'81':'81',
+}
+wages= wages[wages['naics2'] != '92'] # Delete public administration industry - not covered in QCEW
+wages['industry_code'] = wages['naics2'].apply(lambda x: industry_remap[x])
 wages= pandas.merge(wages, cw, left_on='metarea', right_on='ipums_code')
 
 
 # Need to do this merge on BOTH industry and MSA
-out = pandas.merge(wages, e, left_on='qcew_code', right_on='area_fips')
+merged = pandas.merge(wages, e, left_on=['qcew_code','industry_code'], right_on=['area_fips','industry_code'])
