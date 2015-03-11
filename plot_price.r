@@ -19,3 +19,5 @@ df.m <-melt(data[,c('price_per_hour','unemp.quartile')])
 ggplot(df.m) + geom_density(aes(x = value, colour = unemp.quartile), adjust=5) + 
   labs(x = NULL, title='Price per Hour by Unemployment Rate Quartile') + scale_x_continuous(limits=c(0, 800))+ xlab('Price ($)')
 ggsave('price_per_hour_by_unemployment.pdf')
+out<-data[,c('ad_id','loc_id','location','price_per_hour','population','unemployment','median_income','avg_commute','loc.count','unemp.quartile')]
+write.csv(out,file='export_with_fixed_20150108.csv')
