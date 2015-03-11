@@ -60,3 +60,22 @@ wages= pandas.merge(wages, cw, left_on='metarea', right_on='ipums_code')
 
 # Need to do this merge on BOTH industry and MSA
 merged = pandas.merge(wages, e, left_on=['qcew_code','industry_code'], right_on=['area_fips','industry_code'])
+
+b=merged.groupby(['sex','month','area_fips'])['employment'].aggregate({'total_workers':sum})
+# Compute the sum of workers by gender and month in a particular area
+merged=pandas.merge(merged, b, left_on=['sex','month','area_fips'],right_index=True)
+# Merge in counts back to DF
+merged['industry_share'] = merged['employment']/merged['total_workers']
+
+# Test that the industry shares sum to 1 (to machine precision)
+test = merged.groupby(['sex','month','area_fips'])['industry_share'].sum()
+(test - 1).sum() # The differences with 1 should be very small
+print(test.sum() - test.shape[0]) # Should be 0
+
+merged['ws'] = merged['p50'] * merged['industry_share'] # Compute a weighted share for summing
+merged=pandas.merge(merged, merged.groupby(['sex','month','area_fips'])['ws'].aggregate({'index_p50':sum}), left_on=['sex','month','area_fips'], right_index=True)
+# Group by sex, month, and area, then sum the weight share, and merge
+# this in as 'p50_index'
+del merged['ws'] # Remove temporary weighted share
+
+
