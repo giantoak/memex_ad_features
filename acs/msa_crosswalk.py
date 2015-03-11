@@ -12,6 +12,11 @@ out.loc[out.ipums_code==56,'qcew_code'] = 'C1210' # Atlantic City, NJ
 out.loc[out.ipums_code==60,'qcew_code'] = 'C1226' # Augusta, GA
 out.loc[out.ipums_code==64,'qcew_code'] = 'C1242' # Austin, TX
 out.loc[out.ipums_code==72,'qcew_code'] = 'C1258' # Baltimore, MD
+out.loc[out.ipums_code==74,'qcew_code'] = 'C1270' # Barnstable, MA
+out.loc[out.ipums_code==112,'qcew_code'] = 'C1446' # Boston, MA
+out.loc[out.ipums_code==100,'qcew_code'] = 'C1382' # Birmingham, AL
+out.loc[out.ipums_code==126,'qcew_code'] = 'C1778' # College Station, TX
+out.loc[out.ipums_code==128,'qcew_code'] = 'C1538' # College Station, TX
 
 out[out.ipums_code.isnull()]
 out[out.qcew_code.isnull()]
