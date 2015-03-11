@@ -1,5 +1,6 @@
 import glob
 import pandas
+import ipdb
 outputs = []
 try:
     data = pandas.read_csv('temp.csv')
@@ -61,21 +62,33 @@ wages= pandas.merge(wages, cw, left_on='metarea', right_on='ipums_code')
 # Need to do this merge on BOTH industry and MSA
 merged = pandas.merge(wages, e, left_on=['qcew_code','industry_code'], right_on=['area_fips','industry_code'])
 
-b=merged.groupby(['sex','month','area_fips'])['employment'].aggregate({'total_workers':sum})
+b=merged.groupby(['sex','month','year','area_fips'])['employment'].aggregate({'total_workers':sum})
 # Compute the sum of workers by gender and month in a particular area
-merged=pandas.merge(merged, b, left_on=['sex','month','area_fips'],right_index=True)
+merged=pandas.merge(merged, b, left_on=['sex','month','year','area_fips'],right_index=True)
 # Merge in counts back to DF
 merged['industry_share'] = merged['employment']/merged['total_workers']
 
 # Test that the industry shares sum to 1 (to machine precision)
-test = merged.groupby(['sex','month','area_fips'])['industry_share'].sum()
+test = merged.groupby(['sex','month','year','area_fips'])['industry_share'].sum()
 (test - 1).sum() # The differences with 1 should be very small
 print(test.sum() - test.shape[0]) # Should be 0
 
-merged['ws'] = merged['p50'] * merged['industry_share'] # Compute a weighted share for summing
-merged=pandas.merge(merged, merged.groupby(['sex','month','area_fips'])['ws'].aggregate({'index_p50':sum}), left_on=['sex','month','area_fips'], right_index=True)
+def create_index(df,varname='p50'):
+    df['ws'] = df[varname] * df['industry_share'] # Compute a weighted share for summing
+    df=pandas.merge(df, df.groupby(['sex','month','year','area_fips'])['ws'].aggregate({'index_' + varname :sum}), left_on=['sex','month','year','area_fips'], right_index=True)
 # Group by sex, month, and area, then sum the weight share, and merge
 # this in as 'p50_index'
-del merged['ws'] # Remove temporary weighted share
+    del df['ws'] # Remove temporary weighted share
+    return df
 
+indices = ['p50','p25','p75']
+for i in indices:
+    merged = create_index(merged, i)
 
+output_cols = ['sex','month','year','area_fips']
+for i in indices:
+    output_cols.append('index_' + i)
+out = merged[output_cols]
+out = out.drop_duplicates(['sex','month','year','area_fips'])
+out.sort(['sex','area_fips','year','month'], inplace=True)
+out.to_csv('female_opportunity_index.csv', index=False)
