@@ -15,3 +15,5 @@ e['sub_month'].replace({'month1_emplvl':1,'month2_emplvl':2,'month3_emplvl':3}, 
 e['month'] = (e['qtr'] - 1) * 3 + e['sub_month'] # Create month of year var
 del e['sub_month']
 del e['qtr']
+
+wages=pandas.read_csv('metro_level.csv')
