@@ -18,7 +18,7 @@
   #UHRSWORK           70-71           2     
   #INCWAGE            72-77           6     
 
-columns<-read.csv('cols.txt')
+columns<-read.csv('cols_17.txt')
 columns$Variable<-tolower(columns$Variable)
 cn<-columns$Variable
 wid<-columns$Len
