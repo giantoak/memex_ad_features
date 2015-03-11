@@ -1,34 +1,41 @@
-  #YEAR               H   1-4            4      X
-  #DATANUM            H   5-6            2      X
-  #SERIAL             H   7-14           8      X
-  #HHWT               H  15-24          10      X
-  #REGION             H  25-26           2      X
-  #STATEICP           H  27-28           2      X
-  #STATEFIP           H  29-30           2      X
-  #COUNTY             H  31-34           4      X
-  #CITY               H  35-38           4      X
-  #PUMA               H  39-43           5      X
-  #GQ                 H  44              1      X
-  #PERNUM             P  45-48           4      X
-  #PERWT              P  49-58          10      X
+  #Variable               Columns        Len
+  #YEAR                1-4            4     
+  #DATANUM             5-6            2     
+  #SERIAL              7-14           8     
+  #HHWT               15-24          10     
+  #STATEFIP           25-26           2     
+  #COUNTY             27-30           4     
+  #METAREA            31-33           3     
+  #METAREAD           34-37           4     
+  #CITY               38-41           4     
+  #GQ                 42              1     
+  #PERNUM             43-46           4     
+  #PERWT              47-56          10     
+  #SEX                57              1     
+  #AGE                58-60           3     
+  #INDNAICS           61-68           8     
+  #WKSWORK2           69              1     
+  #UHRSWORK           70-71           2     
+  #INCWAGE            72-77           6     
 
-  #SEX                P  59              1      X
-  #AGE                P  60-62           3      X
-  #INDNAICS           P  63-70           8      X
-  #WKSWORK2           P  71              1      X
-  #UHRSWORK           P  72-73           2      X
-  #INCWAGE            P  74-79           6      X
+columns<-read.csv('cols.txt')
+columns$Variable<-tolower(columns$Variable)
+cn<-columns$Variable
+wid<-columns$Len
+
 library(plyr)
 library(Hmisc)
-cn<-c("year","datanum","serial","hhwt","region","stateicp","statefip","county","city","puma","gq","pernum","perwt",
-      "sex","age","indnaics","wkswork2","uhrswork","incwage")
-      #"occ","ind","occsoc","indnaics","uhrswork","incwage")
-wid<-c(4,2,8,10,2,2,2,4,4,5,1,4,10, 1,3,8,1,2,6)
-column_types<-c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer', 'integer','integer','character','integer','integer','integer')
+#cn<-c("year","datanum","serial","hhwt","statefip","county",
+      #"city","puma","gq","pernum","perwt",
+      #"sex","age","indnaics","wkswork2","uhrswork","incwage")
+      ##"occ","ind","occsoc","indnaics","uhrswork","incwage")
+#wid<-c(4,2,8,10,2,4,
+       #4,5,1,4,10, 1,3,8,1,2,6)
+column_types<-c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','integer','integer','integer')
 
 library(LaF)
 library(ffbase)
-large<-laf_open_fwf('usa_00016.dat',
+large<-laf_open_fwf('usa_00017.dat',
                 column_widths=wid,
 #column_types=c('integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','integer','character','character','integer','integer'),
 column_types=column_types,
@@ -56,7 +63,7 @@ cat('data read to mem\n')
 
 a$hhwt<-a$hhwt / 100
 a$perwt<-a$perwt / 100
-a$strata <- 100000*a$statefip + a$puma  
+#a$strata <- 100000*a$statefip + a$puma  
 a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
 # Note: incwage is in dollars
 a<-a[a$uhrswork > 30,] # Restrict to only full time workers
@@ -79,7 +86,7 @@ a$naicschars<-NULL
 #require(survey)
 
 names<-c('mean.wage','var.wage','p05','p10','p25','p50','p75','p90','p95','N','sum.wght')
-computes<-function(x){
+computes<-function(x, keep.cols=c('sex', 'naics2', 'metarea')){
     x$mean.wage<-wtd.mean(x$incwage, weights=x$perwt)
     x$var.wage<-wtd.var(x$incwage, weights=x$perwt)
     quantiles<-c(.05,.1, .25, .5, .75, .9,.95)
@@ -94,18 +101,24 @@ computes<-function(x){
     x$N<-dim(x)[1]
     x$sum.wght<-sum(x$perwt)
     #print(x[1,names])
-    return(x[1,c('sex','naics2','puma','statefip',names)])
+    return(x[1,c(keep.cols,names)])
 }
 
 cat('doing ddply\n')
-b<-ddply(.data=a, .variables=.(naics2, sex, puma, statefip), .fun=computes)
-write.csv(b, file='puma_level.csv', row.names=FALSE)
+b<-ddply(.data=a, .variables=.(naics2, sex, metarea), .fun=computes)
+write.csv(b, file='metro_level.csv', row.names=FALSE)
 cat('ddply local finished\n')
 
-cat('doing ddply state level\n')
-states<-ddply(.data=a, .variables=.(naics2, sex, statefip), .fun=computes)
-states$puma<-NULL # Remove the arbitrary PUMA column
-write.csv(states, file='state_level.csv', row.names=FALSE)
+#cat('doing ddply state level\n')
+#states<-ddply(.data=a, .variables=.(naics2, sex, statefip), .fun=computes)
+#states$puma<-NULL # Remove the arbitrary PUMA column
+#write.csv(states, file='state_level.csv', row.names=FALSE)
+
+cat('doing ddply industry level\n')
+industry<-ddply(.data=a, .variables=.(naics2, sex), .fun=computes)
+industry$metarea<-NULL # Remove the arbitrary metro area column
+#industry$statefip<-NULL # Remove the arbitrary state column
+write.csv(industry, file='industry_level.csv', row.names=FALSE)
 #cat('creating counts\n')
 #counts<-as.data.frame(table(a$naics2, a$puma, a$statefip))
 #names(counts)<-c('naics2','puma','statefip','Freq')
