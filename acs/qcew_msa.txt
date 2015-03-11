@@ -1,4 +1,4 @@
-USMSA	U.S. Metropolitan Statistical Areas (combined)
+qcew_code	msa
 C1018	Abilene, TX MSA
 C1038	Aguadilla-Isabela, PR MSA
 C1042	Akron, OH MSA
