@@ -1,334 +1,335 @@
-000	Not identifiable or not in an MSA	X
-004	Abilene, TX	X
-006	Aguadilla, PR	·
-008	Akron, OH	X
-012	Albany, GA	X
-016	Albany-Schenectady-Troy, NY	X
-020	Albuquerque, NM	X
-022	Alexandria, LA	X
-024	Allentown-Bethlehem-Easton, PA/NJ	X
-028	Altoona, PA	X
-032	Amarillo, TX	X
-038	Anchorage, AK	X
-040	Anderson, IN	·
-044	Ann Arbor, MI	X
-045	Anniston, AL	X
-046	Appleton-Oshkosh-Neenah, WI	X
-047	Arecibo, PR	·
-048	Asheville, NC	X
-050	Athens, GA	X
-052	Atlanta, GA	X
-056	Atlantic City, NJ	X
-058	Auburn-Opekika, AL	X
-060	Augusta-Aiken, GA-SC	X
-064	Austin, TX	X
-068	Bakersfield, CA	X
-072	Baltimore, MD	X
-073	Bangor, ME	·
-074	Barnstable-Yarmouth, MA	X
-076	Baton Rouge, LA	X
-078	Battle Creek, MI	·
-084	Beaumont-Port Arthur-Orange,TX	X
-086	Bellingham, WA	X
-087	Benton Harbor, MI	X
-088	Billings, MT	X
-092	Biloxi-Gulfport, MS	X
-096	Binghamton, NY	X
-100	Birmingham, AL	X
-102	Bloomington, IN	X
-104	Bloomington-Normal, IL	X
-108	Boise City, ID	X
-112	Boston, MA-NH	X
-114	Bradenton, FL	·
-115	Bremerton, WA	X
-116	Bridgeport, CT	X
-120	Brockton, MA	X
-124	Brownsville-Harlingen-San Benito, TX	X
-126	Bryan-College Station, TX	X
-128	Buffalo-Niagara Falls, NY	X
-130	Burlington, NC	·
-131	Burlington, VT	·
-132	Canton, OH	X
-133	Caguas, PR	·
-135	Casper, WY	·
-136	Cedar Rapids, IA	X
-140	Champaign-Urbana-Rantoul, IL	X
-144	Charleston-N.Charleston,SC	X
-148	Charleston, WV	·
-152	Charlotte-Gastonia-Rock Hill, NC-SC	X
-154	Charlottesville, VA	X
-156	Chattanooga, TN/GA	X
-158	Cheyenne, WY	·
-160	Chicago, IL	X
-162	Chico, CA	X
-164	Cincinnati-Hamilton, OH/KY/IN	X
-166	Clarksville- Hopkinsville, TN/KY	X
-168	Cleveland, OH	X
-172	Colorado Springs, CO	X
-174	Columbia, MO	X
-176	Columbia, SC	X
-180	Columbus, GA/AL	X
-184	Columbus, OH	X
-188	Corpus Christi, TX	X
-190	Cumberland, MD/WV	·
-192	Dallas-Fort Worth, TX	X
-193	Danbury, CT	X
-195	Danville, VA	X
-196	Davenport, IA-Rock Island -Moline, IL	X
-200	Dayton-Springfield, OH	X
-202	Daytona Beach, FL	X
-203	Decatur, AL	X
-204	Decatur, IL	X
-208	Denver-Boulder, CO	X
-212	Des Moines, IA	X
-216	Detroit, MI	X
-218	Dothan, AL	X
-219	Dover, DE	X
-220	Dubuque, IA	·
-224	Duluth-Superior, MN/WI	X
-228	Dutchess Co., NY	X
-229	Eau Claire, WI	X
-231	El Paso, TX	X
-232	Elkhart-Goshen, IN	X
-233	Elmira, NY	·
-234	Enid, OK	·
-236	Erie, PA	X
-240	Eugene-Springfield, OR	X
-244	Evansville, IN/KY	X
-252	Fargo-Morehead, ND/MN	X
-256	Fayetteville, NC	X
-258	Fayetteville-Springdale, AR	X
-260	Fitchburg-Leominster, MA	X
-262	Flagstaff, AZ-UT	X
-264	Flint, MI	X
-265	Florence, AL	X
-266	Florence, SC	·
-267	Fort Collins-Loveland, CO	X
-268	Fort Lauderdale-Hollywood-Pompano Beach, FL	X
-270	Fort Myers-Cape Coral, FL	X
-271	Fort Pierce, FL	X
-272	Fort Smith, AR/OK	X
-275	Fort Walton Beach, FL	X
-276	Fort Wayne, IN	X
-284	Fresno, CA	X
-288	Gadsden, AL	X
-290	Gainesville, FL	X
-292	Galveston-Texas City, TX	X
-297	Glens Falls, NY	X
-298	Goldsboro, NC	X
-299	Grand Forks, ND	·
-300	Grand Rapids, MI	X
-301	Grand Junction, CO	X
-304	Great Falls, MT	·
-306	Greeley, CO	X
-308	Green Bay, WI	X
-312	Greensboro-Winston Salem-High Point, NC	X
-315	Greenville, NC	X
-316	Greenville-Spartanburg-Anderson SC	X
-318	Hagerstown, MD	X
-320	Hamilton-Middleton, OH	X
-324	Harrisburg-Lebanon--Carlisle, PA	X
-328	Hartford-Bristol-Middleton- New Britain, CT	X
-329	Hickory-Morgantown, NC	X
-330	Hattiesburg, MS	X
-332	Honolulu, HI	X
-335	Houma-Thibodoux, LA	X
-336	Houston-Brazoria, TX	X
-340	Huntington-Ashland, WV/KY/OH	·
-344	Huntsville, AL	X
-348	Indianapolis, IN	X
-350	Iowa City, IA	X
-352	Jackson, MI	X
-356	Jackson, MS	X
-358	Jackson, TN	X
-359	Jacksonville, FL	X
-360	Jacksonville, NC	X
-361	Jamestown-Dunkirk, NY	X
-362	Janesville-Beloit, WI	X
-366	Johnson City-Kingsport--Bristol, TN/VA	X
-368	Johnstown, PA	X
-371	Joplin, MO	X
-372	Kalamazoo-Portage, MI	X
-374	Kankakee, IL	X
-376	Kansas City, MO-KS	X
-380	Kenosha, WI	X
-381	Kileen-Temple, TX	X
-384	Knoxville, TN	X
-385	Kokomo, IN	X
-387	LaCrosse, WI	X
-388	Lafayette, LA	X
-392	Lafayette-W. Lafayette, IN	X
-396	Lake Charles, LA	X
-398	Lakeland-Winterhaven, FL	X
-400	Lancaster, PA	X
-404	Lansing-E. Lansing, MI	X
-408	Laredo, TX	X
-410	Las Cruces, NM	X
-412	Las Vegas, NV	X
-415	Lawrence, KS	·
-420	Lawton, OK	·
-424	Lewiston-Auburn, ME	·
-428	Lexington-Fayette, KY	X
-432	Lima, OH	X
-436	Lincoln, NE	X
-440	Little Rock--North Little Rock, AR	X
-441	Long Branch-Asbury Park,NJ	·
-442	Longview-Marshall, TX	X
-444	Lorain-Elyria, OH	·
-448	Los Angeles-Long Beach, CA	X
-452	Louisville, KY/IN	X
-460	Lubbock, TX	X
-464	Lynchburg, VA	X
-468	Macon-Warner Robins, GA	X
-472	Madison, WI	X
-476	Manchester, NH	X
-480	Mansfield, OH	X
-484	Mayaguez, PR	·
-488	McAllen-Edinburg-Pharr-Mission, TX	X
-489	Medford, OR	X
-490	Melbourne-Titusville-Cocoa-Palm Bay, FL	X
-492	Memphis, TN/AR/MS	X
-494	Merced, CA	X
-500	Miami-Hialeah, FL	X
-504	Midland, TX	·
-508	Milwaukee, WI	X
-512	Minneapolis-St. Paul, MN	X
-514	Missoula, MT	·
-516	Mobile, AL	X
-517	Modesto, CA	X
-519	Monmouth-Ocean, NJ	X
-520	Monroe, LA	X
-524	Montgomery, AL	X
-528	Muncie, IN	X
-532	Muskegon-Norton Shores-Muskegon Heights, MI	·
-533	Myrtle Beach, SC	X
-534	Naples, FL	X
-535	Nashua, NH	X
-536	Nashville, TN	X
-540	New Bedford, MA	X
-546	New Brunswick-Perth Amboy-Sayreville, NJ	·
-548	New Haven-Meriden, CT	X
-552	New London-Norwich, CT/RI	·
-556	New Orleans, LA	X
-560	New York-Northeastern NJ	X
-564	Newark, OH	·
-566	Newburgh-Middletown, NY	X
-572	Norfolk-VA Beach--Newport News, VA	X
-576	Norwalk, CT	·
-579	Ocala, FL	X
-580	Odessa, TX	X
-588	Oklahoma City, OK	X
-591	Olympia, WA	X
-592	Omaha, NE/IA	X
-595	Orange, NY	·
-596	Orlando, FL	X
-599	Owensboro, KY	·
-601	Panama City, FL	X
-602	Parkersburg-Marietta,WV/OH	·
-603	Pascagoula-Moss Point, MS	·
-608	Pensacola, FL	X
-612	Peoria, IL	X
-616	Philadelphia, PA/NJ	X
-620	Phoenix, AZ	X
-628	Pittsburgh, PA	X
-632	Pittsfield, MA	·
-636	Ponce, PR	·
-640	Portland, ME	X
-644	Portland, OR-WA	X
-645	Portsmouth-Dover--Rochester, NH/ME	·
-646	Poughkeepsie, NY	·
-648	Providence-Fall River-Pawtucket, MA/RI	X
-652	Provo-Orem, UT	X
-656	Pueblo, CO	X
-658	Punta Gorda, FL	X
-660	Racine, WI	X
-664	Raleigh-Durham, NC	X
-666	Rapid City, SD	·
-668	Reading, PA	X
-669	Redding, CA	X
-672	Reno, NV	X
-674	Richland-Kennewick-Pasco, WA	X
-676	Richmond-Petersburg, VA	X
-678	Riverside-San Bernardino,CA	X
-680	Roanoke, VA	X
-682	Rochester, MN	X
-684	Rochester, NY	X
-688	Rockford, IL	X
-689	Rocky Mount, NC	X
-692	Sacramento, CA	X
-696	Saginaw-Bay City-Midland, MI	X
-698	St. Cloud, MN	X
-700	St. Joseph, MO	X
-704	St. Louis, MO-IL	X
-708	Salem, OR	X
-712	Salinas-Sea Side-Monterey, CA	X
-714	Salisbury-Concord, NC	·
-716	Salt Lake City-Ogden, UT	X
-720	San Angelo, TX	·
-724	San Antonio, TX	X
-732	San Diego, CA	X
-736	San Francisco-Oakland-Vallejo, CA	X
-740	San Jose, CA	X
-744	San Juan-Bayamon, PR	·
-746	San Luis Obispo-Atascad-P Robles, CA	X
-747	Santa Barbara-Santa Maria-Lompoc, CA	X
-748	Santa Cruz, CA	X
-749	Santa Fe, NM	X
-750	Santa Rosa-Petaluma, CA	X
-751	Sarasota, FL	X
-752	Savannah, GA	X
-756	Scranton-Wilkes-Barre, PA	X
-760	Seattle-Everett, WA	X
-761	Sharon, PA	X
-762	Sheboygan, WI	X
-764	Sherman-Davidson, TX	·
-768	Shreveport, LA	X
-772	Sioux City, IA/NE	X
-776	Sioux Falls, SD	X
-780	South Bend-Mishawaka, IN	X
-784	Spokane, WA	X
-788	Springfield, IL	X
-792	Springfield, MO	X
-800	Springfield-Holyoke-Chicopee, MA	X
-804	Stamford, CT	X
-805	State College, PA	X
-808	Steubenville-Weirton,OH/WV	·
-812	Stockton, CA	X
-814	Sumter, SC	X
-816	Syracuse, NY	X
-820	Tacoma, WA	X
-824	Tallahassee, FL	X
-828	Tampa-St. Petersburg-Clearwater, FL	X
-832	Terre Haute, IN	X
-836	Texarkana, TX/AR	·
-840	Toledo, OH/MI	X
-844	Topeka, KS	X
-848	Trenton, NJ	X
-852	Tucson, AZ	X
-856	Tulsa, OK	X
-860	Tuscaloosa, AL	X
-864	Tyler, TX	X
-868	Utica-Rome, NY	X
-873	Ventura-Oxnard-Simi Valley, CA	X
-875	Victoria, TX	·
-876	Vineland-Milville-Bridgetown, NJ	X
-878	Visalia-Tulare-Porterville, CA	X
-880	Waco, TX	X
-884	Washington, DC/MD/VA	X
-888	Waterbury, CT	X
-892	Waterloo-Cedar Falls, IA	X
-894	Wausau, WI	X
-896	West Palm Beach-Boca Raton-Delray Beach, FL	X
-900	Wheeling, WV/OH	·
-904	Wichita, KS	X
-908	Wichita Falls, TX	X
-914	Williamsport, PA	X
-916	Wilmington, DE/NJ/MD	X
-920	Wilmington, NC	X
-924	Worcester, MA	X
-926	Yakima, WA	X
-927	Yolo, CA	X
-928	York, PA	X
-932	Youngstown-Warren, OH-PA	X
-934	Yuba City, CA	X
-936	Yuma, AZ	X
+ipums_code;msa;exists
+000;Not identifiable or not in an MSA;X
+004;Abilene, TX;X
+006;Aguadilla, PR;·
+008;Akron, OH;X
+012;Albany, GA;X
+016;Albany-Schenectady-Troy, NY;X
+020;Albuquerque, NM;X
+022;Alexandria, LA;X
+024;Allentown-Bethlehem-Easton, PA/NJ;X
+028;Altoona, PA;X
+032;Amarillo, TX;X
+038;Anchorage, AK;X
+040;Anderson, IN;·
+044;Ann Arbor, MI;X
+045;Anniston, AL;X
+046;Appleton-Oshkosh-Neenah, WI;X
+047;Arecibo, PR;·
+048;Asheville, NC;X
+050;Athens, GA;X
+052;Atlanta, GA;X
+056;Atlantic City, NJ;X
+058;Auburn-Opekika, AL;X
+060;Augusta-Aiken, GA-SC;X
+064;Austin, TX;X
+068;Bakersfield, CA;X
+072;Baltimore, MD;X
+073;Bangor, ME;·
+074;Barnstable-Yarmouth, MA;X
+076;Baton Rouge, LA;X
+078;Battle Creek, MI;·
+084;Beaumont-Port Arthur-Orange,TX;X
+086;Bellingham, WA;X
+087;Benton Harbor, MI;X
+088;Billings, MT;X
+092;Biloxi-Gulfport, MS;X
+096;Binghamton, NY;X
+100;Birmingham, AL;X
+102;Bloomington, IN;X
+104;Bloomington-Normal, IL;X
+108;Boise City, ID;X
+112;Boston, MA-NH;X
+114;Bradenton, FL;·
+115;Bremerton, WA;X
+116;Bridgeport, CT;X
+120;Brockton, MA;X
+124;Brownsville-Harlingen-San Benito, TX;X
+126;Bryan-College Station, TX;X
+128;Buffalo-Niagara Falls, NY;X
+130;Burlington, NC;·
+131;Burlington, VT;·
+132;Canton, OH;X
+133;Caguas, PR;·
+135;Casper, WY;·
+136;Cedar Rapids, IA;X
+140;Champaign-Urbana-Rantoul, IL;X
+144;Charleston-N.Charleston,SC;X
+148;Charleston, WV;·
+152;Charlotte-Gastonia-Rock Hill, NC-SC;X
+154;Charlottesville, VA;X
+156;Chattanooga, TN/GA;X
+158;Cheyenne, WY;·
+160;Chicago, IL;X
+162;Chico, CA;X
+164;Cincinnati-Hamilton, OH/KY/IN;X
+166;Clarksville- Hopkinsville, TN/KY;X
+168;Cleveland, OH;X
+172;Colorado Springs, CO;X
+174;Columbia, MO;X
+176;Columbia, SC;X
+180;Columbus, GA/AL;X
+184;Columbus, OH;X
+188;Corpus Christi, TX;X
+190;Cumberland, MD/WV;·
+192;Dallas-Fort Worth, TX;X
+193;Danbury, CT;X
+195;Danville, VA;X
+196;Davenport, IA-Rock Island -Moline, IL;X
+200;Dayton-Springfield, OH;X
+202;Daytona Beach, FL;X
+203;Decatur, AL;X
+204;Decatur, IL;X
+208;Denver-Boulder, CO;X
+212;Des Moines, IA;X
+216;Detroit, MI;X
+218;Dothan, AL;X
+219;Dover, DE;X
+220;Dubuque, IA;·
+224;Duluth-Superior, MN/WI;X
+228;Dutchess Co., NY;X
+229;Eau Claire, WI;X
+231;El Paso, TX;X
+232;Elkhart-Goshen, IN;X
+233;Elmira, NY;·
+234;Enid, OK;·
+236;Erie, PA;X
+240;Eugene-Springfield, OR;X
+244;Evansville, IN/KY;X
+252;Fargo-Morehead, ND/MN;X
+256;Fayetteville, NC;X
+258;Fayetteville-Springdale, AR;X
+260;Fitchburg-Leominster, MA;X
+262;Flagstaff, AZ-UT;X
+264;Flint, MI;X
+265;Florence, AL;X
+266;Florence, SC;·
+267;Fort Collins-Loveland, CO;X
+268;Fort Lauderdale-Hollywood-Pompano Beach, FL;X
+270;Fort Myers-Cape Coral, FL;X
+271;Fort Pierce, FL;X
+272;Fort Smith, AR/OK;X
+275;Fort Walton Beach, FL;X
+276;Fort Wayne, IN;X
+284;Fresno, CA;X
+288;Gadsden, AL;X
+290;Gainesville, FL;X
+292;Galveston-Texas City, TX;X
+297;Glens Falls, NY;X
+298;Goldsboro, NC;X
+299;Grand Forks, ND;·
+300;Grand Rapids, MI;X
+301;Grand Junction, CO;X
+304;Great Falls, MT;·
+306;Greeley, CO;X
+308;Green Bay, WI;X
+312;Greensboro-Winston Salem-High Point, NC;X
+315;Greenville, NC;X
+316;Greenville-Spartanburg-Anderson SC;X
+318;Hagerstown, MD;X
+320;Hamilton-Middleton, OH;X
+324;Harrisburg-Lebanon--Carlisle, PA;X
+328;Hartford-Bristol-Middleton- New Britain, CT;X
+329;Hickory-Morgantown, NC;X
+330;Hattiesburg, MS;X
+332;Honolulu, HI;X
+335;Houma-Thibodoux, LA;X
+336;Houston-Brazoria, TX;X
+340;Huntington-Ashland, WV/KY/OH;·
+344;Huntsville, AL;X
+348;Indianapolis, IN;X
+350;Iowa City, IA;X
+352;Jackson, MI;X
+356;Jackson, MS;X
+358;Jackson, TN;X
+359;Jacksonville, FL;X
+360;Jacksonville, NC;X
+361;Jamestown-Dunkirk, NY;X
+362;Janesville-Beloit, WI;X
+366;Johnson City-Kingsport--Bristol, TN/VA;X
+368;Johnstown, PA;X
+371;Joplin, MO;X
+372;Kalamazoo-Portage, MI;X
+374;Kankakee, IL;X
+376;Kansas City, MO-KS;X
+380;Kenosha, WI;X
+381;Kileen-Temple, TX;X
+384;Knoxville, TN;X
+385;Kokomo, IN;X
+387;LaCrosse, WI;X
+388;Lafayette, LA;X
+392;Lafayette-W. Lafayette, IN;X
+396;Lake Charles, LA;X
+398;Lakeland-Winterhaven, FL;X
+400;Lancaster, PA;X
+404;Lansing-E. Lansing, MI;X
+408;Laredo, TX;X
+410;Las Cruces, NM;X
+412;Las Vegas, NV;X
+415;Lawrence, KS;·
+420;Lawton, OK;·
+424;Lewiston-Auburn, ME;·
+428;Lexington-Fayette, KY;X
+432;Lima, OH;X
+436;Lincoln, NE;X
+440;Little Rock--North Little Rock, AR;X
+441;Long Branch-Asbury Park,NJ;·
+442;Longview-Marshall, TX;X
+444;Lorain-Elyria, OH;·
+448;Los Angeles-Long Beach, CA;X
+452;Louisville, KY/IN;X
+460;Lubbock, TX;X
+464;Lynchburg, VA;X
+468;Macon-Warner Robins, GA;X
+472;Madison, WI;X
+476;Manchester, NH;X
+480;Mansfield, OH;X
+484;Mayaguez, PR;·
+488;McAllen-Edinburg-Pharr-Mission, TX;X
+489;Medford, OR;X
+490;Melbourne-Titusville-Cocoa-Palm Bay, FL;X
+492;Memphis, TN/AR/MS;X
+494;Merced, CA;X
+500;Miami-Hialeah, FL;X
+504;Midland, TX;·
+508;Milwaukee, WI;X
+512;Minneapolis-St. Paul, MN;X
+514;Missoula, MT;·
+516;Mobile, AL;X
+517;Modesto, CA;X
+519;Monmouth-Ocean, NJ;X
+520;Monroe, LA;X
+524;Montgomery, AL;X
+528;Muncie, IN;X
+532;Muskegon-Norton Shores-Muskegon Heights, MI;·
+533;Myrtle Beach, SC;X
+534;Naples, FL;X
+535;Nashua, NH;X
+536;Nashville, TN;X
+540;New Bedford, MA;X
+546;New Brunswick-Perth Amboy-Sayreville, NJ;·
+548;New Haven-Meriden, CT;X
+552;New London-Norwich, CT/RI;·
+556;New Orleans, LA;X
+560;New York-Northeastern NJ;X
+564;Newark, OH;·
+566;Newburgh-Middletown, NY;X
+572;Norfolk-VA Beach--Newport News, VA;X
+576;Norwalk, CT;·
+579;Ocala, FL;X
+580;Odessa, TX;X
+588;Oklahoma City, OK;X
+591;Olympia, WA;X
+592;Omaha, NE/IA;X
+595;Orange, NY;·
+596;Orlando, FL;X
+599;Owensboro, KY;·
+601;Panama City, FL;X
+602;Parkersburg-Marietta,WV/OH;·
+603;Pascagoula-Moss Point, MS;·
+608;Pensacola, FL;X
+612;Peoria, IL;X
+616;Philadelphia, PA/NJ;X
+620;Phoenix, AZ;X
+628;Pittsburgh, PA;X
+632;Pittsfield, MA;·
+636;Ponce, PR;·
+640;Portland, ME;X
+644;Portland, OR-WA;X
+645;Portsmouth-Dover--Rochester, NH/ME;·
+646;Poughkeepsie, NY;·
+648;Providence-Fall River-Pawtucket, MA/RI;X
+652;Provo-Orem, UT;X
+656;Pueblo, CO;X
+658;Punta Gorda, FL;X
+660;Racine, WI;X
+664;Raleigh-Durham, NC;X
+666;Rapid City, SD;·
+668;Reading, PA;X
+669;Redding, CA;X
+672;Reno, NV;X
+674;Richland-Kennewick-Pasco, WA;X
+676;Richmond-Petersburg, VA;X
+678;Riverside-San Bernardino,CA;X
+680;Roanoke, VA;X
+682;Rochester, MN;X
+684;Rochester, NY;X
+688;Rockford, IL;X
+689;Rocky Mount, NC;X
+692;Sacramento, CA;X
+696;Saginaw-Bay City-Midland, MI;X
+698;St. Cloud, MN;X
+700;St. Joseph, MO;X
+704;St. Louis, MO-IL;X
+708;Salem, OR;X
+712;Salinas-Sea Side-Monterey, CA;X
+714;Salisbury-Concord, NC;·
+716;Salt Lake City-Ogden, UT;X
+720;San Angelo, TX;·
+724;San Antonio, TX;X
+732;San Diego, CA;X
+736;San Francisco-Oakland-Vallejo, CA;X
+740;San Jose, CA;X
+744;San Juan-Bayamon, PR;·
+746;San Luis Obispo-Atascad-P Robles, CA;X
+747;Santa Barbara-Santa Maria-Lompoc, CA;X
+748;Santa Cruz, CA;X
+749;Santa Fe, NM;X
+750;Santa Rosa-Petaluma, CA;X
+751;Sarasota, FL;X
+752;Savannah, GA;X
+756;Scranton-Wilkes-Barre, PA;X
+760;Seattle-Everett, WA;X
+761;Sharon, PA;X
+762;Sheboygan, WI;X
+764;Sherman-Davidson, TX;·
+768;Shreveport, LA;X
+772;Sioux City, IA/NE;X
+776;Sioux Falls, SD;X
+780;South Bend-Mishawaka, IN;X
+784;Spokane, WA;X
+788;Springfield, IL;X
+792;Springfield, MO;X
+800;Springfield-Holyoke-Chicopee, MA;X
+804;Stamford, CT;X
+805;State College, PA;X
+808;Steubenville-Weirton,OH/WV;·
+812;Stockton, CA;X
+814;Sumter, SC;X
+816;Syracuse, NY;X
+820;Tacoma, WA;X
+824;Tallahassee, FL;X
+828;Tampa-St. Petersburg-Clearwater, FL;X
+832;Terre Haute, IN;X
+836;Texarkana, TX/AR;·
+840;Toledo, OH/MI;X
+844;Topeka, KS;X
+848;Trenton, NJ;X
+852;Tucson, AZ;X
+856;Tulsa, OK;X
+860;Tuscaloosa, AL;X
+864;Tyler, TX;X
+868;Utica-Rome, NY;X
+873;Ventura-Oxnard-Simi Valley, CA;X
+875;Victoria, TX;·
+876;Vineland-Milville-Bridgetown, NJ;X
+878;Visalia-Tulare-Porterville, CA;X
+880;Waco, TX;X
+884;Washington, DC/MD/VA;X
+888;Waterbury, CT;X
+892;Waterloo-Cedar Falls, IA;X
+894;Wausau, WI;X
+896;West Palm Beach-Boca Raton-Delray Beach, FL;X
+900;Wheeling, WV/OH;·
+904;Wichita, KS;X
+908;Wichita Falls, TX;X
+914;Williamsport, PA;X
+916;Wilmington, DE/NJ/MD;X
+920;Wilmington, NC;X
+924;Worcester, MA;X
+926;Yakima, WA;X
+927;Yolo, CA;X
+928;York, PA;X
+932;Youngstown-Warren, OH-PA;X
+934;Yuba City, CA;X
+936;Yuma, AZ;X
