@@ -14,7 +14,7 @@ except:
             new = new[new.agglvl_code==44]
             outputs.append(new)
     data = pandas.concat(outputs, axis=0)
-d=data[['area_fips','industry_code','year','qtr',u'month1_emplvl', u'month2_emplvl', u'month3_emplvl']]
+d=data[['area_fips','industry_code','year','qtr',u'month1_emplvl', u'month2_emplvl', u'month3_emplvl']] # Keep only select columns
 e=pandas.melt(d,id_vars=[u'area_fips', u'industry_code', u'year', u'qtr'], var_name='sub_month', value_name='employment') # Reshape to make months verticle instead of horizontal... 
 e['sub_month'].replace({'month1_emplvl':1,'month2_emplvl':2,'month3_emplvl':3}, inplace=True) # Remap month names
 e['month'] = (e['qtr'] - 1) * 3 + e['sub_month'] # Create month of year var
@@ -81,7 +81,7 @@ def create_index(df,varname='p50'):
     del df['ws'] # Remove temporary weighted share
     return df
 
-indices = ['p50','p25','p75']
+indices = ['p50','p25','p75','mean.wage']
 for i in indices:
     merged = create_index(merged, i)
 
