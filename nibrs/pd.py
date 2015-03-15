@@ -860,12 +860,12 @@ m=pandas.concat([m, m2], axis=0)
 m['prostitution'] = m['V20061'].isin([401])
 m['female_violence'] = ((m['V40191'] == 0) & (m['V40171'] == 1) & (m['V20061'].isin([131, 132, 133])))
 m['violence'] = ((m['V40171'] == 1) & (m['V20061'].isin([131, 132, 133])))
-violence = m.groupby('ORI')[['female_violence','violence']].mean()
 
 #jefftest=pandas.read_fwf('ICPSR_30770/DS0005/30770-0005-Data.txt', colspecs=locs, names=names, nrows=400) # 2010 -> This needs a new code book
 # Goals: compute counts of geographic-level total violent acts, violent
 # acts towarsd women, and domestic violence acts
-cross_walk = pandas.read_stata('ICPSR_04634/DS0001/04634-0001-Data.dta')
+#cross_walk = pandas.read_stata('ICPSR_04634/DS0001/04634-0001-Data.dta')
+cross_walk = pandas.read_csv('crosswalk_tract_msa.csv')
 
 # This code explores whether data columns appear to match 2012
 #import ipdb
@@ -893,19 +893,25 @@ cross_walk = pandas.read_stata('ICPSR_04634/DS0001/04634-0001-Data.dta')
 #Deposit Requirement:
 #Alpha State Code (STATE)
 #County Name (COUNTY)
-#Place Name (PLACENM) 
-#Government ID (numeric) (GOVIDNU) 
+#Place Name (PLACENM)
+#Government ID (numeric) (GOVIDNU)
 #Government Type (GOVTYPE)
 #Government Name (GOVNAME)
 #Agency Name (AGENCY)
 #FIPS State Code (FSTATE)
 #FIPS County Code (FCOUNTY)
 #FIPS Place code (FPLACE)
-cross_walk = cross_walk[['ORI9', 'PLACENM','AGENCY','FSTATE','FCOUNTY','FPLACE', 'UPOPTOT']]
-b=m.groupby('ORI')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
-out_fv = pandas.merge(b['female_violence'], cross_walk, left_index=True, right_on='ORI9')
-out_fv.to_csv('female_violence.csv')
-out_v = pandas.merge(b['violence'], cross_walk, left_index=True, right_on='ORI9')
-out_v.to_csv('violence.csv')
-out_p = pandas.merge(b['prostitution'], cross_walk, left_index=True, right_on='ORI9')
-out_p.to_csv('prostitution.csv')
+cross_walk = cross_walk[['ORI9', 'PLACENM','AGENCY','FSTATE','FCOUNTY','FPLACE', 'UPOPTOT','MSA','msaname','countyno']]
+cross_walk = cross_walk[~cross_walk.MSA.isnull()]
+cross_walk['codes'] = cross_walk.MSA.apply(lambda x: '31000US%s' % str(int(x)))
+m = pandas.merge( m, cross_walk[['ORI9','codes']], left_on='ORI', right_on='ORI9') # Merge acts onto MSAs by ORI code
+b=m.groupby('codes')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
+b['violence'].to_csv('violence.csv')
+b['female_violence'].to_csv('female_violence.csv')
+b['prostitution'].to_csv('prostitution.csv')
+#out_fv = pandas.merge(b['female_violence'], cross_walk, left_index=True, right_on='codes', how='left')
+#out_fv.to_csv('female_violence.csv', index=False)
+#out_v = pandas.merge(b['violence'], cross_walk, left_index=True, right_on='codes')
+#out_v.to_csv('violence.csv', index=False)
+#out_p = pandas.merge(b['prostitution'], cross_walk, left_index=True, right_on='codes')
+#out_p.to_csv('prostitution.csv', index=False)

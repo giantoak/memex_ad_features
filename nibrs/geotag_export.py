@@ -167,7 +167,7 @@ commute_centers = [
               ]
 
 
-data = pandas.read_csv('../acs/female_opportunity_index.csv')    
+data = pandas.read_csv('../acs/female_opportunity_index.csv')
 geo_ids = pandas.DataFrame(data.area_fips.unique(), columns=['area_fips'])
 geo_ids['codes']=geo_ids['area_fips'].apply(lambda x: '31000US%s0' % x.replace('C','')) # 310000 is the MSA code
 for i in tables_list:
@@ -177,7 +177,7 @@ for i in tables_list:
 
 data = pandas.merge(data, geo_ids) # Merge geo_id lookups back to data on 'area_fips' column
 data['population'] = data["B15003001"] # Total population
-data['unemployment'] = data["B23025005"]/data["B23025002"] 
+data['unemployment'] = data["B23025005"]/data["B23025002"]
 data['lt_highschool'] = data[less_than_hs_educations].sum(axis=1)/data['population']
 data['highschool'] = data[hs_educations].sum(axis=1)/data['population']
 data['some_college'] = data[some_college_educations].sum(axis=1)/data['population']
@@ -188,27 +188,30 @@ data['avg_commute'] = data[commute_times].dot(commute_centers)/data["B08303001"]
 
 # End merging information from census
 
-counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
-counts.rename(columns={'ad_id':'counts'}, inplace=True)
-out = pandas.merge(data, counts,left_on='ad_id', right_index=True)
-doubles = out.copy()
-calcs=doubles.groupby('ad_id').agg({'price':['min','max'], 'minutes':['min','max']})
-doubles = pandas.merge(doubles, pandas.DataFrame(calcs['price']['min']), left_on='ad_id', right_index=True)
-doubles.rename(columns={'min':'p1'}, inplace=True)
-doubles = pandas.merge(doubles, pandas.DataFrame(calcs['price']['max']), left_on='ad_id', right_index=True)
-doubles.rename(columns={'max':'p2'}, inplace=True)
-doubles = pandas.merge(doubles, pandas.DataFrame(calcs['minutes']['min']), left_on='ad_id', right_index=True)
-doubles.rename(columns={'min':'m1'}, inplace=True)
-doubles = pandas.merge(doubles, pandas.DataFrame(calcs['minutes']['max']), left_on='ad_id', right_index=True)
-doubles.rename(columns={'max':'m2'}, inplace=True)
-doubles['f'] = (doubles['p1'] * doubles['m2'] - doubles['m1'] * doubles['p2']) / (doubles['m2'] - doubles['m1'])
-doubles=doubles[~doubles['ad_id'].duplicated()] # remove duplicates
-doubles =doubles[doubles['m1'] != doubles['m2']] # remove those with two prices for the same time...
-doubles['marginal_price'] = (doubles['p2'] - doubles['p1']) / (doubles['m2'] - doubles['m1'])
-doubles.to_csv('intercept.csv', index=False)
-out.index = range(out.shape[0])
-out.reindex()
-out.to_csv('prices_%s.csv' % datetime.datetime.strftime(datetime.datetime.now(),'%Y%m%d'), index=False)
-#reg = linear_model.LinearRegression()
-#(p1 m2 - m1 p2)/ (m2 - m1)
-#out = reg.fit(X=data.minutes.values[:,np.newaxis],y=data.price.values[:,np.newaxis])
+crosswalk = pandas.read_csv('crosswalk_tract_msa.csv')
+crosswalk = crosswalk[~crosswalk.MSA.isnull()]
+msa_cw = crosswalk[['ORI9','MSA']].drop_duplicates()
+msa_cw['codes'] = msa_cw.MSA.apply(lambda x: '31000US%s' % str(int(x)))
+
+out = pandas.merge(data, msa_cw, on='codes')
+# This dataframe is at the ORI9-month-year level. There are tons of rows
+# here: 48 months and 12k ORI9s
+
+fv = pandas.read_csv('female_violence.csv')
+fv.rename(columns={'size':'total_reports'}, inplace=True) # Rename 'size' column to total reports, the total number of crime reports in the MSA over 2 years
+fv.rename(columns={'mean':'female_violence_fraction'}, inplace=True) # column represents fraction of all crime reports which were violence against women
+fv.rename(columns={'sum':'female_violence_counts'}, inplace=True) # column represents total number of reports of violence against women
+out = pandas.merge(out, fv[['total_reports','female_violence_fraction','female_violence_counts','codes']], on='codes')
+
+v = pandas.read_csv('violence.csv')
+del v['size'] # This is the total number of reports, which is the same as from female violence
+v.rename(columns={'mean':'violence_fraction'}, inplace=True) # column represents fraction of all crime reports which were violence against men OR women
+v.rename(columns={'sum':'violence_counts'}, inplace=True) # column represents total number of reports of violence against men OR women
+out = pandas.merge(out, v[['violence_fraction','violence_counts','codes']], on='codes')
+
+for col in out.columns:
+    if col[0] =='B':
+        # This is a raw census column, delete!
+        del out[col]
+out.rename(columns={'codes':'census_msa_code'}, inplace=True)
+out.to_csv('all_merged.csv', index=False)
