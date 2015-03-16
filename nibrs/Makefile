@@ -1,4 +1,4 @@
-female_violence.csv: pd.py crosswalk_tract_msa.csv
+female_violence.csv violence.csv prostitution.csv: pd.py crosswalk_tract_msa.csv
 	# The female violence tabulations come from reading UCR data from
 	# ICPSR as well as a crosswalk file from Greg DeAngelo
 	python pd.py

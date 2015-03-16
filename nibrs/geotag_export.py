@@ -209,6 +209,12 @@ v.rename(columns={'mean':'violence_fraction'}, inplace=True) # column represents
 v.rename(columns={'sum':'violence_counts'}, inplace=True) # column represents total number of reports of violence against men OR women
 out = pandas.merge(out, v[['violence_fraction','violence_counts','codes']], on='codes')
 
+p = pandas.read_csv('prostitution.csv')
+del p['size'] # This is the total number of reports, which is the same as from female violence
+p.rename(columns={'mean':'prostitution_fraction'}, inplace=True) # column represents fraction of all crime reports which were prostitution arrests
+p.rename(columns={'sum':'prostitution_counts'}, inplace=True) # column represents total number of reports of prostitution
+out = pandas.merge(out, p[['prostitution_fraction','prostitution_counts','codes']], on='codes')
+
 for col in out.columns:
     if col[0] =='B':
         # This is a raw census column, delete!
