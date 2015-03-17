@@ -167,7 +167,7 @@ commute_centers = [
               ]
 
 
-data = pandas.read_csv('../acs/female_opportunity_index.csv')
+data = pandas.read_csv('female_opportunity_index.csv')
 geo_ids = pandas.DataFrame(data.area_fips.unique(), columns=['area_fips'])
 geo_ids['codes']=geo_ids['area_fips'].apply(lambda x: '31000US%s0' % x.replace('C','')) # 310000 is the MSA code
 for i in tables_list:
@@ -197,6 +197,7 @@ out = pandas.merge(data, msa_cw, on='codes')
 # This dataframe is at the ORI9-month-year level. There are tons of rows
 # here: 48 months and 12k ORI9s
 
+out1=out.copy()
 fv = pandas.read_csv('female_violence.csv')
 fv.rename(columns={'size':'total_reports'}, inplace=True) # Rename 'size' column to total reports, the total number of crime reports in the MSA over 2 years
 fv.rename(columns={'mean':'female_violence_fraction'}, inplace=True) # column represents fraction of all crime reports which were violence against women
@@ -220,4 +221,26 @@ for col in out.columns:
         # This is a raw census column, delete!
         del out[col]
 out.rename(columns={'codes':'census_msa_code'}, inplace=True)
-out.to_csv('all_merged.csv', index=False)
+
+out.drop_duplicates(['sex','month','year','census_msa_code'], inplace=True)
+subset = out[['sex','month','year','census_msa_code']]
+subset.to_records(index=False).tolist()
+index = pandas.MultiIndex.from_tuples(subset.to_records(index=False).tolist(), names=subset.columns.tolist())
+out.index = index
+out.reindex()
+out = out.unstack('sex')
+# Note: this leaves us with a DF with the right shape, but it has a
+# multiindex for columns when we really need most things to NOT be
+# there...
+out.columns.names=['main','sex']
+del out['sex']
+female = out.xs(2, level='sex',axis=1)
+male = out.xs(1, level='sex',axis=1)
+female = female[['index_p50','index_p25','index_p75','index_mean.wage','index_sum.wght']]
+female.rename(columns={'index_p75':'female_p75','index_p50':'female_p50','index_p25':'female_p25','index_mean.wage':'female_mean.wage','index_sum.wght':'female_sum.wght'}, inplace=True)
+male.rename(columns={'index_p75':'male_p75','index_p50':'male_p50','index_p25':'male_p25','index_mean.wage':'male_mean.wage','index_sum.wght':'male_sum.wght'}, inplace=True)
+out = pandas.concat([male, female], axis=1)
+delcols = ['month','year','census_msa_code','ORI9']
+for c in delcols:
+    del out[c]
+out.to_csv('all_merged.csv')
