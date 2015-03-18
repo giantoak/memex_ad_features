@@ -80,10 +80,24 @@ doubles['zero_price'] = (doubles['p1'] * doubles['m2'] - doubles['m1'] * doubles
 doubles=doubles[~doubles['ad_id'].duplicated()] # remove duplicates
 doubles =doubles[doubles['m1'] != doubles['m2']] # remove those with two prices for the same time...
 doubles['marginal_price'] = (doubles['p2'] - doubles['p1']) / (doubles['m2'] - doubles['m1'])
-doubles.to_csv('intercept.csv', index=False)
+doubles.to_csv('zero_price.csv', index=False)
 out.index = range(out.shape[0])
 out.reindex()
-out.to_csv('prices_%s.csv' % datetime.datetime.strftime(datetime.datetime.now(),'%Y%m%d'), index=False)
+out.to_csv('ad_prices.csv', index=False)
 #reg = linear_model.LinearRegression()
 #(p1 m2 - m1 p2)/ (m2 - m1)
 #out = reg.fit(X=data.minutes.values[:,np.newaxis],y=data.price.values[:,np.newaxis])
+
+# Begin using MSA data
+msa = pandas.read_csv('forGiantOak/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+doubles = pandas.merge(doubles, msa) # Add census MSA code to the fixed price info
+#msa_features_panel = pandas.read_csv('all_merged.csv', index_col=['month','year','census_msa_code'])
+msa_features_panel = pandas.read_csv('all_merged.csv')
+msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
+#msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
+msa_features = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
+msa_features.to_csv('zero_price_msa_micro.csv', index=False)
+
+#msa_level=msafeatures.groupby('census_msa_code', 
+
+

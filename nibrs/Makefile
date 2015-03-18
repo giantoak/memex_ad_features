@@ -21,6 +21,6 @@ all_merged.csv: geotag_export.py violence.csv female_violence.csv female_opportu
 	python geotag_export.py
 
 
-zero_price.csv: forGiantOak/rates.tsv.gz zero_prices.py
+zero_price.csv ad_prices.csv: forGiantOak/rates.tsv.gz zero_prices.py
 	# Zero price analysis depends on rate information 
 	python zero_prices.py
