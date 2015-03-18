@@ -98,6 +98,10 @@ msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_fea
 msa_features = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
 msa_features.to_csv('zero_price_msa_micro.csv', index=False)
 
+zp_aggregates = msa_features.groupby('census_msa_code')['zero_price'].aggregate({'median':np.median, 'count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
+#msa_aggregates=pandas.merge(msa_features, zp_aggregates, left_on='census_msa_code', right_index=True)
+zp_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
+
 #msa_level=msafeatures.groupby('census_msa_code', 
 
 
