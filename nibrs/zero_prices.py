@@ -95,13 +95,20 @@ doubles = pandas.merge(doubles, msa) # Add census MSA code to the fixed price in
 msa_features_panel = pandas.read_csv('all_merged.csv')
 msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
 #msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
-msa_features = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
-msa_features.to_csv('zero_price_msa_micro.csv', index=False)
+zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
+zero_price.to_csv('zero_price_msa_micro.csv', index=False)
 
-zp_aggregates = msa_features.groupby('census_msa_code')['zero_price'].aggregate({'median':np.median, 'count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
+zp_aggregates = zero_price.groupby('census_msa_code')['zero_price'].aggregate({'median':np.median, 'count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
 #msa_aggregates=pandas.merge(msa_features, zp_aggregates, left_on='census_msa_code', right_index=True)
 zp_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
 
-#msa_level=msafeatures.groupby('census_msa_code', 
+# Begin merging msa info into price data
+ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
+ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
+ad_level = pandas.merge(ad_level, msa_features, how='left')
+ad_level = ad_level.drop_duplicates('ad_id')
+ad_level.to_csv('ad_prices_msa_micro.csv',index=False)
 
-
+ad_aggregate_prices = ad_level.groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
+ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_features, left_index=True, right_on='census_msa_code')
+ad_aggregate_prices.to_csv('ad_prices_msa.csv', index=False)
