@@ -24,6 +24,8 @@ Turn data from sam's geotag export into a dictionary that looks like a list of:
     'geography' - a dictionary of geo_id to name
 """
 
+acs = json.loads(open('acs_2015_03_17.csv').read())
+missing_geographies = []
 """
 This script loads the initial price data that Sam loaded from DeepDive on about 12/25/2014
 
@@ -46,14 +48,19 @@ def census_lookup(geo_id, table_value, verbose=False):
     Where B01001 is the table id and 001 is the value id
     """
     try:
-        table = table_value[0:6]
-        value = table_value[6:]
-        data = combined['data'][geo_id][table]['estimate'][table_value]
+        geo_data = acs[geo_id]
+    except KeyError:
+        print('Geography %s not found' % geo_id)
+        missing_geographies.append(geo_id)
+        return np.nan
+    try:
+        output = geo_data[table_value + '-estimate']
         if verbose:
-            print('Info for: %s ' % combined['geography'][geo_id]['name'])
-            print('Found value: %s' % data)
-        return data
-    except:
+            print('Info for: %s ' % geo_data['name'])
+            print('Found value: %s' % output)
+        return output
+    except KeyError:
+        print('No census data found for table: %s; geography %s' % (table_value, geo_id))
         return np.nan
 
 # Begin merging information from census
