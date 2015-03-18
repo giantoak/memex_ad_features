@@ -21,21 +21,6 @@ all_merged.csv: geotag_export.py violence.csv female_violence.csv female_opportu
 	python geotag_export.py
 
 
-#
-#prostitution.csv
-#crosswalk_tract_msa.csv: python pd.py
-#violence.csv
-
-#ACS:
-
-#../acs/2011.q1-q4.singlefile.csv
-#../acs/2012.q1-q4.singlefile.csv
-#../acs/2013.q1-q4.singlefile.csv
-#../acs/2014.q1-q2.singlefile.csv
-#../acs/female_opportunity_index.csv
-#../acs/industry_level.csv
-#../acs/metro_level.csv
-#../acs/msa_crosswalk.csv
-#../acs/puma_level.csv
-#../acs/state_level.csv
-#../acs/temp.csv
+zero_price.csv: forGiantOak/rates.tsv.gz zero_prices.py
+	# Zero price analysis depends on rate information 
+	python zero_prices.py
