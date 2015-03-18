@@ -182,7 +182,7 @@ data['lt_highschool'] = data[less_than_hs_educations].sum(axis=1)/data['populati
 data['highschool'] = data[hs_educations].sum(axis=1)/data['population']
 data['some_college'] = data[some_college_educations].sum(axis=1)/data['population']
 data['college_plus'] = data[college_plus_educations].sum(axis=1)/data['population']
-data['median_income'] = data['B19013001']
+#data['median_income'] = data['B19013001']
 data['frac_white'] = data["B02001002"]/data["B02001001"]
 data['avg_commute'] = data[commute_times].dot(commute_centers)/data["B08303001"]
 
@@ -190,31 +190,37 @@ data['avg_commute'] = data[commute_times].dot(commute_centers)/data["B08303001"]
 
 crosswalk = pandas.read_csv('crosswalk_tract_msa.csv')
 crosswalk = crosswalk[~crosswalk.MSA.isnull()]
-msa_cw = crosswalk[['ORI9','MSA']].drop_duplicates()
+crosswalk = crosswalk[crosswalk['_merge'] == 'matched (3)']
+msa_cw = crosswalk[['ORI9','MSA','msaname']].drop_duplicates()
 msa_cw['codes'] = msa_cw.MSA.apply(lambda x: '31000US%s' % str(int(x)))
+
 
 out = pandas.merge(data, msa_cw, on='codes')
 # This dataframe is at the ORI9-month-year level. There are tons of rows
 # here: 48 months and 12k ORI9s
 
-out1=out.copy()
+#greg_msas=set(msa_cw.codes.value_counts().index.tolist())
+#jeff_msas=set(data.codes.value_counts().index.tolist())
+#result_msas=set(out.codes.value_counts().index.tolist())
+#out1=out.copy()
+# Code debugging 
 fv = pandas.read_csv('female_violence.csv')
 fv.rename(columns={'size':'total_reports'}, inplace=True) # Rename 'size' column to total reports, the total number of crime reports in the MSA over 2 years
 fv.rename(columns={'mean':'female_violence_fraction'}, inplace=True) # column represents fraction of all crime reports which were violence against women
 fv.rename(columns={'sum':'female_violence_counts'}, inplace=True) # column represents total number of reports of violence against women
-out = pandas.merge(out, fv[['total_reports','female_violence_fraction','female_violence_counts','codes']], on='codes')
+out = pandas.merge(out, fv[['total_reports','female_violence_fraction','female_violence_counts','codes']], on='codes', how='left')
 
 v = pandas.read_csv('violence.csv')
 del v['size'] # This is the total number of reports, which is the same as from female violence
 v.rename(columns={'mean':'violence_fraction'}, inplace=True) # column represents fraction of all crime reports which were violence against men OR women
 v.rename(columns={'sum':'violence_counts'}, inplace=True) # column represents total number of reports of violence against men OR women
-out = pandas.merge(out, v[['violence_fraction','violence_counts','codes']], on='codes')
+out = pandas.merge(out, v[['violence_fraction','violence_counts','codes']], on='codes', how='left')
 
 p = pandas.read_csv('prostitution.csv')
 del p['size'] # This is the total number of reports, which is the same as from female violence
 p.rename(columns={'mean':'prostitution_fraction'}, inplace=True) # column represents fraction of all crime reports which were prostitution arrests
 p.rename(columns={'sum':'prostitution_counts'}, inplace=True) # column represents total number of reports of prostitution
-out = pandas.merge(out, p[['prostitution_fraction','prostitution_counts','codes']], on='codes')
+out = pandas.merge(out, p[['prostitution_fraction','prostitution_counts','codes']], on='codes', how='left')
 
 for col in out.columns:
     if col[0] =='B':
