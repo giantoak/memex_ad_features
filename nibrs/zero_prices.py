@@ -65,6 +65,8 @@ data['price_per_hour'] = 60*data['price']/data['minutes']
 
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
 counts.rename(columns={'ad_id':'counts'}, inplace=True)
+counts.to_csv('price_extraction_counts.csv')
+pandas.DataFrame(counts['counts'].value_counts()/counts['counts'].value_counts().sum(), columns=['distribution']).to_csv('num_prices_extracted_dist.csv')
 out = pandas.merge(data, counts,left_on='ad_id', right_index=True)
 doubles = out.copy()
 calcs=doubles.groupby('ad_id').agg({'price':['min','max'], 'minutes':['min','max']})
@@ -106,9 +108,12 @@ zp_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
 ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
 ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
 ad_level = pandas.merge(ad_level, msa_features, how='left')
+ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='left')
 ad_level = ad_level.drop_duplicates('ad_id')
 ad_level.to_csv('ad_prices_msa_micro.csv',index=False)
 
-ad_aggregate_prices = ad_level.groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
+ad_aggregate_prices = ad_level.groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'ad_count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
 ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_features, left_index=True, right_on='census_msa_code')
+msa_counts = ad_level.groupby('census_msa_code')['counts'].aggregate({'prices_per_ad':np.mean, 'fraction_zero_price':lambda x: (x == 2).mean()})
+ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_counts, left_on='census_msa_code', right_index=True)
 ad_aggregate_prices.to_csv('ad_prices_msa.csv', index=False)
