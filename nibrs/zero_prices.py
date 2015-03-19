@@ -69,6 +69,7 @@ counts.to_csv('price_extraction_counts.csv')
 pandas.DataFrame(counts['counts'].value_counts()/counts['counts'].value_counts().sum(), columns=['distribution']).to_csv('num_prices_extracted_dist.csv')
 out = pandas.merge(data, counts,left_on='ad_id', right_index=True)
 doubles = out.copy()
+doubles = doubles[doubles['counts']==2]
 calcs=doubles.groupby('ad_id').agg({'price':['min','max'], 'minutes':['min','max']})
 doubles = pandas.merge(doubles, pandas.DataFrame(calcs['price']['min']), left_on='ad_id', right_index=True)
 doubles.rename(columns={'min':'p1'}, inplace=True)
@@ -98,11 +99,13 @@ msa_features_panel = pandas.read_csv('all_merged.csv')
 msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
 #msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
 zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
+zero_price = zero_price[zero_price.zero_price > 0]
+zero_price = zero_price[zero_price.zero_price < 200] # very few are above 200
 zero_price.to_csv('zero_price_msa_micro.csv', index=False)
 
-zp_aggregates = zero_price.groupby('census_msa_code')['zero_price'].aggregate({'median':np.median, 'count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
-#msa_aggregates=pandas.merge(msa_features, zp_aggregates, left_on='census_msa_code', right_index=True)
-zp_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
+zp_aggregates = zero_price.groupby('census_msa_code')['zero_price'].aggregate({ 'zero_price_count':len,'zp_mean':np.mean, 'zp_p50':lambda x: np.percentile(x,q=50), 'zp_p10':lambda x: np.percentile(x, q=10), 'zp_p90':lambda x: np.percentile(x, q=90)})
+msa_aggregates=pandas.merge(msa_features, zp_aggregates, left_on='census_msa_code', right_index=True)
+msa_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
 
 # Begin merging msa info into price data
 ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
