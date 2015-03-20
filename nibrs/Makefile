@@ -28,7 +28,7 @@ zero_price.csv: zero_prices.py all_merged.csv
 zero_price_msa_aggregates.csv: zero_prices.py all_merged.csv
 	# Zero price analysis depends on rate information 
 	python zero_prices.py
-export: all_merged.csv
+export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv
 	zip all_merged.zip all_merged.csv
 	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoak.memex/ 
 	zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
@@ -50,3 +50,7 @@ zp_analysis: zero_price_msa_aggregates.csv zero_price_diagnostics.r
 	# zero_price_msa_diagnostics_p10.csv
 	# zero_price_msa_diagnostics_p90.txt
 	R --vanilla < zero_price_diagnostics.r
+
+monthly_panel.csv: msa_panel.py all_merged.csv
+panel_analysis: monthly_panel.csv
+

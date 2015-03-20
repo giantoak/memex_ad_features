@@ -7,15 +7,6 @@ import json
 import requests
 #url = "http://ec2-54-166-98-195.compute-1.amazonaws.com:8000/geotag/export/"
 #data = requests.get(url).json()
-data = json.loads(open('analytical_report_acs.json','r').read())
-combined = {}
-for k, v in data[0].items():
-    combined[k] = {}
-
-for group in data:
-    for k, v in group.items():
-        combined[k].update(v)
-open('census.json','w').write(json.dumps(combined))
 """
 Turn data from sam's geotag export into a dictionary that looks like a list of:
     'release' - Release information description, e.g. 5 year, 2013
@@ -24,8 +15,6 @@ Turn data from sam's geotag export into a dictionary that looks like a list of:
     'geography' - a dictionary of geo_id to name
 """
 
-acs = json.loads(open('acs_2015_03_17.csv').read())
-missing_geographies = []
 """
 This script loads the initial price data that Sam loaded from DeepDive on about 12/25/2014
 
@@ -42,25 +31,30 @@ import numpy as np
 from sklearn import linear_model
 from sklearn import datasets
 
+acs = pandas.read_csv('acs_2015_03_18.csv')
+acs_geos = acs.geoid.tolist()
+missing_geographies = []
 def census_lookup(geo_id, table_value, verbose=False):
     """
     table_value is like B01001001
     Where B01001 is the table id and 001 is the value id
     """
-    try:
+    if geo_id in acs_geos:
+        try:
+            output = acs[acs['geoid'] == geo_id][table_value + '-estimate'].values[0]
+            if verbose:
+                print('Info for: %s ' % geo_data['name'])
+                print('Found value: %s' % output)
+            return output
+        except KeyError:
+            if verbose:
+                print('No census data found for table: %s; geography %s' % (table_value, geo_id))
+            return np.nan
         geo_data = acs[geo_id]
-    except KeyError:
-        print('Geography %s not found' % geo_id)
-        missing_geographies.append(geo_id)
-        return np.nan
-    try:
-        output = geo_data[table_value + '-estimate']
+    else:
         if verbose:
-            print('Info for: %s ' % geo_data['name'])
-            print('Found value: %s' % output)
-        return output
-    except KeyError:
-        print('No census data found for table: %s; geography %s' % (table_value, geo_id))
+            print('Geography %s not found' % geo_id)
+        missing_geographies.append(geo_id)
         return np.nan
 
 # Begin merging information from census
@@ -257,3 +251,26 @@ delcols = ['month','year','census_msa_code','ORI9']
 for c in delcols:
     del out[c]
 out.to_csv('all_merged.csv')
+
+# Code below here creates a pandas "Panel" object
+j=out.copy()
+j.reset_index(inplace=True)    
+j['date_str'] = j.apply(lambda x: str(x['month']) + '-' + str(x['year']), axis=1)   
+import datetime
+j['dp']=j['date_str'].apply(lambda x: pandas.Period(x, 'M'))
+subset = j[['dp','census_msa_code']]
+subset.to_records(index=False).tolist()
+index = pandas.MultiIndex.from_tuples(subset.to_records(index=False).tolist(), names=subset.columns.tolist())
+j.index = index
+j.reindex()
+j.rename(columns={'female_mean.wage':'female_mean','male_mean.wage':'male_mean','female_sum.wght':'female_num_jobs', 'male_sum.wght':'male_num_jobs'}, inplace=True)
+panel = j.to_panel()
+# Panel is our panel object
+diff_cols = ['female_p25','female_p50','female_p75','female_mean.wght','female_sum.wght','male_p25','male_p50','male_p75','male_mean.wght','male_sum.wght']
+diff_cols = ['female_p25','female_p50','female_p75','male_p25','male_p50','male_p75', 'female_num_jobs','male_num_jobs','female_mean','male_mean']
+for col in diff_cols:
+    panel['d_' + col] = panel[col] - panel[col].shift(-1)
+    panel['d_%s_pos'% col] = panel['d_' + col] > 0 # Generate dummies for positive and negative changes
+# Use panel functionality to take first differences
+
+panel.to_frame().to_csv('monthly_panel.csv')
