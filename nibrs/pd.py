@@ -907,6 +907,7 @@ cross_walk = cross_walk[~cross_walk.MSA.isnull()]
 cross_walk = cross_walk[cross_walk['_merge'] == 'matched (3)']
 cross_walk['codes'] = cross_walk.MSA.apply(lambda x: '31000US%s' % str(int(x)))
 m = pandas.merge( m, cross_walk[['ORI9','codes']], left_on='ORI', right_on='ORI9') # Merge acts onto MSAs by ORI code
+#
 b=m.groupby('codes')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
 b['violence'].to_csv('violence.csv')
 b['female_violence'].to_csv('female_violence.csv')
