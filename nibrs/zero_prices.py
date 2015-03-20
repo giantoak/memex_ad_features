@@ -97,7 +97,10 @@ out.to_csv('ad_prices.csv', index=False)
 #out = reg.fit(X=data.minutes.values[:,np.newaxis],y=data.price.values[:,np.newaxis])
 
 # Begin using MSA data
-msa = pandas.read_csv('forGiantOak/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+if False:
+    msa = pandas.read_csv('forGiantOak/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+else:
+    msa = pandas.read_csv('forGiantOak/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
 doubles = pandas.merge(doubles, msa) # Add census MSA code to the fixed price info
 #msa_features_panel = pandas.read_csv('all_merged.csv', index_col=['month','year','census_msa_code'])
 msa_features_panel = pandas.read_csv('all_merged.csv')

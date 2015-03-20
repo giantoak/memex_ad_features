@@ -52,5 +52,7 @@ zp_analysis: zero_price_msa_aggregates.csv zero_price_diagnostics.r
 	R --vanilla < zero_price_diagnostics.r
 
 monthly_panel.csv: msa_panel.py all_merged.csv
-panel_analysis: monthly_panel.csv
+	python msa_panel.py
+panel_analysis: monthly_panel.csv monthly_panel.r
+	R --vanilla < monthly_panel.r
 
