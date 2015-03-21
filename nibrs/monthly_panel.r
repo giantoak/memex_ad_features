@@ -31,7 +31,7 @@ eststo2(plm(d_ad_count ~ d_female_mean_pos*d_male_mean_pos, data=pd, model='pool
 eststo2(plm(d_ad_count ~ d_female_mean_pos*d_male_mean_pos, data=pd, model='within'))
 eststo2(plm(d_ad_count ~ d_female_mean_pos*d_male_mean_pos, data=pd, model='within', effect='time'))
 #eststo2(plm(d_d_ad_count ~ d_female_mean_pos*d_male_mean_pos + factor(dp), data=pd, model='within'))
-eststo2(plm(d_ad_count ~ d_female_mean_pos*d_male_mean_pos, data=pd, model='between'))
+eststo2(plm(d_ad_count ~ d_female_mean_pos*d_male_mean_pos, data=pd, model='within', effect='twoway'))
 esttab2(filename='panel_d_ad_count.csv', col.headers=c('pooled','within','time','within+time'), indicate=list('factor(dp)*'='Time Effects'))
 #esttab2(filename='panel_d_ad_count.txt', col.headers=c('pooled','within','time','within+time'), indicate=list('Time Effects'='factor(dp)*'))
 esttab2(filename='panel_d_ad_count.txt', col.headers=c('pooled','within','within+time effects','between'))
