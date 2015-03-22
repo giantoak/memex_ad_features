@@ -13,7 +13,7 @@ data$violence_per_capita<-data$violence_counts/data$population
 data$female_violence_share<-data$female_violence_fraction/data$violence_fraction
 data$female_num_jobs<-data$female_sum.wght/1000
 data$male_num_jobs<-data$male_sum.wght/1000
-cat('reading zero_price_msa_aggregates.csv...\n')
+cat('reading ad_prices_msa.csv...\n')
 print(summary(data))
 estclear()
 eststo2(lm(zp_mean ~ female_violence_share, data=data))
