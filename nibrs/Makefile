@@ -48,7 +48,7 @@ monthly_panel.csv: msa_panel.py all_merged.csv
 panel_analysis: monthly_panel.csv monthly_panel.r
 	R --vanilla < monthly_panel.r
 
-zp_analysis: zero_price_msa_aggregates.csv zero_price_diagnostics.r
+zp_analysis: zero_price_msa_aggregates.csv msa_level_analysis.r
 	# Creates:
 	# zero_price_msa_diagnostics_mean.csv
 	# zero_price_msa_diagnostics_mean.txt
@@ -56,7 +56,7 @@ zp_analysis: zero_price_msa_aggregates.csv zero_price_diagnostics.r
 	# zero_price_msa_diagnostics_p10.txt
 	# zero_price_msa_diagnostics_p10.csv
 	# zero_price_msa_diagnostics_p90.txt
-	R --vanilla < zero_price_diagnostics.r
+	R --vanilla < msa_level_analysis.r
 
 monthly_panel.csv: msa_panel.py all_merged.csv
 	python msa_panel.py
