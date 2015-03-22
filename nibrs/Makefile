@@ -1,3 +1,29 @@
+download:
+	# This code downloads all data necessary
+	# Get data from the Deep Dive data drop
+	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/forGiantOak3.tgz .
+	tar xvf forGiantOak3.tgz
+	# Get data from 2000 census, from IPUMS extract
+	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
+	gunzip usa_00017.dat.gz
+	# Get data from ICPSR for the National Incident Based Reporting
+	# system
+	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
+	gunzip 35036-0001-Data.txt.gz
+	mkdir -p ICPSR_04634/
+	mkdir -p ICPSR_04634/DS0001/
+	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
+	mv 34603-0001-Data.txt.gz ICPSR_04634/DS0001/
+	gunzip ICPSR_04634/DS0001/34603-0001-Data.txt.gz 
+	# Work on QCEW downloads
+	wget http://www.bls.gov/cew/data/files/2014/csv/2014_qtrly_singlefile.zip
+	wget http://www.bls.gov/cew/data/files/2013/csv/2013_qtrly_singlefile.zip
+	wget http://www.bls.gov/cew/data/files/2012/csv/2012_qtrly_singlefile.zip
+	wget http://www.bls.gov/cew/data/files/2011/csv/2011_qtrly_singlefile.zip
+	unzip 2014_qtrly_singlefile.zip
+	unzip 2013_qtrly_singlefile.zip
+	unzip 2012_qtrly_singlefile.zip
+	unzip 2011_qtrly_singlefile.zip
 female_violence.csv violence.csv prostitution.csv: pd.py crosswalk_tract_msa.csv
 	# The female violence tabulations come from reading UCR data from
 	# ICPSR as well as a crosswalk file from Greg DeAngelo
