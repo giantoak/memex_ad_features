@@ -104,7 +104,9 @@ else:
 doubles = pandas.merge(doubles, msa) # Add census MSA code to the fixed price info
 #msa_features_panel = pandas.read_csv('all_merged.csv', index_col=['month','year','census_msa_code'])
 msa_features_panel = pandas.read_csv('all_merged.csv')
-msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
+msa_features = msa_features_panel.groupby(['census_msa_code','msaname']).mean() # Take mean over time of MSA features
+msa_features.reset_index(inplace=True)
+#msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
 #msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
 zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
 zero_price = zero_price[zero_price.zero_price > 0]
@@ -116,7 +118,21 @@ msa_aggregates=pandas.merge(msa_features, zp_aggregates, left_on='census_msa_cod
 msa_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
 
 # Begin merging msa info into price data
-ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
+# This next block of code merges to the hourly level
+data['1hr'] = data['time_str'] == '1 HOUR'
+a = data.groupby('ad_id')['1hr'].sum()
+a = a>0
+del data['1hr']
+a = pandas.DataFrame(a)
+data = pandas.merge(data, a, left_on='ad_id', right_index=True)
+ad_level_hourly = pandas.DataFrame(data[data['1hr']])
+ad_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
+ad_level_no_hourly.index = ad_level_no_hourly['ad_id']
+ad_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
+ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
+ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
+# Having now recombined the hourly and non-hourly quoted price pieces,
+# continue merging in characteristics
 ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
 ad_level = pandas.merge(ad_level, msa_features, how='left')
 ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='left')
@@ -124,8 +140,9 @@ ad_level = ad_level.drop_duplicates('ad_id')
 ad_level.to_csv('ad_prices_msa_micro.csv',index=False)
 
 # Begin aggregating ad level data up to the MSA level
-ad_aggregate_prices = ad_level.groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'ad_count':len,'mean':np.mean, 'p50':lambda x: np.percentile(x,q=50), 'p10':lambda x: np.percentile(x, q=10), 'p90':lambda x: np.percentile(x, q=90)})
+ad_aggregate_prices = ad_level.groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'ad_count':len,'mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p25':lambda x: np.percentile(x, q=25), 'ad_p90':lambda x: np.percentile(x, q=90), 'ad_p75':lambda x: np.percentile(x, q=75),})
 ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_features, left_index=True, right_on='census_msa_code')
 msa_counts = ad_level.groupby('census_msa_code')['counts'].aggregate({'prices_per_ad':np.mean, 'fraction_zero_price':lambda x: (x == 2).mean()})
 ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_counts, left_on='census_msa_code', right_index=True)
+ad_aggregate_prices = pandas.merge(ad_aggregate_prices, zp_aggregates[['zero_price_count','zp_mean','zp_p50','zp_p10','zp_p25','zp_p75','zp_p90']], left_on='census_msa_code',right_index=True)
 ad_aggregate_prices.to_csv('ad_prices_msa.csv', index=False)
