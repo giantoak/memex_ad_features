@@ -25,17 +25,7 @@ data.reindex(inplace=True)
 # wrong thing. Then we merge these counts into the all_merged data at
 # the month-msa level
 # Begin aggregating ad level data up to the MSA-month level
-
-def hourly_price(x):
-    if (x['time_str'] == '1 HOUR').sum() > 0:
-        a =x['price_per_hour'][x['time_str'] == '1 HOUR'].mean()
-        return a
-    else:
-        return x['price_per_hour'].mean()
-
-ad_level = pandas.DataFrame(data.groupby('ad_id').apply(hourly_price) )
-ad_level.rename(columns={0:'price_per_hour'}, inplace=True)
-#ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
+ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
 ad_level['ad_id'] = ad_level.index
 ad_level.drop_duplicates('ad_id', inplace=True)
 ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id') # Note: we drop lots of ads with price  but not MSA
