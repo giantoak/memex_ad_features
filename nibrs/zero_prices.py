@@ -87,7 +87,7 @@ doubles.rename(columns={'max':'m2'}, inplace=True)
 doubles['zero_price'] = (doubles['p1'] * doubles['m2'] - doubles['m1'] * doubles['p2']) / (doubles['m2'] - doubles['m1'])
 doubles=doubles[~doubles['ad_id'].duplicated()] # remove duplicates
 doubles =doubles[doubles['m1'] != doubles['m2']] # remove those with two prices for the same time...
-doubles['marginal_price'] = (doubles['p2'] - doubles['p1']) / (doubles['m2'] - doubles['m1'])
+doubles['marginal_price'] = (doubles['p2'] - doubles['p1']) / (doubles['m2'] - doubles['m1']) * 60
 doubles.to_csv('zero_price.csv', index=False)
 out.index = range(out.shape[0])
 out.reindex()
@@ -142,10 +142,9 @@ ad_level = ad_level.drop_duplicates('ad_id')
 ad_level.to_csv('ad_prices_msa_micro.csv',index=False)
 
 # Begin aggregating ad level data up to the MSA level
-ad_aggregate_prices = ad_level.groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'ad_count':len,'mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p25':lambda x: np.percentile(x, q=25), 'ad_p90':lambda x: np.percentile(x, q=90), 'ad_p75':lambda x: np.percentile(x, q=75),})
+ad_aggregate_prices = ad_level[ad_level['counts'] == 2].groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'ad_count':len,'mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p25':lambda x: np.percentile(x, q=25), 'ad_p90':lambda x: np.percentile(x, q=90), 'ad_p75':lambda x: np.percentile(x, q=75),})
 ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_features, left_index=True, right_on='census_msa_code')
 msa_counts = ad_level.groupby('census_msa_code')['counts'].aggregate({'prices_per_ad':np.mean, 'fraction_zero_price':lambda x: (x == 2).mean()})
 ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_counts, left_on='census_msa_code', right_index=True)
-ad_aggregate_prices = pandas.merge(ad_aggregate_prices, zp_aggregates[['zero_price_count','zp_mean','zp_p50','zp_p10','zp_p25','zp_p75','zp_p90']], left_on='census_msa_code',right_index=True)
-#ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_aggregates[['zero_price_count','zp_mean','zp_p50','zp_p10','zp_p25','zp_p75','zp_p90','mp_mean','mp_p50','mp_p10','mp_p25','mp_p75','mp_p90']], left_on='census_msa_code',right_index=True)
+ad_aggregate_prices = pandas.merge(ad_aggregate_prices, msa_aggregates[['zero_price_count','zp_mean','zp_p50','zp_p10','zp_p25','zp_p75','zp_p90','mp_mean','mp_p50','mp_p10','mp_p25','mp_p75','mp_p90', 'census_msa_code']])
 ad_aggregate_prices.to_csv('ad_prices_msa.csv', index=False)
