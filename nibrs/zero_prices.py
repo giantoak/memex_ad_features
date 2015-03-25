@@ -109,15 +109,18 @@ msa_features.reset_index(inplace=True)
 #msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
 #msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
 zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
-zero_price = zero_price[zero_price.zero_price > 0]
-zero_price = zero_price[zero_price.zero_price < 200] # very few are above 200
-zero_price.to_csv('zero_price_msa_micro.csv', index=False)
 
-zp_aggregates = zero_price.groupby('census_msa_code')['zero_price'].aggregate({ 'zero_price_count':len,'zp_mean':np.mean, 'zp_p50':lambda x: np.percentile(x,q=50), 'zp_p10':lambda x: np.percentile(x, q=10), 'zp_p25':lambda x: np.percentile(x, q=25), 'zp_p75':lambda x: np.percentile(x, q=75), 'zp_p90':lambda x: np.percentile(x, q=90)})
+# Merge and export zero price aggregates
+zp_aggregates = zero_price[zero_price['counts'] == 2].groupby('census_msa_code')['zero_price'].aggregate({ 'zero_price_count':len,'zp_mean':np.mean, 'zp_p50':lambda x: np.percentile(x,q=50), 'zp_p10':lambda x: np.percentile(x, q=10), 'zp_p25':lambda x: np.percentile(x, q=25), 'zp_p75':lambda x: np.percentile(x, q=75), 'zp_p90':lambda x: np.percentile(x, q=90)})
 msa_aggregates=pandas.merge(msa_features, zp_aggregates, left_on='census_msa_code', right_index=True)
 mp_aggregates = zero_price.groupby('census_msa_code')['marginal_price'].aggregate({ 'marginal_price_count':len,'mp_mean':np.mean, 'mp_p50':lambda x: np.percentile(x,q=50), 'mp_p10':lambda x: np.percentile(x, q=10), 'mp_p25':lambda x: np.percentile(x, q=25), 'mp_p75':lambda x: np.percentile(x, q=75), 'mp_p90':lambda x: np.percentile(x, q=90)})
 msa_aggregates=pandas.merge(msa_aggregates, mp_aggregates, left_on='census_msa_code', right_index=True)
 msa_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
+
+zero_price = zero_price[zero_price.zero_price > 0]
+zero_price = zero_price[zero_price.zero_price < 200] # very few are above 200
+zero_price.to_csv('zero_price_msa_micro.csv', index=False)
+# Export zero price micro data 
 
 # Begin merging msa info into price data
 # This next block of code merges to the hourly level
