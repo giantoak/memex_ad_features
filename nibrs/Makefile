@@ -6,6 +6,9 @@ download:
 	# Get data from 2000 census, from IPUMS extract
 	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
 	gunzip usa_00017.dat.gz
+	# Get data from IPUMS extract of 2013 ACS
+	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
+	gunzip usa_00018.dat.gz
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
 	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
@@ -68,6 +71,7 @@ export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_coun
 	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoak.memex/sex_ad_analysis/
 	zip monthly_panel.zip monthly_panel.csv
 	s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put metro_level_wages.csv s3://giantoak.memex/sex_ad_analysis/ # The metro level wage distribution by gender
 
 monthly_panel.csv: msa_panel.py all_merged.csv
 	python msa_panel.py
@@ -84,8 +88,5 @@ zp_analysis: zero_price_msa_aggregates.csv msa_level_analysis.r
 	# zero_price_msa_diagnostics_p90.txt
 	R --vanilla < msa_level_analysis.r
 
-monthly_panel.csv: msa_panel.py all_merged.csv
-	python msa_panel.py
-panel_analysis: monthly_panel.csv monthly_panel.r
-	R --vanilla < monthly_panel.r
-
+metro_level_wages.csv: acs_2013_ipums.csv
+	R --vanilla < acs_2013_wages.csv
