@@ -87,6 +87,10 @@ zp_analysis: zero_price_msa_aggregates.csv msa_level_analysis.r
 	# zero_price_msa_diagnostics_p10.csv
 	# zero_price_msa_diagnostics_p90.txt
 	R --vanilla < msa_level_analysis.r
+micro_analysis: ad_prices_msa_micro.csv individual_level_analysis.r
+	# Creates:
+	# Tons of files in results/micro_zero_price/
+	R --vanilla < individual_level_analysis.r
 
 metro_level_wages.csv: acs_2013_ipums.r
 	R --vanilla < acs_2013_wages.r

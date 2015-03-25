@@ -244,8 +244,21 @@ for col in out.columns:
         # This is a raw census column, delete!
         del out[col]
 out.rename(columns={'codes':'census_msa_code'}, inplace=True)
-
 out.drop_duplicates(['sex','month','year','census_msa_code'], inplace=True)
+
+# Add LEMAS and UCR data
+lemas = pandas.read_csv('ucr_lemas_msa.csv')
+lemas=lemas[['msa_parents','rape_2010','rape_2011','rape_2012','violent_2010','violent_2011','violent_2012','property_2010','property_2011','property_2012']]
+lemas = pandas.melt(lemas, id_vars=['msa_parents'])
+lemas['year'] = lemas['variable'].apply(lambda x: int(x.split('_')[1]))
+lemas['measure'] = lemas['variable'].apply(lambda x: x.split('_')[0])
+lemas.rename(columns={'msa_parents':'census_msa_code'}, inplace=True)
+aggregated = lemas.groupby(['census_msa_code','year','measure'])['value'].sum().to_frame()
+aggregated = aggregated.unstack('measure')
+aggregated.columns = ['property','rape','violent']
+out = pandas.merge(out, aggregated, left_on=['census_msa_code','year'], right_index=True, how='left') # Merge UCR data
+
+# Begin reshaping on sex
 subset = out[['sex','month','year','census_msa_code']]
 subset.to_records(index=False).tolist()
 index = pandas.MultiIndex.from_tuples(subset.to_records(index=False).tolist(), names=subset.columns.tolist())
@@ -259,7 +272,7 @@ out.columns.names=['main','sex']
 del out['sex']
 female = out.xs(2, level='sex',axis=1)
 male = out.xs(1, level='sex',axis=1)
-female = female[['index_p50','index_p25','index_p75','index_mean.wage','index_sum.wght']]
+#female = female[['index_p50','index_p25','index_p75','index_mean.wage','index_sum.wght']]
 female.rename(columns={
     'index_p75':'female_p75',
     'index_p50':'female_p50',
