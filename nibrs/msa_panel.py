@@ -25,10 +25,28 @@ data.reindex(inplace=True)
 # wrong thing. Then we merge these counts into the all_merged data at
 # the month-msa level
 # Begin aggregating ad level data up to the MSA-month level
-ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
-ad_level['ad_id'] = ad_level.index
-ad_level.drop_duplicates('ad_id', inplace=True)
-ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id') # Note: we drop lots of ads with price  but not MSA
+data['1hr'] = data['time_str'] == '1 HOUR'
+a = data.groupby('ad_id')['1hr'].sum()
+a = a>0
+del data['1hr']
+a = pandas.DataFrame(a)
+data = pandas.merge(data, a, left_on='ad_id', right_index=True)
+ad_level_hourly = pandas.DataFrame(data[data['1hr']])
+ad_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
+ad_level_no_hourly.index = ad_level_no_hourly['ad_id']
+ad_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
+ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
+ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
+# Having now recombined the hourly and non-hourly quoted price pieces,
+# continue merging in characteristics
+ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
+ad_level = pandas.merge(ad_level, msa_features, how='left')
+ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='left')
+ad_level = ad_level.drop_duplicates('ad_id')
+#ad_level = pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean())
+#ad_level['ad_id'] = ad_level.index
+#ad_level.drop_duplicates('ad_id', inplace=True)
+#ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id') # Note: we drop lots of ads with price  but not MSA
 # NOTE: at this point we grow with a merge instead of shrinking. This is
 # because we have more than one msa per ad
 ad_level = pandas.merge(ad_level, data[['ad_id','date']])
