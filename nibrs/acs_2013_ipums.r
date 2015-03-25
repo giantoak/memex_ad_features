@@ -43,20 +43,26 @@ cat('data read to mem\n')
 a$hhwt<-a$hhwt / 100
 a$perwt<-a$perwt / 100
 #a$strata <- 100000*a$statefip + a$puma  
-a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
-# Note: incwage is in dollars
-a<-a[a$uhrswork > 30,] # Restrict to only full time workers
+#a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
+## Note: incwage is in dollars
+#a<-a[a$uhrswork > 30,] # Restrict to only full time workers
+a$worker <- a$wkswork2 > 5 & a$incwage > 0 & a$uhrswork > 30
+# a 'worker' is someone who works 48+ weeks, has positive wage earnings,
+# and works 30+ hours per week
 cat('subsetting done!\n')
 # a<-a[a$wkswork2 >= 5,] # Restrict to year round workers
 
 a$incwage<-a$incwage / 2000 # A stand-in for doing the FT/year round selection
 
-names<-c('mean.wage','var.wage','p05','p10','p25','p50','p75','p90','p95','N','sum.wght')
+a$employed<-a$empstat == 1
+
+names<-c('mean.wage','var.wage','p05','p10','p25','p50','p75','p90','p95','N','sum.wght','epop')
 computes<-function(x, keep.cols=c('sex',  'met2013')){
-    x$mean.wage<-wtd.mean(x$incwage, weights=x$perwt)
-    x$var.wage<-wtd.var(x$incwage, weights=x$perwt)
+    x$mean.wage<-wtd.mean(x$incwage[x$worker], weights=x$perwt[x$worker])
+    x$epop<-wtd.mean(x$employed, weights=x$perwt)
+    x$var.wage<-wtd.var(x$incwage[x$worker], weights=x$perwt[x$worker])
     quantiles<-c(.05,.1, .25, .5, .75, .9,.95)
-    quantile.results<-wtd.quantile(x$incwage, weights=x$perwt, probs=quantiles)
+    quantile.results<-wtd.quantile(x$incwage[x$worker], weights=x$perwt[x$worker], probs=quantiles)
     x$p05<-quantile.results[1]
     x$p10<-quantile.results[2]
     x$p25<-quantile.results[3]

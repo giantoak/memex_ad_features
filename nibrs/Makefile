@@ -46,7 +46,7 @@ metro_level.csv: census_2000_msa.r
 	R --vanilla < census_2000_msa.r
 	# This command is untested
 
-all_merged.csv: geotag_export.py violence.csv female_violence.csv female_opportunity_index.csv analytical_report_acs.json
+all_merged.csv: geotag_export.py violence.csv female_violence.csv female_opportunity_index.csv analytical_report_acs.json metro_level_wages.csv
 	python geotag_export.py
 
 zero_price.csv: zero_prices.py all_merged.csv
@@ -88,5 +88,5 @@ zp_analysis: zero_price_msa_aggregates.csv msa_level_analysis.r
 	# zero_price_msa_diagnostics_p90.txt
 	R --vanilla < msa_level_analysis.r
 
-metro_level_wages.csv: acs_2013_ipums.csv
-	R --vanilla < acs_2013_wages.csv
+metro_level_wages.csv: acs_2013_ipums.r
+	R --vanilla < acs_2013_wages.r

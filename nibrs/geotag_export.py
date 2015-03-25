@@ -195,6 +195,22 @@ crosswalk = crosswalk[crosswalk['_merge'] == 'matched (3)']
 msa_cw = crosswalk[['ORI9','MSA','msaname']].drop_duplicates()
 msa_cw['codes'] = msa_cw.MSA.apply(lambda x: '31000US%s' % str(int(x)))
 
+msa_wages = pandas.read_csv('metro_level_wages.csv')
+msa_wages['codes']=msa_wages['met2013'].apply(lambda x: '31000US%s' % str(int(x))) # 310000 is the MSA code
+msa_wages.rename(columns= {
+    'p05':'wage_p05',
+    'p10':'wage_p10',
+    'p25':'wage_p25',
+    'p50':'wage_p50',
+    'p75':'wage_p75',
+    'p90':'wage_p90',
+    'p95':'wage_p95',
+    'sum.wght':'wage_sum.wght',
+    'mean.wage':'wage_mean.wage',
+    'var.wage':'wage_var.wage',
+    }, inplace=True)
+
+data = pandas.merge(data, msa_wages, on=['codes','sex'],how='left')
 
 out = pandas.merge(data, msa_cw, on='codes')
 # This dataframe is at the ORI9-month-year level. There are tons of rows
@@ -244,8 +260,39 @@ del out['sex']
 female = out.xs(2, level='sex',axis=1)
 male = out.xs(1, level='sex',axis=1)
 female = female[['index_p50','index_p25','index_p75','index_mean.wage','index_sum.wght']]
-female.rename(columns={'index_p75':'female_p75','index_p50':'female_p50','index_p25':'female_p25','index_mean.wage':'female_mean.wage','index_sum.wght':'female_sum.wght'}, inplace=True)
-male.rename(columns={'index_p75':'male_p75','index_p50':'male_p50','index_p25':'male_p25','index_mean.wage':'male_mean.wage','index_sum.wght':'male_sum.wght'}, inplace=True)
+female.rename(columns={
+    'index_p75':'female_p75',
+    'index_p50':'female_p50',
+    'index_p25':'female_p25',
+    'index_mean.wage':'female_mean.wage',
+    'index_sum.wght':'female_sum.wght',
+    'wage_p05':'female_wage_p05',
+    'wage_p10':'female_wage_p10',
+    'wage_p25':'female_wage_p25',
+    'wage_p50':'female_wage_p50',
+    'wage_p75':'female_wage_p75',
+    'wage_p90':'female_wage_p90',
+    'wage_p95':'female_wage_p95',
+    'wage_mean':'female_wage_mean',
+    'epop':'female_epop',
+    },
+    inplace=True)
+male.rename(columns={
+    'index_p75':'male_p75',
+    'index_p50':'male_p50',
+    'index_p25':'male_p25',
+    'index_mean.wage':'male_mean.wage',
+    'index_sum.wght':'male_sum.wght',
+    'wage_p05':'male_wage_p05',
+    'wage_p10':'male_wage_p10',
+    'wage_p25':'male_wage_p25',
+    'wage_p50':'male_wage_p50',
+    'wage_p75':'male_wage_p75',
+    'wage_p90':'male_wage_p90',
+    'wage_p95':'male_wage_p95',
+    'wage_mean':'male_wage_mean',
+    'epop':'male_epop',
+    }, inplace=True)
 out = pandas.concat([male, female], axis=1)
 delcols = ['month','year','census_msa_code','ORI9']
 for c in delcols:
