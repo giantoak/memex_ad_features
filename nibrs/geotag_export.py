@@ -324,7 +324,9 @@ for c in delcols:
 out['violence_per_capita'] = out['violence_counts']/out['population']
 out['female_violence_share'] = out['female_violence_fraction']/out['violence_fraction']
 out['relative_sex_crime'] = out['rape']/out['violent']
+out['rape_per_capita'] = out['rape']/out['population']
 out['crime_rate'] = out['property']/out['population']
+out['property_crime_per_capita'] = out['property']/out['population']
 out['le_auth_per_capita'] = out['swnauthemp']/out['population']
 out['le_per_capita'] = out['swnftemp']/out['population']
 out.to_csv('all_merged.csv')
