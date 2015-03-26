@@ -37,11 +37,13 @@ if False:
     data = pandas.read_csv('forGiantOak/rates.tsv.gz', sep='\t', compression='gzip', header=None)
 else:
     data = pandas.read_csv('forGiantOak/rates.tsv', sep='\t', header=None)
+print('There are %s observations' % data.shape[0]) # about 2.1M
 data.rename(columns={0:'ad_id', 1:'rate'}, inplace=True)
 data['time_str'] = data['rate'].apply(lambda x: x.split(',')[1])
 data['price'] = data['rate'].apply(lambda x: x.split(',')[0])
 data['unit'] = data['time_str'].apply(lambda x: x.split(' ')[1])
-data = data[data['unit'] != 'DURATION']
+data = data[data['unit'] != 'DURATION'] # about 1.7M
+print('There are %s observations after dropping no duration prices' % data.shape[0])
 data['timeValue'] = data['time_str'].apply(lambda x: x.split(' ')[0])
 data['unit'][data['unit'] == 'HOURS'] = 'HOUR'
 data['minutes'] = np.nan
@@ -59,6 +61,7 @@ data['price'] = data['price'].apply(lambda x: x.replace('dollar',''))
 data = data[data['price'].apply(lambda x: 'euro' not in x)]
 data = data[data['price'].apply(lambda x: 'eur' not in x)]
 data = data[data['price'].apply(lambda x: 'aud' not in x)]
+print('There are %s prices after dropping foreign prices' % data.shape[0])
 data['price'] = data['price'].astype('int')
 # This code is useful for dealing with the 'price' string problem in
 # sam's rates_locs file from 12/29
@@ -69,12 +72,15 @@ data['price_per_hour'] = 60*data['price']/data['minutes']
 data.to_csv('normalized_prices.csv', index=False)
 
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
+print('The %s extracted prices pertain to %s observations' % (data.shape[0], counts.shape[0]))
 counts.rename(columns={'ad_id':'counts'}, inplace=True)
 counts.to_csv('price_extraction_counts.csv')
 pandas.DataFrame(counts['counts'].value_counts()/counts['counts'].value_counts().sum(), columns=['distribution']).to_csv('num_prices_extracted_dist.csv')
 out = pandas.merge(data, counts,left_on='ad_id', right_index=True)
 doubles = out.copy()
 doubles = doubles[doubles['counts']==2]
+print('There are %s ads after restricting to ads with 2 prices' % doubles.shape[0])
+
 calcs=doubles.groupby('ad_id').agg({'price':['min','max'], 'minutes':['min','max']})
 doubles = pandas.merge(doubles, pandas.DataFrame(calcs['price']['min']), left_on='ad_id', right_index=True)
 doubles.rename(columns={'min':'p1'}, inplace=True)
@@ -86,6 +92,7 @@ doubles = pandas.merge(doubles, pandas.DataFrame(calcs['minutes']['max']), left_
 doubles.rename(columns={'max':'m2'}, inplace=True)
 doubles['zero_price'] = (doubles['p1'] * doubles['m2'] - doubles['m1'] * doubles['p2']) / (doubles['m2'] - doubles['m1'])
 doubles=doubles[~doubles['ad_id'].duplicated()] # remove duplicates
+print('There are %s ads after dropping duplicates' % doubles.shape[0])
 doubles =doubles[doubles['m1'] != doubles['m2']] # remove those with two prices for the same time...
 doubles['marginal_price'] = (doubles['p2'] - doubles['p1']) / (doubles['m2'] - doubles['m1']) * 60
 doubles.to_csv('zero_price.csv', index=False)
@@ -109,6 +116,7 @@ msa_features.reset_index(inplace=True)
 #msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
 #msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
 zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
+print('There are %s ads that merge in with MSAs, representing %s of %s MSAs' % (zero_price.shape[0], zero_price.census_msa_code.value_counts().shape[0], doubles.census_msa_code.value_counts().shape[0]))
 
 # Merge and export zero price aggregates
 zp_aggregates = zero_price[zero_price['counts'] == 2].groupby('census_msa_code')['zero_price'].aggregate({ 'zero_price_count':len,'zp_mean':np.mean, 'zp_p50':lambda x: np.percentile(x,q=50), 'zp_p10':lambda x: np.percentile(x, q=10), 'zp_p25':lambda x: np.percentile(x, q=25), 'zp_p75':lambda x: np.percentile(x, q=75), 'zp_p90':lambda x: np.percentile(x, q=90)})

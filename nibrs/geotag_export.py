@@ -258,6 +258,12 @@ aggregated = aggregated.unstack('measure')
 aggregated.columns = ['property','rape','violent']
 out = pandas.merge(out, aggregated, left_on=['census_msa_code','year'], right_index=True, how='left') # Merge UCR data
 
+lemas = pandas.read_csv('ucr_lemas_msa.csv')
+lemas=lemas[['msa_parents','swnauthemp','swnftemp']]
+lemas.rename(columns={'msa_parents':'census_msa_code'}, inplace=True)
+a2 = lemas.groupby(['census_msa_code'])['swnauthemp','swnftemp'].sum()
+out = pandas.merge(out, a2, left_on='census_msa_code', right_index=True, how='left') # Merge LEMAS data
+
 # Begin reshaping on sex
 subset = out[['sex','month','year','census_msa_code']]
 subset.to_records(index=False).tolist()
@@ -306,10 +312,21 @@ male.rename(columns={
     'wage_mean':'male_wage_mean',
     'epop':'male_epop',
     }, inplace=True)
+duplicate_columns = [i for i in male.columns if 'male' not in i]
+duplicate_columns.append('female_violence_fraction')
+for c in duplicate_columns:
+    del male[c]
 out = pandas.concat([male, female], axis=1)
 delcols = ['month','year','census_msa_code','ORI9']
 for c in delcols:
     del out[c]
+
+out['violence_per_capita'] = out['violence_counts']/out['population']
+out['female_violence_share'] = out['female_violence_fraction']/out['violence_fraction']
+out['relative_sex_crime'] = out['rape']/out['violent']
+out['crime_rate'] = out['property']/out['population']
+out['le_auth_per_capita'] = out['swnauthemp']/out['population']
+out['le_per_capita'] = out['swnftemp']/out['population']
 out.to_csv('all_merged.csv')
 
 # Code below here creates a pandas "Panel" object
