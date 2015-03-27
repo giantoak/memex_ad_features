@@ -144,12 +144,21 @@ ad_level_no_hourly.index = ad_level_no_hourly['ad_id']
 ad_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
 ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
 ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
+print('There are %s prices from ads when computing hourly price' % ad_level.shape[0])
 # Having now recombined the hourly and non-hourly quoted price pieces,
 # continue merging in characteristics
-ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
+ad_level = pandas.merge(ad_level, msa, on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
+print('There are %s prices from ads once we merge in MSAs' % ad_level.shape[0])
+#ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
 ad_level = pandas.merge(ad_level, msa_features, how='left')
-ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='left')
+print('There are %s prices from ads once we merge in MSA features' % ad_level.shape[0])
+ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='right')
+print('There are %s prices from ads once we merge in price counts per ad' % ad_level.shape[0])
+ad_level = ad_level[ad_level['counts'] == 2]
+print('There are %s prices from ads once we restrict to those with exactly 2 prices' % ad_level.shape[0])
+ad_level['platform'] = ad_level['ad_id'].apply(lambda x: x.split(':')[0])
 ad_level = ad_level.drop_duplicates('ad_id')
+print('There are %s prices from ads once we drop duplicates on ad_id' % ad_level.shape[0])
 
 # Begin aggregating ad level data up to the MSA level
 ad_aggregate_prices = ad_level[ad_level['counts'] == 2].groupby('census_msa_code')['price_per_hour'].aggregate({'median':np.median, 'ad_count':len,'mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p25':lambda x: np.percentile(x, q=25), 'ad_p90':lambda x: np.percentile(x, q=90), 'ad_p75':lambda x: np.percentile(x, q=75),})
