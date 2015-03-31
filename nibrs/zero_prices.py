@@ -34,9 +34,9 @@ def census_lookup(geo_id, table_value, verbose=False):
 
 #data = pandas.read_csv('rates_locs.csv')
 if False:
-    data = pandas.read_csv('forGiantOak/rates.tsv.gz', sep='\t', compression='gzip', header=None)
+    data = pandas.read_csv('forGiantOak3/rates.tsv.gz', sep='\t', compression='gzip', header=None)
 else:
-    data = pandas.read_csv('forGiantOak/rates.tsv', sep='\t', header=None)
+    data = pandas.read_csv('forGiantOak3/rates.tsv', sep='\t', header=None)
 print('There are %s observations' % data.shape[0]) # about 2.1M
 data.rename(columns={0:'ad_id', 1:'rate'}, inplace=True)
 data['time_str'] = data['rate'].apply(lambda x: x.split(',')[1])
@@ -105,9 +105,9 @@ out.to_csv('ad_prices.csv', index=False)
 
 # Begin using MSA data
 if False:
-    msa = pandas.read_csv('forGiantOak/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
 else:
-    msa = pandas.read_csv('forGiantOak/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
+    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
 doubles = pandas.merge(doubles, msa) # Add census MSA code to the fixed price info
 #msa_features_panel = pandas.read_csv('all_merged.csv', index_col=['month','year','census_msa_code'])
 msa_features_panel = pandas.read_csv('all_merged.csv')

@@ -6,19 +6,21 @@ import numpy as np
 from sklearn import linear_model
 from sklearn import datasets
 
-msa_month_features = pandas.read_csv('all_merged.csv')
+msa_features_panel = pandas.read_csv('all_merged.csv')
 data = pandas.read_csv('normalized_prices.csv')
 if False:
-    msa = pandas.read_csv('forGiantOak/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
-    ts = pandas.read_csv('forGiantOak/doc-provider-timestamp.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','cluster','date_str'])
+    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+    ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','cluster','date_str'])
 else:
-    msa = pandas.read_csv('forGiantOak/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
-    ts = pandas.read_csv('forGiantOak/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster','date_str'])
+    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
+    ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster','date_str'])
 data = pandas.merge(data,ts)
 data= data[data['date_str'] != '\N']
 data['date'] = data['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S' ))
 data.index = pandas.DatetimeIndex(data['date']) 
 data.reindex(inplace=True)
+counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
+counts.rename(columns={'ad_id':'count'}, inplace=True)
 ##out=data.resample('M', how='mean')
 # Progress; Need to resample both counts and prices to the monthly
 # level. But first want to merge in actual data so we don't average the
@@ -39,7 +41,9 @@ ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
 ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
 # Having now recombined the hourly and non-hourly quoted price pieces,
 # continue merging in characteristics
-ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
+ad_level = pandas.merge(ad_level, msa, on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
+msa_features = msa_features_panel.groupby(['census_msa_code','msaname']).mean() # Take mean over time of MSA features
+msa_features.reset_index(inplace=True)
 ad_level = pandas.merge(ad_level, msa_features, how='left')
 ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='left')
 ad_level = ad_level.drop_duplicates('ad_id')
@@ -55,9 +59,9 @@ ad_level['year'] = ad_level['date'].apply(lambda x: int(x.strftime('%Y')))
 
 
 
-#ad_level = pandas.merge(ad_level, msa_month_features, how='left')
+#ad_level = pandas.merge(ad_level, msa_features_panel, how='left')
 month_msa_aggregate_prices = ad_level.groupby(['month','year','census_msa_code'])['price_per_hour'].aggregate({'ad_median':np.median, 'ad_count':len,'ad_mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p90':lambda x: np.percentile(x, q=90)})
-month_msa_aggregates_with_features = pandas.merge(month_msa_aggregate_prices, msa_month_features, left_index=True, right_on=['month','year','census_msa_code'])
+month_msa_aggregates_with_features = pandas.merge(month_msa_aggregate_prices, msa_features_panel, left_index=True, right_on=['month','year','census_msa_code'])
 month_msa_aggregate_prices.to_csv('ad_prices_msa_month.csv', index=False)
 # Code below here creates a pandas "Panel" object
 j=month_msa_aggregates_with_features.copy()
