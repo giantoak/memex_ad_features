@@ -54,10 +54,12 @@ zero_price.csv: zero_prices.py all_merged.csv
 	#These files are also created: ad_prices.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv
 	# Zero price analysis depends on rate information 
 	python zero_prices.py
+ad_prices_msa.csv: zero_prices.py all_merged.csv
+	python zero_prices.py
 zero_price_msa_aggregates.csv: zero_prices.py all_merged.csv
 	# Zero price analysis depends on rate information 
 	python zero_prices.py
-export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv
+export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv ad_prices_msa_micro.csv
 	zip all_merged.zip all_merged.csv
 	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoak.memex/sex_ad_analysis/
 	zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv

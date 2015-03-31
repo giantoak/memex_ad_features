@@ -125,6 +125,8 @@ mp_aggregates = zero_price.groupby('census_msa_code')['marginal_price'].aggregat
 msa_aggregates=pandas.merge(msa_aggregates, mp_aggregates, left_on='census_msa_code', right_index=True)
 msa_aggregates.to_csv('zero_price_msa_aggregates.csv', index=False)
 
+zp_individual = zero_price[zero_price['counts'] == 2].copy()
+
 zero_price = zero_price[zero_price.zero_price > 0]
 zero_price = zero_price[zero_price.zero_price < 200] # very few are above 200
 zero_price.to_csv('zero_price_msa_micro.csv', index=False)
@@ -152,11 +154,12 @@ print('There are %s prices from ads once we merge in MSAs' % ad_level.shape[0])
 #ad_level = pandas.merge(ad_level, msa, left_index=True, right_on='ad_id', how='left') # Note: we drop lots of ads with price  but not MSA
 ad_level = pandas.merge(ad_level, msa_features, how='left')
 print('There are %s prices from ads once we merge in MSA features' % ad_level.shape[0])
+ad_level['platform'] = ad_level['ad_id'].apply(lambda x: x.split(':')[0])
 ad_level = pandas.merge(counts, ad_level, left_index=True, right_on='ad_id',how='right')
 print('There are %s prices from ads once we merge in price counts per ad' % ad_level.shape[0])
+ad_level.to_csv('ad_level_prices.csv', index=False)
 ad_level = ad_level[ad_level['counts'] == 2]
 print('There are %s prices from ads once we restrict to those with exactly 2 prices' % ad_level.shape[0])
-ad_level['platform'] = ad_level['ad_id'].apply(lambda x: x.split(':')[0])
 ad_level = ad_level.drop_duplicates('ad_id')
 print('There are %s prices from ads once we drop duplicates on ad_id' % ad_level.shape[0])
 
@@ -170,4 +173,5 @@ ad_aggregate_prices.to_csv('ad_prices_msa.csv', index=False)
 
 #ad_level = pandas.merge(ad_level, msa_aggregates[['zero_price_count','zp_mean','zp_p50','zp_p10','zp_p25','zp_p75','zp_p90','mp_mean','mp_p50','mp_p10','mp_p25','mp_p75','mp_p90', 'census_msa_code']], how='left')
 ad_level = pandas.merge(ad_level, ad_aggregate_prices, how='left')
+ad_level = pandas.merge(ad_level, zp_individual[['zero_price','marginal_price','ad_id']], on='ad_id', how='left')
 ad_level.to_csv('ad_prices_msa_micro.csv',index=False)
