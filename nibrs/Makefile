@@ -54,7 +54,7 @@ zero_price.csv: zero_prices.py all_merged.csv
 	#These files are also created: ad_prices.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv
 	# Zero price analysis depends on rate information 
 	python zero_prices.py
-ad_prices_msa.csv: zero_prices.py all_merged.csv
+ad_prices_msa.csv ad_prices_msa_micro.csv: zero_prices.py all_merged.csv
 	python zero_prices.py
 zero_price_msa_aggregates.csv: zero_prices.py all_merged.csv
 	# Zero price analysis depends on rate information 
