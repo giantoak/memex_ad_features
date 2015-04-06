@@ -37,6 +37,7 @@ if False:
     data = pandas.read_csv('forGiantOak3/rates.tsv.gz', sep='\t', compression='gzip', header=None)
 else:
     data = pandas.read_csv('forGiantOak3/rates.tsv', sep='\t', header=None)
+
 print('There are %s observations' % data.shape[0]) # about 2.1M
 data.rename(columns={0:'ad_id', 1:'rate'}, inplace=True)
 data['time_str'] = data['rate'].apply(lambda x: x.split(',')[1])
@@ -68,6 +69,15 @@ data['price'] = data['price'].astype('int')
 
 data['price_per_hour'] = 60*data['price']/data['minutes']
 # Begin merging information from census
+if False:
+    sexad = pandas.read_csv('forGiantOak3/isssexad.tsv.gz', sep='\t', header=None,compression='gzip')
+    sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
+else:
+    sexad = pandas.read_csv('forGiantOak3/isssexad.tsv', sep='\t', header=None)
+    sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
+data = pandas.merge(data, sexad, on='ad_id', how='left')
+data = data[data['sex_ad'] == 1] # remove non- sex ads
+print('There are %s prices after dropping Non-sex ad prices' % data.shape[0])
 
 data.to_csv('normalized_prices.csv', index=False)
 
