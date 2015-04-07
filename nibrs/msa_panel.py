@@ -61,7 +61,9 @@ ad_level['year'] = ad_level['date'].apply(lambda x: int(x.strftime('%Y')))
 
 #ad_level = pandas.merge(ad_level, msa_features_panel, how='left')
 month_msa_aggregate_prices = ad_level.groupby(['month','year','census_msa_code'])['price_per_hour'].aggregate({'ad_median':np.median, 'ad_count':len,'ad_mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p90':lambda x: np.percentile(x, q=90)})
+month_msa_counts = pandas.DataFrame(ad_level.groupby(['month','year','census_msa_code'])['count'].size(), columns=['raw_counts'])
 month_msa_aggregates_with_features = pandas.merge(month_msa_aggregate_prices, msa_features_panel, left_index=True, right_on=['month','year','census_msa_code'])
+month_msa_aggregates_with_features = pandas.merge(month_msa_aggregates_with_features, month_msa_counts, left_on=['month','year','census_msa_code'], right_index=True)
 month_msa_aggregate_prices.to_csv('ad_prices_msa_month.csv', index=False)
 # Code below here creates a pandas "Panel" object
 j=month_msa_aggregates_with_features.copy()
@@ -83,4 +85,11 @@ for col in diff_cols:
     panel['d_%s_pos'% col] = panel['d_' + col] > 0 # Generate dummies for positive and negative changes
 # Use panel functionality to take first differences
 
-panel.to_frame().to_csv('monthly_panel.csv')
+
+
+f = panel.to_frame()
+f.to_csv('monthly_panel.csv')
+f['MonthDate']=f['dp'].apply(lambda x: str(x)+'-01 00:00:00')
+f['counts'] = f['ad_count']
+f['region'] = f['msaname']
+f[['region','MonthDate','counts','ad_p10','ad_p50','ad_mean','raw_counts']].to_csv('counts.csv', index=False)

@@ -96,3 +96,10 @@ micro_analysis: ad_prices_msa_micro.csv individual_level_analysis.r
 
 metro_level_wages.csv: acs_2013_ipums.r
 	R --vanilla < acs_2013_wages.r
+
+tempus: all_merged.csv msa_panel.py zero_prices.py
+	# Produces counts.csv and region_features.csv,
+	# ad_prices_msa_month.csv, and monthly_panel.csv. Also need to run
+	# zero_prices to clean up and remove 
+	python msa_panel.py
+	python zero_prices.py
