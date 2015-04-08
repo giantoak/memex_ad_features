@@ -76,10 +76,9 @@ else:
     sexad = pandas.read_csv('forGiantOak3/isssexad.tsv', sep='\t', header=None)
     sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
 data = pandas.merge(data, sexad, on='ad_id', how='left')
+data.to_csv('normalized_prices.csv', index=False)
 data = data[data['sex_ad'] == 1] # remove non- sex ads
 print('There are %s prices after dropping Non-sex ad prices' % data.shape[0])
-
-data.to_csv('normalized_prices.csv', index=False)
 
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
 print('The %s extracted prices pertain to %s observations' % (data.shape[0], counts.shape[0]))
@@ -123,8 +122,15 @@ doubles = pandas.merge(doubles, msa) # Add census MSA code to the fixed price in
 msa_features_panel = pandas.read_csv('all_merged.csv')
 msa_features = msa_features_panel.groupby(['census_msa_code','msaname']).mean() # Take mean over time of MSA features
 msa_features.reset_index(inplace=True)
-#msa_features = msa_features_panel[(msa_features_panel['month'] == 12) & (msa_features_panel['year']==2013)]
-#msa_features = msa_features_panel.xs(12, level='month').xs(2013, level='year') # Grab a single year
+
+# Now make an export at the MSA level for Tempus
+tempus_features = msa_features.copy()
+remove_columns = ['month','year','male_p25','male_p75','male_p50','male_sum.wght','female_p25','female_p75','female_p50','female_sum.wght',]
+for col in remove_columns:
+    del tempus_features[col]
+tempus_features.to_csv('region_features.csv',index=False)
+# save off an msa-level features data set for R as well
+
 zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')
 print('There are %s ads that merge in with MSAs, representing %s of %s MSAs' % (zero_price.shape[0], zero_price.census_msa_code.value_counts().shape[0], doubles.census_msa_code.value_counts().shape[0]))
 
