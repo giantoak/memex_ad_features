@@ -59,9 +59,17 @@ ad_level['year'] = ad_level['date'].apply(lambda x: int(x.strftime('%Y')))
 
 
 
+# Compute month_msa_counts without extraction
+print('Merging raw MSA and Date info for raw counts')
+raw_ads = pandas.merge(msa,ts)
+raw_ads = raw_ads[raw_ads['date_str'] != '\N']
+raw_ads['date'] = raw_ads['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S' ))
+raw_ads['month'] = raw_ads['date'].apply(lambda x: int(x.strftime('%m')))
+raw_ads['year'] = raw_ads['date'].apply(lambda x: int(x.strftime('%Y')))
+month_msa_counts = pandas.DataFrame(raw_ads.groupby(['month','year','census_msa_code']).size(), columns=['raw_counts'])
+
 #ad_level = pandas.merge(ad_level, msa_features_panel, how='left')
 month_msa_aggregate_prices = ad_level.groupby(['month','year','census_msa_code'])['price_per_hour'].aggregate({'ad_median':np.median, 'ad_count':len,'ad_mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p90':lambda x: np.percentile(x, q=90)})
-month_msa_counts = pandas.DataFrame(ad_level.groupby(['month','year','census_msa_code'])['count'].size(), columns=['raw_counts'])
 month_msa_aggregates_with_features = pandas.merge(month_msa_aggregate_prices, msa_features_panel, left_index=True, right_on=['month','year','census_msa_code'])
 month_msa_aggregates_with_features = pandas.merge(month_msa_aggregates_with_features, month_msa_counts, left_on=['month','year','census_msa_code'], right_index=True)
 month_msa_aggregate_prices.to_csv('ad_prices_msa_month.csv', index=False)
@@ -89,7 +97,7 @@ for col in diff_cols:
 
 f = panel.to_frame()
 f.to_csv('monthly_panel.csv')
-f['MonthDate']=f['dp'].apply(lambda x: str(x)+'-01 00:00:00')
-f['counts'] = f['ad_count']
-f['region'] = f['msaname']
-f[['region','MonthDate','counts','ad_p10','ad_p50','ad_mean','raw_counts']].to_csv('counts.csv', index=False)
+j['MonthDate']=j['dp'].apply(lambda x: str(x)+'-01 00:00:00')
+j['counts'] = j['ad_count']
+j['region'] = j['msaname']
+j[['region','MonthDate','counts','ad_p10','ad_p50','ad_mean','raw_counts']].to_csv('counts.csv', index=False)
