@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 """
 This script loads the initial price data that Sam loaded from DeepDive on about 12/25/2014
@@ -36,7 +37,7 @@ def census_lookup(geo_id, table_value, verbose=False):
 if False:
     data = pandas.read_csv('forGiantOak3/rates.tsv.gz', sep='\t', compression='gzip', header=None)
 else:
-    data = pandas.read_csv('forGiantOak3/rates.tsv', sep='\t', header=None)
+    data = pandas.read_csv('forGiantOak3/rates2.tsv', sep='\t', header=None)
 
 print('There are %s observations' % data.shape[0]) # about 2.1M
 data.rename(columns={0:'ad_id', 1:'rate'}, inplace=True)
@@ -59,8 +60,13 @@ data['price'] = data['price'].apply(lambda x: x.replace('kisses',''))
 data['price'] = data['price'].apply(lambda x: x.replace('kiss',''))
 data['price'] = data['price'].apply(lambda x: x.replace('dollars',''))
 data['price'] = data['price'].apply(lambda x: x.replace('dollar',''))
+data['price'] = data['price'].apply(lambda x: x.replace('dlr',''))
 data = data[data['price'].apply(lambda x: 'euro' not in x)]
 data = data[data['price'].apply(lambda x: 'eur' not in x)]
+data = data[data['price'].apply(lambda x: 'eu' not in x)]
+data = data[data['price'].apply(lambda x: 's' not in x)]
+data = data[data['price'].apply(lambda x: '¥' not in x)]
+data = data[data['price'].apply(lambda x: '\xef\xbc\x90' not in x)]
 data = data[data['price'].apply(lambda x: 'aud' not in x)]
 print('There are %s prices after dropping foreign prices' % data.shape[0])
 data['price'] = data['price'].astype('int')
@@ -125,10 +131,17 @@ msa_features.reset_index(inplace=True)
 
 # Now make an export at the MSA level for Tempus
 tempus_features = msa_features.copy()
-remove_columns = ['month','year','male_p25','male_p75','male_p50','male_sum.wght','female_p25','female_p75','female_p50','female_sum.wght',]
+tempus_features['region'] = tempus_features['msaname']
+remove_columns = ['month','year','male_p25','male_p75','male_p50','male_sum.wght','female_p25','female_p75','female_p50','female_sum.wght','msaname']
 for col in remove_columns:
     del tempus_features[col]
+
+counts_output = pandas.read_csv('counts.csv') # Here we make sure that both counts and region.features have matching sets of MSAs
+tempus_features = tempus_features[(~tempus_features['population'].isnull()) & (~tempus_features['unemployment'].isnull()) & (~tempus_features['female_wage_p50'].isnull()) & (~tempus_features['male_wage_p50'].isnull())]
+tempus_features = tempus_features[tempus_features['region'].isin(list(set(counts_output['region'])))]
+counts_output = counts_output[counts_output['region'].isin(list(set(tempus_features['region'])))]
 tempus_features.to_csv('region_features.csv',index=False)
+counts_output.to_csv('counts.csv',index=False)
 # save off an msa-level features data set for R as well
 
 zero_price = pandas.merge(doubles, msa_features, left_on='census_msa_code', right_on='census_msa_code')

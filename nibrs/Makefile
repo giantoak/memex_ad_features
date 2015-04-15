@@ -27,6 +27,8 @@ download:
 	unzip 2013_qtrly_singlefile.zip
 	unzip 2012_qtrly_singlefile.zip
 	unzip 2011_qtrly_singlefile.zip
+	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
+	gunzip forGiantOak3/rates2.tsv.gz
 female_violence.csv violence.csv prostitution.csv: pd.py crosswalk_tract_msa.csv
 	# The female violence tabulations come from reading UCR data from
 	# ICPSR as well as a crosswalk file from Greg DeAngelo

@@ -14,7 +14,9 @@ if False:
 else:
     msa = pandas.read_csv('forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
     ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster','date_str'])
+print('merging prices and cluster/time info')
 data = pandas.merge(data,ts)
+print('Parsing info')
 data= data[data['date_str'] != '\N']
 data['date'] = data['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S' ))
 data.index = pandas.DatetimeIndex(data['date']) 
@@ -72,7 +74,7 @@ month_msa_counts = pandas.DataFrame(raw_ads.groupby(['month','year','census_msa_
 month_msa_aggregate_prices = ad_level.groupby(['month','year','census_msa_code'])['price_per_hour'].aggregate({'ad_median':np.median, 'ad_count':len,'ad_mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p90':lambda x: np.percentile(x, q=90)})
 month_msa_aggregates_with_features = pandas.merge(month_msa_aggregate_prices, msa_features_panel, left_index=True, right_on=['month','year','census_msa_code'])
 month_msa_aggregates_with_features = pandas.merge(month_msa_aggregates_with_features, month_msa_counts, left_on=['month','year','census_msa_code'], right_index=True)
-month_msa_aggregate_prices.to_csv('ad_prices_msa_month.csv', index=False)
+month_msa_aggregate_prices.to_csv('ad_prices_msa_month.csv')
 # Code below here creates a pandas "Panel" object
 j=month_msa_aggregates_with_features.copy()
 j.reset_index(inplace=True)    
