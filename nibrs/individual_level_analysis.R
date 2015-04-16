@@ -38,10 +38,10 @@ xlist<-c(
 'lavg_commute + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
 'lavg_commute + unemployment + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
 'lavg_commute + lmale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
-'lavg_commute + lfemale_wage_p25 + lfemale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
-'lavg_commute + lfemale_wage_p25*lfemale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
-'lfemale_wage_p25*lfemale_epop',
-'lfemale_wage_p25*lfemale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita'
+'lavg_commute + lfemale_wage_p50 + lfemale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
+'lavg_commute + lfemale_wage_p50*lfemale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita',
+'lfemale_wage_p50*lfemale_epop',
+'lfemale_wage_p50*lfemale_epop + lrape_per_capita + lproperty_crime_per_capita + lle_per_capita'
 )
 ylist<-c('lmarginal_price', 'lzero_price', 'lprice_per_hour')
 for (y in ylist){
