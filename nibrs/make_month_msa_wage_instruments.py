@@ -92,6 +92,6 @@ for i in indices:
 out = merged[output_cols]
 out = out.drop_duplicates(['sex','month','year','area_fips'])
 out.sort(['sex','area_fips','year','month'], inplace=True)
-out.to_csv('female_opportunity_index.csv', index=False)
+out.to_csv('month_msa_wage_instruments.csv', index=False)
 
 column_index = out.columns.tolist()

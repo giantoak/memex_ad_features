@@ -106,7 +106,7 @@ computes<-function(x, keep.cols=c('sex', 'naics2', 'metarea')){
 
 cat('doing ddply\n')
 b<-ddply(.data=a, .variables=.(naics2, sex, metarea), .fun=computes)
-write.csv(b, file='metro_level.csv', row.names=FALSE)
+write.csv(b, file='census_2000_msa_industry_gender_wage.csv', row.names=FALSE)
 cat('ddply local finished\n')
 
 #cat('doing ddply state level\n')
@@ -114,11 +114,11 @@ cat('ddply local finished\n')
 #states$puma<-NULL # Remove the arbitrary PUMA column
 #write.csv(states, file='state_level.csv', row.names=FALSE)
 
-cat('doing ddply industry level\n')
-industry<-ddply(.data=a, .variables=.(naics2, sex), .fun=computes)
-industry$metarea<-NULL # Remove the arbitrary metro area column
-#industry$statefip<-NULL # Remove the arbitrary state column
-write.csv(industry, file='industry_level.csv', row.names=FALSE)
+#cat('doing ddply industry level\n')
+#industry<-ddply(.data=a, .variables=.(naics2, sex), .fun=computes)
+#industry$metarea<-NULL # Remove the arbitrary metro area column
+##industry$statefip<-NULL # Remove the arbitrary state column
+#write.csv(industry, file='industry_level.csv', row.names=FALSE)
 #cat('creating counts\n')
 #counts<-as.data.frame(table(a$naics2, a$puma, a$statefip))
 #names(counts)<-c('naics2','puma','statefip','Freq')

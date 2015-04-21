@@ -1,14 +1,14 @@
-download: ucr_lemas_msa.csv doc-provider-timestamp.tsv
-	# This code downloads all data necessary
+#download: ucr_lemas_msa.csv doc-provider-timestamp.tsv
+	## This code downloads all data necessary
 	
 
+### Download Related targets
 
 35036-0001-Data.txt:
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
 	gunzip 35036-0001-Data.txt.gz
-
 
 ICPSR_34603/DS0001/34603-0001-Data.txt:
 	# Download one of the raw ICPSR extract files for NIBRS
@@ -33,7 +33,6 @@ crosswalk_tract_msa.csv:
 	unzip 2012_qtrly_singlefile.zip
 	unzip 2011_qtrly_singlefile.zip
 
-
 ucr_lemas_msa.csv:
 	# Get UCR data from Greg
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
@@ -44,6 +43,10 @@ doc-provider-timestamp.tsv:
 	tar xvf forGiantOak3.tgz
 	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
 	gunzip forGiantOak3/rates2.tsv.gz
+
+cols_17.txt:
+	# Get a hand-curated list of the columns of the usa_00017.dat file
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_17.txt
 
 usa_00017.dat:
 	# IPUMS 2000 census and QCEW are used to create the wage instruments:
@@ -56,26 +59,35 @@ usa_00018.dat:
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
 	gunzip usa_00018.dat.gz
 
+cols_18.txt:
+	# Get a hand-curated list of the columns of the usa_00018.dat file
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_18.txt
+
+#### End Download related targets
+
+#### Begin intermediate data targets
+
 female_violence_nibrs.csv: make_nibrs.py crosswalk_tract_msa.csv ICPSR_34603/DS0001/34603-0001-Data.txt 35036-0001-Data.txt
 	# The female violence tabulations come from reading NIBRS data from
 	# ICPSR as well as a crosswalk file from Greg DeAngelo
 	python make_nibrs.py
 
-female_opportunity_index.csv: qcew.py metro_level.csv msa_crosswalk.csv
+month_msa_wage_instruments.csv: make_month_msa_wage_instruments.py census_2000_msa_industry_gender_wage.csv msa_crosswalk.csv
 	# This opportunity index is based on 2000 census data and computed
 	# based on QCEW data
-	python qcew.py
-	#./qcew_download.sh
+	python make_month_msa_wage_instruments.py
 
 msa_crosswalk.csv: msa_crosswalk.py
 	python msa_crosswalk.py
 	# Hand recode counties bewteen Census 2000 in IPUMS and 2013 FIPS
 	# used by QCEW
-metro_level.csv: census_2000_msa.r
-	R --vanilla < census_2000_msa.r
-	# This command is untested
+	# NOTE: this depends on 'ipums_msa.txt' and 'qcew_msa.txt' which
+	# are in the git repository and don't need to be downloaded
 
-all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv female_opportunity_index.csv analytical_report_acs.json metro_level_wages.csv
+census_2000_msa_industry_gender_wage.csv: make_census_2000_msa_industry_gender_wage.r cols_17.txt usa_00017.dat
+	R --vanilla < make_census_2000_msa_industry_gender_wage.r
+
+all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json metro_level_wages.csv
 	python geotag_export.py
 
 zero_price.csv: zero_prices.py all_merged.csv
