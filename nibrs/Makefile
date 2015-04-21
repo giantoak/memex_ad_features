@@ -1,32 +1,29 @@
-download:
+download: ucr_lemas_msa.csv doc-provider-timestamp.tsv
 	# This code downloads all data necessary
 	
-	# Get data from the Deep Dive data drop, and extract it
-	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/forGiantOak3.tgz .
-	tar xvf forGiantOak3.tgz
-	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
-	gunzip forGiantOak3/rates2.tsv.gz
 
-	# Get data from IPUMS extract of 2013 ACS
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
-	gunzip usa_00018.dat.gz
 
+35036-0001-Data.txt:
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
 	gunzip 35036-0001-Data.txt.gz
-	mkdir -p ICPSR_04634/
-	mkdir -p ICPSR_04634/DS0001/
+
+
+ICPSR_34603/DS0001/34603-0001-Data.txt:
+	# Download one of the raw ICPSR extract files for NIBRS
+	# computations
+	mkdir -p ICPSR_34603/
+	mkdir -p ICPSR_34603/DS0001/
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
-	mv 34603-0001-Data.txt.gz ICPSR_04634/DS0001/
-	gunzip ICPSR_04634/DS0001/34603-0001-Data.txt.gz 
+	mv 34603-0001-Data.txt.gz ICPSR_34603/DS0001/
+	gunzip ICPSR_34603/DS0001/34603-0001-Data.txt.gz 
 
-	# IPUMS 2000 census and QCEW are used to create the wage instruments:
-	# Get data from 2000 census, from IPUMS extract
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
-	gunzip usa_00017.dat.gz
+crosswalk_tract_msa.csv:
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/crosswalk_tract_msa.csv
 
-	# Work on QCEW downloads
+2011.q1-q4.singlefile.csv: 
+	## Work on QCEW downloads
 	wget http://www.bls.gov/cew/data/files/2014/csv/2014_qtrly_singlefile.zip
 	wget http://www.bls.gov/cew/data/files/2013/csv/2013_qtrly_singlefile.zip
 	wget http://www.bls.gov/cew/data/files/2012/csv/2012_qtrly_singlefile.zip
@@ -36,13 +33,33 @@ download:
 	unzip 2012_qtrly_singlefile.zip
 	unzip 2011_qtrly_singlefile.zip
 
+
+ucr_lemas_msa.csv:
 	# Get UCR data from Greg
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
 
-female_violence.csv violence.csv prostitution.csv: pd.py crosswalk_tract_msa.csv
+doc-provider-timestamp.tsv:
+	# Get data from the Deep Dive data drop, and extract it
+	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/forGiantOak3.tgz .
+	tar xvf forGiantOak3.tgz
+	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
+	gunzip forGiantOak3/rates2.tsv.gz
+
+usa_00017.dat:
+	# IPUMS 2000 census and QCEW are used to create the wage instruments:
+	# Get data from 2000 census, from IPUMS extract
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
+	gunzip usa_00017.dat.gz
+
+usa_00018.dat: 
+	# Get data from IPUMS extract of 2013 ACS
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
+	gunzip usa_00018.dat.gz
+
+female_violence_nibrs.csv: make_nibrs.py crosswalk_tract_msa.csv ICPSR_34603/DS0001/34603-0001-Data.txt 35036-0001-Data.txt
 	# The female violence tabulations come from reading NIBRS data from
 	# ICPSR as well as a crosswalk file from Greg DeAngelo
-	python pd.py
+	python make_nibrs.py
 
 female_opportunity_index.csv: qcew.py metro_level.csv msa_crosswalk.csv
 	# This opportunity index is based on 2000 census data and computed
@@ -58,7 +75,7 @@ metro_level.csv: census_2000_msa.r
 	R --vanilla < census_2000_msa.r
 	# This command is untested
 
-all_merged.csv: geotag_export.py violence.csv female_violence.csv female_opportunity_index.csv analytical_report_acs.json metro_level_wages.csv
+all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv female_opportunity_index.csv analytical_report_acs.json metro_level_wages.csv
 	python geotag_export.py
 
 zero_price.csv: zero_prices.py all_merged.csv
@@ -117,3 +134,19 @@ tempus: all_merged.csv msa_panel.py zero_prices.py
 	# zero_prices to clean up and remove 
 	python msa_panel.py
 	python zero_prices.py
+
+### Below here are simultaneously created files. The approach to these is
+# to make each of these dependent on the file that actually has a rule defined above
+2012.q1-q4.singlefile.csv: 2011.q1-q4.singlefile.csv
+2013.q1-q4.singlefile.csv: 2011.q1-q4.singlefile.csv
+2014.q1-q3.singlefile.csv: 2011.q1-q4.singlefile.csv
+email_addresses.tsv: doc-provider-timestamp.tsv    
+ids_to_urls.tsv: doc-provider-timestamp.tsv   
+links.tsv: doc-provider-timestamp.tsv  
+msa_locations.tsv: doc-provider-timestamp.tsv 
+phone_numbers.tsv: doc-provider-timestamp.tsv 
+rates2.tsv: doc-provider-timestamp.tsv 
+rates.tsv: doc-provider-timestamp.tsv 
+violence_nibrs.csv: female_violence_nibrs.csv
+prostitution_nibrs.csv: female_violence_nibrs.csv
+prostitution.csv: female_violence.csv

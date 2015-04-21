@@ -817,8 +817,6 @@ State_Codes=(
         )
 state_lookup = {i[0]:i[1] for i in State_Codes}
 
-m=pandas.read_fwf('test.txt', colspecs=locations, names=cols)
-#m=pandas.read_fwf('', colspecs=locations, names=cols)
 column_locations = {i[1]:i[0] for i in zip(locations, cols)}
 keep_list = [
         #'STATE', # Numeric code for state, recoded as above
@@ -909,12 +907,6 @@ cross_walk['codes'] = cross_walk.MSA.apply(lambda x: '31000US%s' % str(int(x)))
 m = pandas.merge( m, cross_walk[['ORI9','codes']], left_on='ORI', right_on='ORI9') # Merge acts onto MSAs by ORI code
 #
 b=m.groupby('codes')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
-b['violence'].to_csv('violence.csv')
-b['female_violence'].to_csv('female_violence.csv')
-b['prostitution'].to_csv('prostitution.csv')
-#out_fv = pandas.merge(b['female_violence'], cross_walk, left_index=True, right_on='codes', how='left')
-#out_fv.to_csv('female_violence.csv', index=False)
-#out_v = pandas.merge(b['violence'], cross_walk, left_index=True, right_on='codes')
-#out_v.to_csv('violence.csv', index=False)
-#out_p = pandas.merge(b['prostitution'], cross_walk, left_index=True, right_on='codes')
-#out_p.to_csv('prostitution.csv', index=False)
+b['violence'].to_csv('violence_nibrs.csv')
+b['female_violence'].to_csv('female_violence_nibrs.csv')
+b['prostitution'].to_csv('prostitution_nibrs.csv')
