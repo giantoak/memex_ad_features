@@ -1,23 +1,31 @@
 download:
 	# This code downloads all data necessary
-	# Get data from the Deep Dive data drop
+	
+	# Get data from the Deep Dive data drop, and extract it
 	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/forGiantOak3.tgz .
 	tar xvf forGiantOak3.tgz
-	# Get data from 2000 census, from IPUMS extract
-	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
-	gunzip usa_00017.dat.gz
+	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
+	gunzip forGiantOak3/rates2.tsv.gz
+
 	# Get data from IPUMS extract of 2013 ACS
-	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
 	gunzip usa_00018.dat.gz
+
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
-	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
 	gunzip 35036-0001-Data.txt.gz
 	mkdir -p ICPSR_04634/
 	mkdir -p ICPSR_04634/DS0001/
-	wget http://giantoak.memex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
 	mv 34603-0001-Data.txt.gz ICPSR_04634/DS0001/
 	gunzip ICPSR_04634/DS0001/34603-0001-Data.txt.gz 
+
+	# IPUMS 2000 census and QCEW are used to create the wage instruments:
+	# Get data from 2000 census, from IPUMS extract
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
+	gunzip usa_00017.dat.gz
+
 	# Work on QCEW downloads
 	wget http://www.bls.gov/cew/data/files/2014/csv/2014_qtrly_singlefile.zip
 	wget http://www.bls.gov/cew/data/files/2013/csv/2013_qtrly_singlefile.zip
@@ -27,10 +35,12 @@ download:
 	unzip 2013_qtrly_singlefile.zip
 	unzip 2012_qtrly_singlefile.zip
 	unzip 2011_qtrly_singlefile.zip
-	s3cmd -c ~/mdata.cfg get s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
-	gunzip forGiantOak3/rates2.tsv.gz
+
+	# Get UCR data from Greg
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
+
 female_violence.csv violence.csv prostitution.csv: pd.py crosswalk_tract_msa.csv
-	# The female violence tabulations come from reading UCR data from
+	# The female violence tabulations come from reading NIBRS data from
 	# ICPSR as well as a crosswalk file from Greg DeAngelo
 	python pd.py
 
@@ -52,7 +62,6 @@ all_merged.csv: geotag_export.py violence.csv female_violence.csv female_opportu
 	python geotag_export.py
 
 zero_price.csv: zero_prices.py all_merged.csv
-#zero_price.csv: forGiantOak/rates.tsv.gz forGiantOak/msa_locations.tsv.gz zero_prices.py all_merged.csv
 	#These files are also created: ad_prices.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv
 	# Zero price analysis depends on rate information 
 	python zero_prices.py
@@ -65,6 +74,7 @@ export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_coun
 	zip all_merged.zip all_merged.csv
 	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
 	zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
+
 	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
 	zip zero_price_msa_micro.zip zero_price_msa_micro.csv
 	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
