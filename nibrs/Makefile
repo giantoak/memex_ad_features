@@ -87,6 +87,16 @@ msa_crosswalk.csv: msa_crosswalk.py
 census_2000_msa_industry_gender_wage.csv: make_census_2000_msa_industry_gender_wage.r cols_17.txt usa_00017.dat
 	R --vanilla < make_census_2000_msa_industry_gender_wage.r
 
+lemas.csv: make_lemas.py ucr_lemas_msa.csv
+	# Take ucr_lemas_msa data from Greg, keep only the lemas information
+	# that happens once in the sample, and save as lemas.csv
+	python make_lemas.py
+
+ucr.csv: make_ucr.py ucr_lemas_msa.csv
+	# Take ucr_lemas_msa data from Greg, keep only the ucr information
+	# that happens annually, reshape to the msa-yera level, and save as ucr.csv
+	python make_lemas.py
+
 all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json metro_level_wages.csv
 	python geotag_export.py
 
