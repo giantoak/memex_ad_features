@@ -63,21 +63,21 @@ zero_price_msa_aggregates.csv: zero_prices.py all_merged.csv
 	python zero_prices.py
 export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv ad_prices_msa_micro.csv
 	zip all_merged.zip all_merged.csv
-	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
 	zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
-	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
 	zip zero_price_msa_micro.zip zero_price_msa_micro.csv
-	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_micro.zip s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
 	zip zero_price_msa_aggregates.zip zero_price_msa_aggregates.csv
-	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_aggregates.zip s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_aggregates.zip s3://giantoakmemex/sex_ad_analysis/
 	zip price_extraction_counts.zip price_extraction_counts.csv
-	s3cmd -c ~/jeffgo.cfg -P put price_extraction_counts.zip s3://giantoak.memex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put price_extraction_counts.zip s3://giantoakmemex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoakmemex/sex_ad_analysis/
 	zip monthly_panel.zip monthly_panel.csv
-	s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoak.memex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put metro_level_wages.csv s3://giantoak.memex/sex_ad_analysis/ # The metro level wage distribution by gender
-	s3cmd -c ~/jeffgo.cfg -P put counts.csv s3://giantoak.memex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put region_features.csv s3://giantoak.memex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoakmemex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put metro_level_wages.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
+	s3cmd -c ~/jeffgo.cfg -P put counts.csv s3://giantoakmemex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put region_features.csv s3://giantoakmemex/sex_ad_analysis/
 
 monthly_panel.csv: msa_panel.py all_merged.csv
 	python msa_panel.py
