@@ -78,6 +78,6 @@ computes<-function(x, keep.cols=c('sex',  'met2013')){
 
 cat('doing ddply\n')
 b<-ddply(.data=a, .variables=.(sex, met2013), .fun=computes)
-write.csv(b, file='metro_level_wages.csv', row.names=FALSE)
+write.csv(b, file='acs_2013_msa_gender_wage.csv', row.names=FALSE)
 cat('ddply local finished\n')
 

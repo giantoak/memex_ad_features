@@ -1,5 +1,8 @@
 ### Download Related targets
 
+### Data from Tempus export
+acs_2015_03_18.csv:
+	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/acs_2015_03_18.csv
 ### Data from Greg
 crosswalk_tract_msa.csv:
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/crosswalk_tract_msa.csv
@@ -14,14 +17,14 @@ doc-provider-timestamp.tsv:
 	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/forGiantOak3.tgz .
 	tar xvf forGiantOak3.tgz
 	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
-	gunzip forGiantOak3/rates2.tsv.gz
+	gunzip -f forGiantOak3/rates2.tsv.gz
 ismassageparlorad.tsv:
 	# Get massage parlor extraction from the Deep Dive data drop, and extract it
 	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/ismassageparlorad.tsv.gz
-	gunzip ismassageparlorad.tsv.gz
+	gunzip -f ismassageparlorad.tsv.gz
 	mv ismassageparlorad.tsv forGiantOak3/
 
-issexad.tsv:
+isssexad.tsv:
 	# Get the sex ad flag from deep dive
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
 	mv isssexad.tsv forGiantOak3/
@@ -35,12 +38,12 @@ usa_00017.dat:
 	# IPUMS 2000 census and QCEW are used to create the wage instruments:
 	# Get data from 2000 census, from IPUMS extract
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
-	gunzip usa_00017.dat.gz
+	gunzip -f usa_00017.dat.gz
 
 usa_00018.dat: 
 	# Get data from IPUMS extract of 2013 ACS
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
-	gunzip usa_00018.dat.gz
+	gunzip -f usa_00018.dat.gz
 
 cols_18.txt:
 	# Get a hand-curated list of the columns of the usa_00018.dat file
@@ -50,7 +53,7 @@ cols_18.txt:
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
-	gunzip 35036-0001-Data.txt.gz
+	gunzip -f 35036-0001-Data.txt.gz
 
 ICPSR_34603/DS0001/34603-0001-Data.txt:
 	# Download one of the raw ICPSR extract files for NIBRS
@@ -59,7 +62,7 @@ ICPSR_34603/DS0001/34603-0001-Data.txt:
 	mkdir -p ICPSR_34603/DS0001/
 	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
 	mv 34603-0001-Data.txt.gz ICPSR_34603/DS0001/
-	gunzip ICPSR_34603/DS0001/34603-0001-Data.txt.gz 
+	gunzip -f ICPSR_34603/DS0001/34603-0001-Data.txt.gz 
 
 2011.q1-q4.singlefile.csv: 
 	## Work on QCEW downloads
@@ -106,10 +109,11 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 	# that happens annually, reshape to the msa-yera level, and save as ucr.csv
 	python make_lemas.py
 
-#all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json metro_level_wages.csv
+#all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json acs_2013_msa_gender_wage.csv
 	#python geotag_export.py
 
 ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
+	python make_ad_prices.py
 #zero_price.csv: zero_prices.py all_merged.csv issexad.tsv rates2.tsv
 	##These files are also created: ad_prices.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv
 	## Zero price analysis depends on rate information 
@@ -142,7 +146,7 @@ export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_coun
 	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoakmemex/sex_ad_analysis/
 	zip monthly_panel.zip monthly_panel.csv
 	s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoakmemex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put metro_level_wages.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
+	s3cmd -c ~/jeffgo.cfg -P put acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
 	s3cmd -c ~/jeffgo.cfg -P put counts.csv s3://giantoakmemex/sex_ad_analysis/
 	s3cmd -c ~/jeffgo.cfg -P put region_features.csv s3://giantoakmemex/sex_ad_analysis/
 
@@ -165,8 +169,8 @@ micro_analysis: ad_prices_msa_micro.csv individual_level_analysis.r
 	# Tons of files in results/micro_zero_price/
 	R --vanilla < individual_level_analysis.r
 
-metro_level_wages.csv: acs_2013_ipums.r
-	R --vanilla < acs_2013_wages.r
+acs_2013_msa_gender_wage.csv: make_acs_2013_msa_gender_wage.r cols_18.txt usa_00018.dat
+	R --vanilla < make_acs_2013_msa_gender_wage.r
 
 tempus: all_merged.csv msa_panel.py zero_prices.py
 	# Produces counts.csv and region_features.csv,
