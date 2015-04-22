@@ -189,12 +189,6 @@ data['avg_commute'] = data[commute_times].dot(commute_centers)/data["B08303001"]
 
 # End merging information from census
 
-crosswalk = pandas.read_csv('crosswalk_tract_msa.csv')
-crosswalk = crosswalk[~crosswalk.MSA.isnull()]
-crosswalk = crosswalk[crosswalk['_merge'] == 'matched (3)']
-msa_cw = crosswalk[['ORI9','MSA','msaname']].drop_duplicates()
-msa_cw['codes'] = msa_cw.MSA.apply(lambda x: '31000US%s' % str(int(x)))
-
 msa_wages = pandas.read_csv('metro_level_wages.csv')
 msa_wages['codes']=msa_wages['met2013'].apply(lambda x: '31000US%s' % str(int(x))) # 310000 is the MSA code
 msa_wages.rename(columns= {
@@ -211,6 +205,13 @@ msa_wages.rename(columns= {
     }, inplace=True)
 
 data = pandas.merge(data, msa_wages, on=['codes','sex'],how='left')
+
+# Merge in crosswalk between MSAS and LEAs
+crosswalk = pandas.read_csv('crosswalk_tract_msa.csv')
+crosswalk = crosswalk[~crosswalk.MSA.isnull()]
+crosswalk = crosswalk[crosswalk['_merge'] == 'matched (3)']
+msa_cw = crosswalk[['ORI9','MSA','msaname']].drop_duplicates()
+msa_cw['codes'] = msa_cw.MSA.apply(lambda x: '31000US%s' % str(int(x)))
 
 out = pandas.merge(data, msa_cw, on='codes')
 # This dataframe is at the ORI9-month-year level. There are tons of rows

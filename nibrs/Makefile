@@ -99,6 +99,9 @@ msa_crosswalk.csv: msa_crosswalk.py
 census_2000_msa_industry_gender_wage.csv: make_census_2000_msa_industry_gender_wage.r cols_17.txt usa_00017.dat
 	R --vanilla < make_census_2000_msa_industry_gender_wage.r
 
+acs_2013_msa_gender_wage.csv: make_acs_2013_msa_gender_wage.r cols_18.txt usa_00018.dat
+	R --vanilla < make_acs_2013_msa_gender_wage.r
+
 lemas.csv: make_lemas.py ucr_lemas_msa.csv
 	# Take ucr_lemas_msa data from Greg, keep only the lemas information
 	# that happens once in the sample, and save as lemas.csv
@@ -111,6 +114,8 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 
 #all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json acs_2013_msa_gender_wage.csv
 	#python geotag_export.py
+acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
+	python make_acs.py
 
 ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
 	python make_ad_prices.py
@@ -125,12 +130,13 @@ ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv is
 	## Zero price analysis depends on rate information 
 	#python zero_prices.py
 ############ End intermediate data targets
-export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv ad_prices_msa_micro.csv ad_prices.csv ad_zero_prices.csv
+export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv ad_prices_msa_micro.csv ad_prices.csv ad_zero_prices.csv acs.csv
 	# Note: this code needs Jeff's (or another Giant Oak person's) keys to upload to the giantoakmemex bucket
 	zip all_merged.zip all_merged.csv
 	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
 	zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
 
+	s3cmd -c ~/jeffgo.csv -P put acs.csv s3://giantoakmemex/sex_ad_analysis/
 	zip ad_prices.zip ad_prices.csv
 	s3cmd -c ~/jeffgo.cfg -P put ad_prices.zip s3://giantoakmemex/sex_ad_analysis/
 	zip ad_zero_prices.zip ad_zero_prices.csv
@@ -168,9 +174,6 @@ micro_analysis: ad_prices_msa_micro.csv individual_level_analysis.r
 	# Creates:
 	# Tons of files in results/micro_zero_price/
 	R --vanilla < individual_level_analysis.r
-
-acs_2013_msa_gender_wage.csv: make_acs_2013_msa_gender_wage.r cols_18.txt usa_00018.dat
-	R --vanilla < make_acs_2013_msa_gender_wage.r
 
 tempus: all_merged.csv msa_panel.py zero_prices.py
 	# Produces counts.csv and region_features.csv,
