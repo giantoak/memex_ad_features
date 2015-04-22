@@ -61,9 +61,8 @@ else:
     sexad = pandas.read_csv('forGiantOak3/isssexad.tsv', sep='\t', header=None)
     sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
 data = pandas.merge(data, sexad, on='ad_id', how='left')
-data.to_csv('normalized_prices.csv', index=False)
-data = data[data['sex_ad'] == 1] # remove non- sex ads
-#print('There are %s prices after dropping Non-sex ad prices' % data.shape[0])
+#data = data[data['sex_ad'] == 1] # remove non- sex ads
+##print('There are %s prices after dropping Non-sex ad prices' % data.shape[0])
 
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
 print('The %s extracted prices pertain to %s observations' % (data.shape[0], counts.shape[0]))
@@ -95,11 +94,9 @@ massage = pandas.read_csv('forGiantOak3/ismassageparlorad.tsv', sep='\t', header
 out = out.merge(massage, how='left')
 
 del out['time_str']
-del out['price']
 del out['unit']
 del out['timeValue']
-del out['minutes']
-out.to_csv('ad_prices.csv', index=False)
+out[[i for i in out.columns if i not in ['price','minutes']]].to_csv('ad_prices.csv', index=False)
 
 # Begin work on fixed prices
 out = out[out['prices_from_ad']==2]
