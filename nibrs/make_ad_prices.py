@@ -87,12 +87,18 @@ if False:
 else:
     ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster_id','date_str'])
 out = out.merge(ts, how='left')
-out[out['cluster_id'] == '\N'] = ''
+out[out['cluster_id'] == '\N'] = np.nan
+out[out['date_str'] == '\N'] = np.nan
 
 # Merge in massage parlor flag
 massage = pandas.read_csv('forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'])
 out = out.merge(massage, how='left')
 
+del out['time_str']
+del out['price']
+del out['unit']
+del out['timeValue']
+del out['minutes']
 out.to_csv('ad_prices.csv', index=False)
 
 # Begin work on fixed prices
