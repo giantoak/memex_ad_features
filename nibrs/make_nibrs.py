@@ -903,10 +903,11 @@ cross_walk = pandas.read_csv('crosswalk_tract_msa.csv')
 cross_walk = cross_walk[['ORI9', 'PLACENM','AGENCY','FSTATE','FCOUNTY','FPLACE', 'UPOPTOT','MSA','msaname','countyno','_merge']]
 cross_walk = cross_walk[~cross_walk.MSA.isnull()]
 cross_walk = cross_walk[cross_walk['_merge'] == 'matched (3)']
-cross_walk['codes'] = cross_walk.MSA.apply(lambda x: '31000US%s' % str(int(x)))
-m = pandas.merge( m, cross_walk[['ORI9','codes']], left_on='ORI', right_on='ORI9') # Merge acts onto MSAs by ORI code
+cross_walk['census_msa_code'] = cross_walk.MSA.apply(lambda x: '31000US%s' % str(int(x)))
+m = pandas.merge( m, cross_walk[['ORI9','census_msa_code']], left_on='ORI', right_on='ORI9') # Merge acts onto MSAs by ORI code
 #
-b=m.groupby('codes')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
+b=m.groupby('census_msa_code')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
+#b.rename(columns={'codes':'census_msa_code'}, inplace=True)
 b['violence'].to_csv('violence_nibrs.csv')
 b['female_violence'].to_csv('female_violence_nibrs.csv')
 b['prostitution'].to_csv('prostitution_nibrs.csv')

@@ -117,6 +117,8 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
 	python make_acs.py
 
+msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv
+	python make_msa_characteristics.py
 ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
 	python make_ad_prices.py
 #zero_price.csv: zero_prices.py all_merged.csv issexad.tsv rates2.tsv
@@ -130,28 +132,34 @@ ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv is
 	## Zero price analysis depends on rate information 
 	#python zero_prices.py
 ############ End intermediate data targets
-export: all_merged.csv monthly_panel.csv ad_prices_msa.csv price_extraction_counts.csv ad_prices_msa_micro.csv ad_prices.csv ad_zero_prices.csv acs.csv
+export: ad_prices.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv
 	# Note: this code needs Jeff's (or another Giant Oak person's) keys to upload to the giantoakmemex bucket
-	zip all_merged.zip all_merged.csv
-	s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
-	zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
+	#zip all_merged.zip all_merged.csv
+	#s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
+	#zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
 
-	s3cmd -c ~/jeffgo.csv -P put acs.csv s3://giantoakmemex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put prostitution_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put female_violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put month_msa_wage_instruments.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put census_2000_msa_industry_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put acs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_prices.zip ad_prices.csv
-	s3cmd -c ~/jeffgo.cfg -P put ad_prices.zip s3://giantoakmemex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put ad_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_zero_prices.zip ad_zero_prices.csv
-	s3cmd -c ~/jeffgo.cfg -P put ad_zero_prices.zip s3://giantoakmemex/sex_ad_analysis/
+	s3cmd -c ~/jeffgo.cfg -P put ad_zero_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
 
-	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
-	zip zero_price_msa_micro.zip zero_price_msa_micro.csv
-	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
-	zip zero_price_msa_aggregates.zip zero_price_msa_aggregates.csv
-	s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_aggregates.zip s3://giantoakmemex/sex_ad_analysis/
-	zip price_extraction_counts.zip price_extraction_counts.csv
-	s3cmd -c ~/jeffgo.cfg -P put price_extraction_counts.zip s3://giantoakmemex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoakmemex/sex_ad_analysis/
-	zip monthly_panel.zip monthly_panel.csv
-	s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoakmemex/sex_ad_analysis/
+	#s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
+	#zip zero_price_msa_micro.zip zero_price_msa_micro.csv
+	#s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
+	#zip zero_price_msa_aggregates.zip zero_price_msa_aggregates.csv
+	#s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_aggregates.zip s3://giantoakmemex/sex_ad_analysis/
+	#zip price_extraction_counts.zip price_extraction_counts.csv
+	#s3cmd -c ~/jeffgo.cfg -P put price_extraction_counts.zip s3://giantoakmemex/sex_ad_analysis/
+	#s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoakmemex/sex_ad_analysis/
+	#zip monthly_panel.zip monthly_panel.csv
+	#s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoakmemex/sex_ad_analysis/
 	s3cmd -c ~/jeffgo.cfg -P put acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
 	s3cmd -c ~/jeffgo.cfg -P put counts.csv s3://giantoakmemex/sex_ad_analysis/
 	s3cmd -c ~/jeffgo.cfg -P put region_features.csv s3://giantoakmemex/sex_ad_analysis/
@@ -198,3 +206,4 @@ violence_nibrs.csv: female_violence_nibrs.csv
 prostitution_nibrs.csv: female_violence_nibrs.csv
 prostitution.csv: female_violence.csv
 ad_zero_prices.csv: ad_prices.csv
+lemas.csv: ucr.csv
