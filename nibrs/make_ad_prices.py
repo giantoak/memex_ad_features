@@ -117,3 +117,14 @@ print('There are %s ads after dropping duplicates' % out.shape[0])
 out =out[out['m1'] != out['m2']] # remove those with two prices for the same time...
 out['marginal_price'] = (out['p2'] - out['p1']) / (out['m2'] - out['m1']) * 60
 out.to_csv('ad_zero_prices.csv', index=False)
+
+# Re-read ad_prices.csv to aggregate from file
+del out
+data = pandas.read_csv('ad_prices.csv')
+print(data.shape)
+p=pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
+print(p.shape)
+del data['price_per_hour']
+data = data.merge(p, left_on='ad_id', right_index=True)
+print(data.shape)
+data.to_csv('ad_price_ad_level.csv')

@@ -117,6 +117,9 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
 	python make_acs.py
 
+msa_month_characteristics.csv: make_msa_month_characteristics.py ad_prices.csv
+	python make_msa_month_characteristics.py
+
 msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv
 	python make_msa_characteristics.py
 ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
@@ -206,4 +209,5 @@ violence_nibrs.csv: female_violence_nibrs.csv
 prostitution_nibrs.csv: female_violence_nibrs.csv
 prostitution.csv: female_violence.csv
 ad_zero_prices.csv: ad_prices.csv
+ad_price_ad_level.csv: ad_prices.csv
 lemas.csv: ucr.csv
