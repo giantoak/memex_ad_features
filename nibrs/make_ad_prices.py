@@ -52,7 +52,6 @@ data['price'] = data['price'].astype('int')
 # This code is useful for dealing with the 'price' string problem in
 # sam's rates_locs file from 12/29
 
-data['price_per_hour'] = 60*data['price']/data['minutes']
 # Begin merging information from census
 if False:
     sexad = pandas.read_csv('forGiantOak3/isssexad.tsv.gz', sep='\t', header=None,compression='gzip')
@@ -93,10 +92,10 @@ out[out['date_str'] == '\N'] = np.nan
 massage = pandas.read_csv('forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'])
 out = out.merge(massage, how='left')
 
-del out['time_str']
 del out['unit']
 del out['timeValue']
-out[[i for i in out.columns if i not in ['price','minutes']]].to_csv('ad_prices.csv', index=False)
+out.to_csv('ad_prices.csv', index=False)
+#out[[i for i in out.columns if i not in ['price','minutes']]].to_csv('ad_prices.csv', index=False)
 
 # Begin work on fixed prices
 out = out[out['prices_from_ad']==2]
@@ -122,9 +121,23 @@ out.to_csv('ad_zero_prices.csv', index=False)
 del out
 data = pandas.read_csv('ad_prices.csv')
 print(data.shape)
-p=pandas.DataFrame(data.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
-print(p.shape)
-del data['price_per_hour']
-data = data.merge(p, left_on='ad_id', right_index=True)
-print(data.shape)
-data.to_csv('ad_price_ad_level.csv')
+# Begin computing price per hour:
+# If we have a 1 hour price, that's it. Otherwise, 
+data['1hr'] = data['time_str'] == '1 HOUR'
+a = data.groupby('ad_id')['1hr'].sum()
+a = a>0
+del data['1hr']
+a = pandas.DataFrame(a)
+data = pandas.merge(data, a, left_on='ad_id', right_index=True)
+ad_level_hourly = pandas.DataFrame(data[data['1hr']])
+ad_level_hourly['price_per_hour'] = ad_level_hourly['price']
+ad_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
+ad_level_no_hourly.index = ad_level_no_hourly['ad_id']
+ad_level_no_hourly['price_per_hour'] = 60*ad_level_no_hourly['price']/ad_level_no_hourly['minutes'].astype('float')
+#ad_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
+ad_level_no_hourly_prices = pandas.DataFrame(ad_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
+ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
+ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
+
+
+ad_level.to_csv('ad_price_ad_level.csv')

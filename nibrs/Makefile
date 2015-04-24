@@ -117,12 +117,18 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
 	python make_acs.py
 
-msa_month_characteristics.csv: make_msa_month_characteristics.py ad_prices.csv
+msa_month_characteristics.csv: make_msa_month_characteristics.py ucr.csv month_msa_wage_instruments.csv msa_month_ad_aggregates.csv
 	python make_msa_month_characteristics.py
+
+msa_month_ad_aggregates.csv: make_msa_month_ad_aggregates.py ad_prices_ad_level.csv 
+	python make_msa_month_ad_aggregates.py
+
+provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
+	python make_provider_panel.py
 
 msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv
 	python make_msa_characteristics.py
-ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
+ad_prices.csv: make_ad_prices.py forGiantOak3/msa_locations.tsv forGiantOak3/doc-provider-timestamp.tsv forGiantOak3/isssexad.tsv
 	python make_ad_prices.py
 #zero_price.csv: zero_prices.py all_merged.csv issexad.tsv rates2.tsv
 	##These files are also created: ad_prices.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv

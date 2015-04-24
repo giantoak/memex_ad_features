@@ -92,6 +92,32 @@ for i in indices:
 out = merged[output_cols]
 out = out.drop_duplicates(['sex','month','year','area_fips'])
 out.sort(['sex','area_fips','year','month'], inplace=True)
-out.to_csv('month_msa_wage_instruments.csv', index=False)
+out['census_msa_code'] = out['area_fips'].apply(lambda x: '31000US%s0' % str(int(x.replace('C','')))) # 310000 is the MSA code
+del out['area_fips']
+
+out.set_index(['sex','month','year','census_msa_code'], inplace=True)
+out=out.unstack('sex')
 
 column_index = out.columns.tolist()
+#### HERE! Think I roughly need to do something like:
+female = out.xs(2, level='sex',axis=1)
+male = out.xs(1, level='sex',axis=1)
+#female = female[['index_p50','index_p25','index_p75','index_mean.wage','index_sum.wght']]
+female.rename(columns={
+    'index_p25':'female_wage_inst_p25',
+    'index_p50':'female_wage_inst_p50',
+    'index_p75':'female_wage_inst_p75',
+    'index_mean.wage':'female_wage_inst_mean',
+    'index_sum.wght':'female_wage_inst_employment',
+    },
+    inplace=True)
+male.rename(columns={
+    'index_p25':'male_wage_inst_p25',
+    'index_p50':'male_wage_inst_p50',
+    'index_p75':'male_wage_inst_p75',
+    'index_mean.wage':'male_wage_inst_mean',
+    'index_sum.wght':'male_wage_inst_employment',
+    },
+    inplace=True)
+out = pandas.concat([male, female], axis=1)
+out.to_csv('month_msa_wage_instruments.csv')
