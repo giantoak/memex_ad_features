@@ -63,6 +63,12 @@ data = pandas.merge(data, sexad, on='ad_id', how='left')
 #data = data[data['sex_ad'] == 1] # remove non- sex ads
 ##print('There are %s prices after dropping Non-sex ad prices' % data.shape[0])
 
+
+# Merge in massage parlor information
+massage = pandas.read_csv('forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None)
+massage.rename(columns={0:'ad_id', 1:'massage_ad'}, inplace=True)
+data = pandas.merge(data, massage, on='ad_id', how='left')
+
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
 print('The %s extracted prices pertain to %s observations' % (data.shape[0], counts.shape[0]))
 counts.rename(columns={'ad_id':'prices_from_ad'}, inplace=True)
@@ -138,6 +144,9 @@ ad_level_no_hourly['price_per_hour'] = 60*ad_level_no_hourly['price']/ad_level_n
 ad_level_no_hourly_prices = pandas.DataFrame(ad_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
 ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
 ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
+ad_level.sort('1hr', ascending=False, inplace=True)
+al = pandas.DataFrame(ad_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
+out = pandas.merge(al, ad_level.drop_duplicates('ad_id')[['ad_id','sex_ad','census_msa_code','cluster_id','date_str','is_massage_parlor_ad','1hr']], left_index=True, right_on='ad_id', how='left')
 
 
-ad_level.to_csv('ad_price_ad_level.csv')
+out.to_csv('ad_price_ad_level.csv')

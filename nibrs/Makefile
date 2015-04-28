@@ -23,6 +23,10 @@ ismassageparlorad.tsv:
 	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/ismassageparlorad.tsv.gz
 	gunzip -f ismassageparlorad.tsv.gz
 	mv ismassageparlorad.tsv forGiantOak3/
+msa_locations.tsv: doc-provider-timestamp.tsv
+	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/msa_locations_round2.tsv.gz
+	gunzip msa_locations_round2.tsv.gz
+	mv msa_locations_round2.tsv forGiantOak3/msa_locations.tsv
 
 isssexad.tsv:
 	# Get the sex ad flag from deep dive
@@ -117,10 +121,10 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
 	python make_acs.py
 
-msa_month_characteristics.csv: make_msa_month_characteristics.py ucr.csv month_msa_wage_instruments.csv msa_month_ad_aggregates.csv
+msa_month_characteristics.csv: make_msa_month_characteristics.py ucr.csv month_msa_wage_instruments.csv msa_month_ad_aggregates.csv provider_panel.csv
 	python make_msa_month_characteristics.py
 
-msa_month_ad_aggregates.csv: make_msa_month_ad_aggregates.py ad_prices_ad_level.csv 
+msa_month_ad_aggregates.csv: make_msa_month_ad_aggregates.py ad_price_ad_level.csv 
 	python make_msa_month_ad_aggregates.py
 
 provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
@@ -128,7 +132,8 @@ provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
 
 msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv
 	python make_msa_characteristics.py
-ad_prices.csv: make_ad_prices.py forGiantOak3/msa_locations.tsv forGiantOak3/doc-provider-timestamp.tsv forGiantOak3/isssexad.tsv
+
+ad_prices.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
 	python make_ad_prices.py
 #zero_price.csv: zero_prices.py all_merged.csv issexad.tsv rates2.tsv
 	##These files are also created: ad_prices.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv
@@ -141,7 +146,7 @@ ad_prices.csv: make_ad_prices.py forGiantOak3/msa_locations.tsv forGiantOak3/doc
 	## Zero price analysis depends on rate information 
 	#python zero_prices.py
 ############ End intermediate data targets
-export: ad_prices.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv
+export: ad_prices.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv
 	# Note: this code needs Jeff's (or another Giant Oak person's) keys to upload to the giantoakmemex bucket
 	#zip all_merged.zip all_merged.csv
 	#s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
@@ -156,8 +161,14 @@ export: ad_prices.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.cs
 	s3cmd -c ~/jeffgo.cfg -P put acs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_prices.zip ad_prices.csv
 	s3cmd -c ~/jeffgo.cfg -P put ad_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	zip ad_price_ad_level.zip ad_price_ad_level.csv
+	s3cmd -c ~/jeffgo.cfg -P put ad_price_ad_level.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_zero_prices.zip ad_zero_prices.csv
 	s3cmd -c ~/jeffgo.cfg -P put ad_zero_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	zip provider_panel.zip provider_panel.csv
+	s3cmd -c ~/jeffgo.cfg -P put provider_panel.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	s3cmd -c ~/jeffgo.cfg -P put msa_month_characteristics.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+
 
 	#s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
 	#zip zero_price_msa_micro.zip zero_price_msa_micro.csv
@@ -207,7 +218,6 @@ tempus: all_merged.csv msa_panel.py zero_prices.py
 email_addresses.tsv: doc-provider-timestamp.tsv    
 ids_to_urls.tsv: doc-provider-timestamp.tsv   
 links.tsv: doc-provider-timestamp.tsv  
-msa_locations.tsv: doc-provider-timestamp.tsv 
 phone_numbers.tsv: doc-provider-timestamp.tsv 
 rates2.tsv: doc-provider-timestamp.tsv 
 rates.tsv: doc-provider-timestamp.tsv 

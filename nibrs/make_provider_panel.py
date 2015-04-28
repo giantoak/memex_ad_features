@@ -29,15 +29,21 @@ def unique_msa_if_exists(x):
     else:
         return np.nan
 
+# Define a function to take a set of ads in a month and compute the
+# prices
+
 # Assign providers to MSA at the monthly level
 f=clusters.groupby(['cluster_id','year','month'])['census_msa_code'].apply(unique_msa_if_exists) # Grab unique MSA, if there is one
 f = pd.DataFrame(f[~f.isnull()], columns=['census_msa_code'])
+g=pd.DataFrame(clusters.groupby(['cluster_id','year','month'])['price_per_hour'].size(), columns=['num_ads_in_cluster_month'])
+me=clusters.groupby(['cluster_id','year','month'])['price_per_hour'].agg({'avg_price_per_hour_in_cluster_month':np.mean,'std_price_per_hour_in_cluster_month':np.std})
+f = f.merge(g, how='left', left_index=True, right_index=True)
+f = f.merge(me, how='left', left_index=True, right_index=True)
+
 f.reset_index(inplace=True)
 f['date'] = f.apply(lambda x: datetime.datetime(year=x['year'], month=x['month'], day=1), axis=1)
 f.index=pd.DatetimeIndex(f['date'])
 f.reindex(inplace=True)
-f.head()
-
 # Create an empty data frame of cluster-msa-month data to merge in
 # active providers
 t=pd.DatetimeIndex(start=datetime.datetime(year=2010, month=1, day=1),freq='M',periods=60)
@@ -69,24 +75,17 @@ def fill_last_msa(ser):
             last_value = v
     return ser
 
-panel=panel_frame.merge(f[['cluster_id','year','month','census_msa_code']], on=['cluster_id','year','month'],how='left') # Merge MSA info into time info on cluster, year, and month
+panel=panel_frame.merge(f[['cluster_id','year','month','census_msa_code','num_ads_in_cluster_month','avg_price_per_hour_in_cluster_month','std_price_per_hour_in_cluster_month']], on=['cluster_id','year','month'],how='left') # Merge MSA info into time info on cluster, year, and month
+
 panel['successfully_merged_msa'] = ~panel['census_msa_code'].isnull()
 del panel['1']
 del panel['index']
 print('There were %s cluster-months with an MSA successfully merged on' % (panel['successfully_merged_msa'].sum()))
 # Compute how many clusters were active in a given MSA at a given time
-merged_msas = pd.DataFrame(panel.groupby(['census_msa_code','date'])['successfully_merged_msa'].sum())
-merged_msas.rename(columns={'successfully_merged_msa':'active_providers'}, inplace=True)
-panel = pd.merge(panel, merged_msas, left_on=['census_msa_code','date'], right_index=True, how='left')
 panel['census_msa_code']=panel.groupby('cluster_id')['census_msa_code'].apply(fill_last_msa) # fill in Missing MSA codes by propagating forward
 print('After filling in missing cluster-months with fill_last_msa, there were %s cluster-months with an MSA successfully merged on' % (panel.shape[0]-panel['census_msa_code'].isnull().sum()))
 # Compute how many clusters were either active or imputed active by
 # fill_last_msa in a given MSA at a given time
-merged_msas = pd.DataFrame(panel.groupby(['census_msa_code','date'])['successfully_merged_msa'].sum())
-merged_msas.rename(columns={'successfully_merged_msa':'active_providers_imputed'}, inplace=True)
-panel = pd.merge(panel, merged_msas, left_on=['census_msa_code','date'], right_index=True, how='left')
-
-
 
 panel.set_index(['cluster_id','date'], inplace=True)
 for i in range(1,4):
@@ -96,7 +95,8 @@ for i in range(1,4):
     panel[moved_lag_name] = (panel['census_msa_code'] != panel[msa_lag_name]) & (~panel['census_msa_code'].isnull()) & (~panel[msa_lag_name].isnull())
     panel.loc[panel[msa_lag_name].isnull(), moved_lag_name] = np.nan 
     panel.loc[panel['census_msa_code'].isnull(), moved_lag_name] = np.nan
+panel['first_appearance'] = (~panel['census_msa_code'].isnull()) & (panel['census_msa_code_l1'].isnull())
 # If either the old or new MSA is missing, it's not clear there was a move
 
 panel.reset_index(inplace=True)
-panel.to_csv('provider_panel.csv')
+panel.to_csv('provider_panel.csv', index=False)
