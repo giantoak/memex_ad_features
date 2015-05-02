@@ -831,7 +831,7 @@ keep_list = [
         'V40191', #Gender of victim 1 (0 for female, 1 for male)
         'V40192', #Gender of victim 2  (0 for female, 1 for male)
         'V40193', #Gender of victim 3  (0 for female, 1 for male)
-        'V40171', # Type of victim - 1
+        'V40171', # Type of victim - 1 (code 1 is individual - other choices are business, state, etc)
         'V40172', # Type of victim - 2
         'V40173', # Type of victim - 3
         'V40071', # UCR offense code 1-1 (not sure what this means)
@@ -850,6 +850,64 @@ keep_list = [
         #'B1008',
         #'B1012',
         ]
+'''
+# Offence codes from UCR
+        Homicide Offenses
+        91 Murder/Nonnegligent Manslaughter
+        92 Negligent Manslaughter
+        93 Justifiable Homicide
+        100 Kidnaping/Abduction
+        Sex Offenses, Forcible
+        111 Forcible Rape
+        112 Forcible Sodomy
+        113 Sexual Assault With An Object
+        114 Forcible Fondling
+        120 Robbery
+        Assault Offenses
+        131 Aggravated Assault
+        132 Simple Assault
+        133 Intimidation
+        200 Arson
+        210 Extortion/Blackmail
+        220 Burglary/Breaking and Entering
+        Larceny/Theft Offenses
+        231 Pocket-picking
+        232 Purse-snatching
+        233 Shoplifting
+        234 Theft From Building
+        235 Theft From Coin-Operated Machine or Device
+        236 Theft From Motor Vehicle
+        237 Theft of Motor Vehicle Parts/Accessories
+        238 All Other Larceny
+        240 Motor Vehicle Theft
+        250 Counterfeiting/Forgery
+        Fraud Offenses
+        261 False Pretenses/Swindle/Confidence Game
+        262 Credit Card/Automatic Teller Machine Fraud
+        263 Impersonation
+        264 Welfare Fraud
+        265 Wire Fraud
+        270 Embezzlement
+        280 Stolen Property Offenses
+        290 Destruction/Damage/Vandalism of Property
+        Drug/Narcotic Offenses
+        351 Drug/Narcotic Violations
+        352 Drug Equipment Violations
+        Sex Offenses, Nonforcible
+        361 Incest
+        362 Statutory Rape
+        370 Pornography/Obscene Material
+        Gambling Offenses
+        391 Betting/Wagering
+        392 Operating/Promoting/Assisting Gambling
+        393 Gambling Equipment Violations
+        394 Sports Tampering
+        Prostitution Offenses
+        401 Prostitution
+        402 Assisting or Promoting Prostitution
+        510 Bribery
+        520 Weapon Law Violations
+'''
 locs = tuple([column_locations[i] for i in keep_list])
 names = keep_list
 m=pandas.read_fwf('35036-0001-Data.txt', colspecs=locs, names=names)

@@ -191,6 +191,7 @@ data['avg_commute'] = data[commute_times].dot(commute_centers)/data["B08303001"]
 
 msa_wages = pandas.read_csv('metro_level_wages.csv')
 msa_wages['codes']=msa_wages['met2013'].apply(lambda x: '31000US%s' % str(int(x))) # 310000 is the MSA code
+del msa_wages['met2013']
 msa_wages.rename(columns= {
     'p05':'wage_p05',
     'p10':'wage_p10',

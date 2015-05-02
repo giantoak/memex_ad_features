@@ -167,6 +167,7 @@ for col in msas.columns:
 # Begin merging data from custom ACS tabs
 acs_wage_tabs = pandas.read_csv('acs_2013_msa_gender_wage.csv')
 acs_wage_tabs['census_msa_code']=acs_wage_tabs['met2013'].apply(lambda x: '31000US%s' % str(int(x))) # 310000 is the MSA code
+del acs_wage_tabs['met2013']
 acs_wage_tabs.rename(columns= {
     'p05':'wage_p05',
     'p10':'wage_p10',

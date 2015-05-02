@@ -18,7 +18,7 @@ provider_panel = pd.read_csv('provider_panel.csv')
 # Need to roll some of these statistics up to the msa-month level, if
 # desired... 
 # Micro price is avg_price_per_hour_in_cluster_month. 
-provider_stats = provider_panel.groupby(['census_msa_code','year','month'])['avg_price_per_hour_in_cluster_month'].aggregate({'avg_price_of_active_clusters_in_month':np.mean,'active_clusters':np.size})
+provider_stats = provider_panel.groupby(['census_msa_code','year','month'])['avg_price_per_hour_in_cluster_month'].aggregate({'avg_price_of_active_providers_in_month':np.mean})
 provider_counts_with_price = provider_panel.groupby(['census_msa_code','year','month'])['num_ads_in_cluster_month_with_price'].aggregate({'active_providers_with_price':np.sum})
 provider_counts_total = provider_panel.groupby(['census_msa_code','year','month'])['num_ads_in_cluster_month_total'].aggregate({'active_providers_total':np.sum})
 # active_providers_with_price - is the number of clusters offering with an MSA in a

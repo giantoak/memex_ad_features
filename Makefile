@@ -97,7 +97,7 @@ female_violence_nibrs.csv: make_nibrs.py crosswalk_tract_msa.csv ICPSR_34603/DS0
 	# ICPSR as well as a crosswalk file from Greg DeAngelo
 	python make_nibrs.py
 
-month_msa_wage_instruments.csv: make_month_msa_wage_instruments.py census_2000_msa_industry_gender_wage.csv msa_crosswalk.csv
+month_msa_wage_instruments.csv: make_month_msa_wage_instruments.py census_2000_msa_industry_gender_wage.csv msa_crosswalk.csv 2011.q1-q4.singlefile.csv
 	# This opportunity index is based on 2000 census data and computed
 	# based on QCEW data
 	python make_month_msa_wage_instruments.py
@@ -142,7 +142,7 @@ provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
 msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
-ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv
+ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv data/forGiantOak3/ismassageparlorad.tsv
 	python make_ad_prices.py
 ############ End intermediate data targets
 
