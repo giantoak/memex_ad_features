@@ -1,62 +1,66 @@
+### System Variables
+HTTP_GET = wget
+GET_FROM_DEEPDIVE_S3 = s3cmd -c ~/mdata.cfg get --skip-existing
+PUT_TO_GIANTOAK_S3 = $(PUT_TO_GIANTOAK_S3)
 ### Download Related targets
 
 ### Data from Tempus export
 acs_2015_03_18.csv:
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/acs_2015_03_18.csv
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/acs_2015_03_18.csv
 ### Data from Greg
 crosswalk_tract_msa.csv:
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/crosswalk_tract_msa.csv
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/crosswalk_tract_msa.csv
 
 ucr_lemas_msa.csv:
 	# Get UCR data from Greg
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
 
 ### Data from Stanford
-doc-provider-timestamp.tsv:
+forGiantOak3/doc-provider-timestamp.tsv:
 	# Get data from the Deep Dive data drop, and extract it
-	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/forGiantOak3.tgz .
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/forGiantOak3.tgz .
 	tar xvf forGiantOak3.tgz
-	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
 	gunzip -f forGiantOak3/rates2.tsv.gz
-ismassageparlorad.tsv:
+forGiantOak3/ismassageparlorad.tsv:
 	# Get massage parlor extraction from the Deep Dive data drop, and extract it
-	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/ismassageparlorad.tsv.gz
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/ismassageparlorad.tsv.gz
 	gunzip -f ismassageparlorad.tsv.gz
 	mv ismassageparlorad.tsv forGiantOak3/
-msa_locations.tsv: doc-provider-timestamp.tsv
-	s3cmd -c ~/mdata.cfg get --skip-existing s3://memex-data/escort_beta/msa_locations_round2.tsv.gz
+forGiantOak3/msa_locations.tsv: forGiantOak3/doc-provider-timestamp.tsv
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/msa_locations_round2.tsv.gz
 	gunzip msa_locations_round2.tsv.gz
 	mv msa_locations_round2.tsv forGiantOak3/msa_locations.tsv
 
-isssexad.tsv:
+forGiantOak3/isssexad.tsv:
 	# Get the sex ad flag from deep dive
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
 	mv isssexad.tsv forGiantOak3/
 
 ## Publicly available data sources
 cols_17.txt:
 	# Get a hand-curated list of the columns of the usa_00017.dat file
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_17.txt
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_17.txt
 
 usa_00017.dat:
 	# IPUMS 2000 census and QCEW are used to create the wage instruments:
 	# Get data from 2000 census, from IPUMS extract
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
 	gunzip -f usa_00017.dat.gz
 
 usa_00018.dat: 
 	# Get data from IPUMS extract of 2013 ACS
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
 	gunzip -f usa_00018.dat.gz
 
 cols_18.txt:
 	# Get a hand-curated list of the columns of the usa_00018.dat file
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_18.txt
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_18.txt
 
 35036-0001-Data.txt:
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
 	gunzip -f 35036-0001-Data.txt.gz
 
 ICPSR_34603/DS0001/34603-0001-Data.txt:
@@ -64,20 +68,24 @@ ICPSR_34603/DS0001/34603-0001-Data.txt:
 	# computations
 	mkdir -p ICPSR_34603/
 	mkdir -p ICPSR_34603/DS0001/
-	wget http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
+	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
 	mv 34603-0001-Data.txt.gz ICPSR_34603/DS0001/
 	gunzip -f ICPSR_34603/DS0001/34603-0001-Data.txt.gz 
 
 2011.q1-q4.singlefile.csv: 
 	## Work on QCEW downloads
-	wget http://www.bls.gov/cew/data/files/2014/csv/2014_qtrly_singlefile.zip
-	wget http://www.bls.gov/cew/data/files/2013/csv/2013_qtrly_singlefile.zip
-	wget http://www.bls.gov/cew/data/files/2012/csv/2012_qtrly_singlefile.zip
-	wget http://www.bls.gov/cew/data/files/2011/csv/2011_qtrly_singlefile.zip
+	$(HTTP_GET) http://www.bls.gov/cew/data/files/2014/csv/2014_qtrly_singlefile.zip
+	$(HTTP_GET) http://www.bls.gov/cew/data/files/2013/csv/2013_qtrly_singlefile.zip
+	$(HTTP_GET) http://www.bls.gov/cew/data/files/2012/csv/2012_qtrly_singlefile.zip
+	$(HTTP_GET) http://www.bls.gov/cew/data/files/2011/csv/2011_qtrly_singlefile.zip
 	unzip 2014_qtrly_singlefile.zip
 	unzip 2013_qtrly_singlefile.zip
 	unzip 2012_qtrly_singlefile.zip
 	unzip 2011_qtrly_singlefile.zip
+	rm 2014_qtrly_singlefile.zip
+	rm 2013_qtrly_singlefile.zip
+	rm 2012_qtrly_singlefile.zip
+	rm 2011_qtrly_singlefile.zip
 
 #### End Download related targets
 
@@ -130,59 +138,33 @@ msa_month_ad_aggregates.csv: make_msa_month_ad_aggregates.py ad_price_ad_level.c
 provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
 	python make_provider_panel.py
 
-msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv
+msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
-ad_prices_price_level.csv: make_ad_prices.py msa_locations.tsv doc-provider-timestamp.tsv isssexad.tsv
+ad_prices_price_level.csv: make_ad_prices.py forGiantOak3/msa_locations.tsv forGiantOak3/doc-provider-timestamp.tsv forGiantOak3/isssexad.tsv
 	python make_ad_prices.py
-#zero_price.csv: zero_prices.py all_merged.csv issexad.tsv rates2.tsv
-	##These files are also created: ad_prices_price_level.csv ad_prices_msa_micro.csv zero_price_msa_aggregates.csv
-	## Zero price analysis depends on rate information 
-	#python zero_prices.py
-
-#ad_prices_msa.csv ad_prices_msa_micro.csv: zero_prices.py all_merged.csv
-	#python zero_prices.py
-#zero_price_msa_aggregates.csv: zero_prices.py all_merged.csv
-	## Zero price analysis depends on rate information 
-	#python zero_prices.py
 ############ End intermediate data targets
+
 export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv
-	# Note: this code needs Jeff's (or another Giant Oak person's) keys to upload to the giantoakmemex bucket
-	#zip all_merged.zip all_merged.csv
-	#s3cmd -c ~/jeffgo.cfg -P put all_merged.zip s3://giantoakmemex/sex_ad_analysis/
-	#zip ad_prices_msa_micro.zip ad_prices_msa_micro.csv
-
-	s3cmd -c ~/jeffgo.cfg -P put prostitution_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put female_violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put month_msa_wage_instruments.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put census_2000_msa_industry_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put acs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) prostitution_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) female_violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) month_msa_wage_instruments.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) census_2000_msa_industry_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) acs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_prices_price_level.zip ad_prices_price_level.csv
-	s3cmd -c ~/jeffgo.cfg -P put ad_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) ad_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_price_ad_level.zip ad_price_ad_level.csv
-	s3cmd -c ~/jeffgo.cfg -P put ad_price_ad_level.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip ad_zero_prices.zip ad_zero_prices.csv
-	s3cmd -c ~/jeffgo.cfg -P put ad_zero_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) ad_zero_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
 	zip provider_panel.zip provider_panel.csv
-	s3cmd -c ~/jeffgo.cfg -P put provider_panel.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
-	s3cmd -c ~/jeffgo.cfg -P put msa_month_characteristics.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-
-
-	#s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
-	#zip zero_price_msa_micro.zip zero_price_msa_micro.csv
-	#s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_micro.zip s3://giantoakmemex/sex_ad_analysis/
-	#zip zero_price_msa_aggregates.zip zero_price_msa_aggregates.csv
-	#s3cmd -c ~/jeffgo.cfg -P put zero_price_msa_aggregates.zip s3://giantoakmemex/sex_ad_analysis/
-	#zip price_extraction_counts.zip price_extraction_counts.csv
-	#s3cmd -c ~/jeffgo.cfg -P put price_extraction_counts.zip s3://giantoakmemex/sex_ad_analysis/
-	#s3cmd -c ~/jeffgo.cfg -P put ad_prices_msa.csv s3://giantoakmemex/sex_ad_analysis/
-	#zip monthly_panel.zip monthly_panel.csv
-	#s3cmd -c ~/jeffgo.cfg -P put monthly_panel.zip s3://giantoakmemex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
-	s3cmd -c ~/jeffgo.cfg -P put counts.csv s3://giantoakmemex/sex_ad_analysis/
-	s3cmd -c ~/jeffgo.cfg -P put region_features.csv s3://giantoakmemex/sex_ad_analysis/
+	$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
+	$(PUT_TO_GIANTOAK_S3) counts.csv s3://giantoakmemex/sex_ad_analysis/
+	$(PUT_TO_GIANTOAK_S3) region_features.csv s3://giantoakmemex/sex_ad_analysis/
 
 monthly_panel.csv: msa_panel.py all_merged.csv
 	python msa_panel.py
@@ -215,12 +197,12 @@ tempus: all_merged.csv msa_panel.py zero_prices.py
 2012.q1-q4.singlefile.csv: 2011.q1-q4.singlefile.csv
 2013.q1-q4.singlefile.csv: 2011.q1-q4.singlefile.csv
 2014.q1-q3.singlefile.csv: 2011.q1-q4.singlefile.csv
-email_addresses.tsv: doc-provider-timestamp.tsv    
-ids_to_urls.tsv: doc-provider-timestamp.tsv   
-links.tsv: doc-provider-timestamp.tsv  
-phone_numbers.tsv: doc-provider-timestamp.tsv 
-rates2.tsv: doc-provider-timestamp.tsv 
-rates.tsv: doc-provider-timestamp.tsv 
+forGiantOak3/email_addresses.tsv: forGiantOak3/doc-provider-timestamp.tsv    
+forGiantOak3/ids_to_urls.tsv: forGiantOak3/doc-provider-timestamp.tsv   
+forGiantOak3/links.tsv: forGiantOak3/doc-provider-timestamp.tsv  
+forGiantOak3/phone_numbers.tsv: forGiantOak3/doc-provider-timestamp.tsv 
+forGiantOak3/rates2.tsv: forGiantOak3/doc-provider-timestamp.tsv 
+forGiantOak3/rates.tsv: forGiantOak3/doc-provider-timestamp.tsv 
 violence_nibrs.csv: female_violence_nibrs.csv
 prostitution_nibrs.csv: female_violence_nibrs.csv
 prostitution.csv: female_violence.csv

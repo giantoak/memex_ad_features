@@ -37,7 +37,7 @@ prices['month'] = prices['date'].apply(lambda x: int(x.strftime('%m')))
 prices['year'] = prices['date'].apply(lambda x: int(x.strftime('%Y')))
 prices = prices[prices['year'] > 2010]
 ##### Do MSA aggregations of prices
-msa_aggregate_prices = prices.groupby('census_msa_code')['price_per_hour'].aggregate({'ad_median':np.median, 'ad_count':len,'ad_mean':np.mean, 'ad_p50':lambda x: np.percentile(x,q=50), 'ad_p10':lambda x: np.percentile(x, q=10), 'ad_p90':lambda x: np.percentile(x, q=90),'num_ads_with_price':np.size})
+msa_aggregate_prices = prices.groupby('census_msa_code')['price_per_hour'].aggregate({'ad_median_msa':np.median, 'ad_count_msa':len,'ad_mean_msa':np.mean, 'ad_p50_msa':lambda x: np.percentile(x,q=50), 'ad_p10_msa':lambda x: np.percentile(x, q=10), 'ad_p90_msa':lambda x: np.percentile(x, q=90)})
 msa_aggregate_prices.reset_index(inplace=True)
 
 out = pd.merge(nibrs, ucr_avg, how='outer')

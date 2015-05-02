@@ -35,10 +35,12 @@ def unique_msa_if_exists(x):
 # Assign providers to MSA at the monthly level
 f=clusters.groupby(['cluster_id','year','month'])['census_msa_code'].apply(unique_msa_if_exists) # Grab unique MSA, if there is one
 f = pd.DataFrame(f[~f.isnull()], columns=['census_msa_code'])
-g=pd.DataFrame(clusters.groupby(['cluster_id','year','month'])['price_per_hour'].size(), columns=['num_ads_in_cluster_month'])
+g=pd.DataFrame(clusters.groupby(['cluster_id','year','month'])['price_per_hour'].size(), columns=['num_ads_in_cluster_month_with_price'])
+h=pd.DataFrame(clusters.groupby(['cluster_id','year','month'])['census_msa_code'].size(), columns=['num_ads_in_cluster_month_total'])
 me=clusters.groupby(['cluster_id','year','month'])['price_per_hour'].agg({'avg_price_per_hour_in_cluster_month':np.mean,'std_price_per_hour_in_cluster_month':np.std})
 f = f.merge(g, how='left', left_index=True, right_index=True)
 f = f.merge(me, how='left', left_index=True, right_index=True)
+f = f.merge(h, how='left', left_index=True, right_index=True)
 
 f.reset_index(inplace=True)
 f['date'] = f.apply(lambda x: datetime.datetime(year=x['year'], month=x['month'], day=1), axis=1)
@@ -75,7 +77,7 @@ def fill_last_msa(ser):
             last_value = v
     return ser
 
-panel=panel_frame.merge(f[['cluster_id','year','month','census_msa_code','num_ads_in_cluster_month','avg_price_per_hour_in_cluster_month','std_price_per_hour_in_cluster_month']], on=['cluster_id','year','month'],how='left') # Merge MSA info into time info on cluster, year, and month
+panel=panel_frame.merge(f[['cluster_id','year','month','census_msa_code','num_ads_in_cluster_month_total','num_ads_in_cluster_month_with_price','avg_price_per_hour_in_cluster_month','std_price_per_hour_in_cluster_month']], on=['cluster_id','year','month'],how='left') # Merge MSA info into time info on cluster, year, and month
 
 panel['successfully_merged_msa'] = ~panel['census_msa_code'].isnull()
 del panel['1']

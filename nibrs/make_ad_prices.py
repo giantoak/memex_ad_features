@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This script takes ad price extraction and creates ad_prices.csv (ad level clean price data)
+This script takes ad price extraction and creates ad_prices_ad_level.csv (ad level clean price data)
 
 It then creates a data set of only ads with two prices "doubles" with 
 the implied fixed cost 
@@ -100,8 +100,7 @@ out = out.merge(massage, how='left')
 
 del out['unit']
 del out['timeValue']
-out.to_csv('ad_prices.csv', index=False)
-#out[[i for i in out.columns if i not in ['price','minutes']]].to_csv('ad_prices.csv', index=False)
+out.to_csv('ad_prices_price_level.csv', index=False)
 
 # Begin work on fixed prices
 out = out[out['prices_from_ad']==2]
@@ -123,9 +122,9 @@ out =out[out['m1'] != out['m2']] # remove those with two prices for the same tim
 out['marginal_price'] = (out['p2'] - out['p1']) / (out['m2'] - out['m1']) * 60
 out.to_csv('ad_zero_prices.csv', index=False)
 
-# Re-read ad_prices.csv to aggregate from file
+# Re-read ad_prices_price_level.csv to aggregate from file
 del out
-data = pandas.read_csv('ad_prices.csv')
+data = pandas.read_csv('ad_prices_price_level.csv')
 print(data.shape)
 # Begin computing price per hour:
 # If we have a 1 hour price, that's it. Otherwise, 
@@ -135,18 +134,18 @@ a = a>0
 del data['1hr']
 a = pandas.DataFrame(a)
 data = pandas.merge(data, a, left_on='ad_id', right_index=True)
-ad_level_hourly = pandas.DataFrame(data[data['1hr']])
-ad_level_hourly['price_per_hour'] = ad_level_hourly['price']
-ad_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
-ad_level_no_hourly.index = ad_level_no_hourly['ad_id']
-ad_level_no_hourly['price_per_hour'] = 60*ad_level_no_hourly['price']/ad_level_no_hourly['minutes'].astype('float')
-#ad_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
-ad_level_no_hourly_prices = pandas.DataFrame(ad_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
-ad_level_no_hourly['price_per_hour'] = ad_level_no_hourly_prices
-ad_level = pandas.concat([ad_level_hourly, ad_level_no_hourly], axis=0)
-ad_level.sort('1hr', ascending=False, inplace=True)
-al = pandas.DataFrame(ad_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
-out = pandas.merge(al, ad_level.drop_duplicates('ad_id')[['ad_id','sex_ad','census_msa_code','cluster_id','date_str','is_massage_parlor_ad','1hr']], left_index=True, right_on='ad_id', how='left')
+price_level_hourly = pandas.DataFrame(data[data['1hr']])
+price_level_hourly['price_per_hour'] = price_level_hourly['price']
+price_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
+price_level_no_hourly.index = price_level_no_hourly['ad_id']
+price_level_no_hourly['price_per_hour'] = 60*price_level_no_hourly['price']/price_level_no_hourly['minutes'].astype('float')
+#price_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
+price_level_no_hourly_prices = pandas.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
+price_level_no_hourly['price_per_hour'] = price_level_no_hourly_prices
+price_level = pandas.concat([price_level_hourly, price_level_no_hourly], axis=0)
+price_level.sort('1hr', ascending=False, inplace=True)
+ad_level_prices = pandas.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
+ad_level = price_level.drop_duplicates('ad_id')[['ad_id','sex_ad','census_msa_code','cluster_id','date_str','is_massage_parlor_ad','1hr']]
+out = pandas.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
 
-
-out.to_csv('ad_price_ad_level.csv')
+out.to_csv('ad_price_ad_level.csv', index=False)
