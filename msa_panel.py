@@ -9,11 +9,11 @@ from sklearn import datasets
 msa_features_panel = pandas.read_csv('all_merged.csv')
 data = pandas.read_csv('normalized_prices.csv')
 if False:
-    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
-    ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','cluster','date_str'])
+    msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+    ts = pandas.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','cluster','date_str'])
 else:
-    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
-    ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster','date_str'])
+    msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
+    ts = pandas.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster','date_str'])
 print('merging prices and cluster/time info')
 data = pandas.merge(data,ts)
 print('Parsing info')

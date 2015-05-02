@@ -14,9 +14,9 @@ import json
 import numpy as np
 
 if False:
-    data = pandas.read_csv('forGiantOak3/rates.tsv.gz', sep='\t', compression='gzip', header=None)
+    data = pandas.read_csv('data/forGiantOak3/rates.tsv.gz', sep='\t', compression='gzip', header=None)
 else:
-    data = pandas.read_csv('forGiantOak3/rates2.tsv', sep='\t', header=None)
+    data = pandas.read_csv('data/forGiantOak3/rates2.tsv', sep='\t', header=None)
 
 print('There are %s observations' % data.shape[0]) # about 2.1M
 data.rename(columns={0:'ad_id', 1:'rate'}, inplace=True)
@@ -54,10 +54,10 @@ data['price'] = data['price'].astype('int')
 
 # Begin merging information from census
 if False:
-    sexad = pandas.read_csv('forGiantOak3/isssexad.tsv.gz', sep='\t', header=None,compression='gzip')
+    sexad = pandas.read_csv('data/forGiantOak3/isssexad.tsv.gz', sep='\t', header=None,compression='gzip')
     sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
 else:
-    sexad = pandas.read_csv('forGiantOak3/isssexad.tsv', sep='\t', header=None)
+    sexad = pandas.read_csv('data/forGiantOak3/isssexad.tsv', sep='\t', header=None)
     sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
 data = pandas.merge(data, sexad, on='ad_id', how='left')
 #data = data[data['sex_ad'] == 1] # remove non- sex ads
@@ -65,7 +65,7 @@ data = pandas.merge(data, sexad, on='ad_id', how='left')
 
 
 # Merge in massage parlor information
-massage = pandas.read_csv('forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None)
+massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None)
 massage.rename(columns={0:'ad_id', 1:'massage_ad'}, inplace=True)
 data = pandas.merge(data, massage, on='ad_id', how='left')
 
@@ -76,26 +76,26 @@ out = pandas.merge(data, counts,left_on='ad_id', right_index=True)
 
 # Begin using MSA data
 if False:
-    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+    msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
 else:
-    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
+    msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
 if False:
-    cluster = pandas.read_csv('forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
+    cluster = pandas.read_csv('data/forGiantOak3/msa_locations.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','census_msa_code'])
 else:
-    msa = pandas.read_csv('forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
+    msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'])
 out = pandas.merge(out, msa, how='left') # Add census MSA code to the fixed price info
 
 # Merge in cluster ID
 if False:
-    ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','cluster','date_str'])
+    ts = pandas.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv.gz', sep='\t', header=None, compression='gzip', names=['ad_id','cluster','date_str'])
 else:
-    ts = pandas.read_csv('forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster_id','date_str'])
+    ts = pandas.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster_id','date_str'])
 out = out.merge(ts, how='left')
 out[out['cluster_id'] == '\N'] = np.nan
 out[out['date_str'] == '\N'] = np.nan
 
 # Merge in massage parlor flag
-massage = pandas.read_csv('forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'])
+massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'])
 out = out.merge(massage, how='left')
 
 del out['unit']

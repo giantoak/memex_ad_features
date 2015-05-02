@@ -16,26 +16,26 @@ ucr_lemas_msa.csv:
 	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
 
 ### Data from Stanford
-forGiantOak3/doc-provider-timestamp.tsv:
+data/forGiantOak3/doc-provider-timestamp.tsv:
 	# Get data from the Deep Dive data drop, and extract it
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/forGiantOak3.tgz .
-	tar xvf forGiantOak3.tgz
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/rates2.tsv.gz forGiantOak3/
-	gunzip -f forGiantOak3/rates2.tsv.gz
-forGiantOak3/ismassageparlorad.tsv:
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/data/forGiantOak3.tgz .
+	tar xvf data/forGiantOak3.tgz
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/rates2.tsv.gz data/forGiantOak3/
+	gunzip -f data/forGiantOak3/rates2.tsv.gz
+data/forGiantOak3/ismassageparlorad.tsv:
 	# Get massage parlor extraction from the Deep Dive data drop, and extract it
 	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/ismassageparlorad.tsv.gz
 	gunzip -f ismassageparlorad.tsv.gz
-	mv ismassageparlorad.tsv forGiantOak3/
-forGiantOak3/msa_locations.tsv: forGiantOak3/doc-provider-timestamp.tsv
+	mv ismassageparlorad.tsv data/forGiantOak3/
+data/forGiantOak3/msa_locations.tsv: data/forGiantOak3/doc-provider-timestamp.tsv
 	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/msa_locations_round2.tsv.gz
 	gunzip msa_locations_round2.tsv.gz
-	mv msa_locations_round2.tsv forGiantOak3/msa_locations.tsv
+	mv msa_locations_round2.tsv data/forGiantOak3/msa_locations.tsv
 
-forGiantOak3/isssexad.tsv:
+data/forGiantOak3/isssexad.tsv:
 	# Get the sex ad flag from deep dive
 	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
-	mv isssexad.tsv forGiantOak3/
+	mv isssexad.tsv data/forGiantOak3/
 
 ## Publicly available data sources
 cols_17.txt:
@@ -141,7 +141,7 @@ provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
 msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
-ad_prices_price_level.csv: make_ad_prices.py forGiantOak3/msa_locations.tsv forGiantOak3/doc-provider-timestamp.tsv forGiantOak3/isssexad.tsv
+ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv
 	python make_ad_prices.py
 ############ End intermediate data targets
 
@@ -197,12 +197,12 @@ tempus: all_merged.csv msa_panel.py zero_prices.py
 2012.q1-q4.singlefile.csv: 2011.q1-q4.singlefile.csv
 2013.q1-q4.singlefile.csv: 2011.q1-q4.singlefile.csv
 2014.q1-q3.singlefile.csv: 2011.q1-q4.singlefile.csv
-forGiantOak3/email_addresses.tsv: forGiantOak3/doc-provider-timestamp.tsv    
-forGiantOak3/ids_to_urls.tsv: forGiantOak3/doc-provider-timestamp.tsv   
-forGiantOak3/links.tsv: forGiantOak3/doc-provider-timestamp.tsv  
-forGiantOak3/phone_numbers.tsv: forGiantOak3/doc-provider-timestamp.tsv 
-forGiantOak3/rates2.tsv: forGiantOak3/doc-provider-timestamp.tsv 
-forGiantOak3/rates.tsv: forGiantOak3/doc-provider-timestamp.tsv 
+data/forGiantOak3/email_addresses.tsv: data/forGiantOak3/doc-provider-timestamp.tsv    
+data/forGiantOak3/ids_to_urls.tsv: data/forGiantOak3/doc-provider-timestamp.tsv   
+data/forGiantOak3/links.tsv: data/forGiantOak3/doc-provider-timestamp.tsv  
+data/forGiantOak3/phone_numbers.tsv: data/forGiantOak3/doc-provider-timestamp.tsv 
+data/forGiantOak3/rates2.tsv: data/forGiantOak3/doc-provider-timestamp.tsv 
+data/forGiantOak3/rates.tsv: data/forGiantOak3/doc-provider-timestamp.tsv 
 violence_nibrs.csv: female_violence_nibrs.csv
 prostitution_nibrs.csv: female_violence_nibrs.csv
 prostitution.csv: female_violence.csv
