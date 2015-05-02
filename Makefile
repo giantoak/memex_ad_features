@@ -18,9 +18,10 @@ ucr_lemas_msa.csv:
 ### Data from Stanford
 data/forGiantOak3/doc-provider-timestamp.tsv:
 	# Get data from the Deep Dive data drop, and extract it
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/data/forGiantOak3.tgz .
-	tar xvf data/forGiantOak3.tgz
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/rates2.tsv.gz data/forGiantOak3/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/forGiantOak3.tgz .
+	tar xvf forGiantOak3.tgz -C data/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/rates2.tsv.gz .
+	mv rates2.tsv.gz data/forGiantOak3/
 	gunzip -f data/forGiantOak3/rates2.tsv.gz
 data/forGiantOak3/ismassageparlorad.tsv:
 	# Get massage parlor extraction from the Deep Dive data drop, and extract it
