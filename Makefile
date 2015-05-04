@@ -2,18 +2,19 @@
 HTTP_GET = wget
 GET_FROM_DEEPDIVE_S3 = s3cmd -c ~/mdata.cfg get --skip-existing
 PUT_TO_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg put -P
+EXPORT_BUCKET = giantoakmemex
 ### Download Related targets
 
 ### Data from Tempus export
 acs_2015_03_18.csv:
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/acs_2015_03_18.csv
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/acs_2015_03_18.csv
 ### Data from Greg
 crosswalk_tract_msa.csv:
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/crosswalk_tract_msa.csv
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/crosswalk_tract_msa.csv
 
 ucr_lemas_msa.csv:
 	# Get UCR data from Greg
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
 
 ### Data from Stanford
 data/forGiantOak3/doc-provider-timestamp.tsv:
@@ -35,33 +36,33 @@ data/forGiantOak3/msa_locations.tsv: data/forGiantOak3/doc-provider-timestamp.ts
 
 data/forGiantOak3/isssexad.tsv:
 	# Get the sex ad flag from deep dive
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
 	mv isssexad.tsv data/forGiantOak3/
 
 ## Publicly available data sources
 cols_17.txt:
 	# Get a hand-curated list of the columns of the usa_00017.dat file
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_17.txt
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/cols_17.txt
 
 usa_00017.dat:
 	# IPUMS 2000 census and QCEW are used to create the wage instruments:
 	# Get data from 2000 census, from IPUMS extract
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/usa_00017.dat.gz 
 	gunzip -f usa_00017.dat.gz
 
 usa_00018.dat: 
 	# Get data from IPUMS extract of 2013 ACS
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/usa_00018.dat.gz 
 	gunzip -f usa_00018.dat.gz
 
 cols_18.txt:
 	# Get a hand-curated list of the columns of the usa_00018.dat file
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/cols_18.txt
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/cols_18.txt
 
 35036-0001-Data.txt:
 	# Get data from ICPSR for the National Incident Based Reporting
 	# system
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
 	gunzip -f 35036-0001-Data.txt.gz
 
 ICPSR_34603/DS0001/34603-0001-Data.txt:
@@ -69,7 +70,7 @@ ICPSR_34603/DS0001/34603-0001-Data.txt:
 	# computations
 	mkdir -p ICPSR_34603/
 	mkdir -p ICPSR_34603/DS0001/
-	$(HTTP_GET) http://giantoakmemex.s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/34603-0001-Data.txt.gz
 	mv 34603-0001-Data.txt.gz ICPSR_34603/DS0001/
 	gunzip -f ICPSR_34603/DS0001/34603-0001-Data.txt.gz 
 
@@ -125,8 +126,6 @@ ucr.csv: make_ucr.py ucr_lemas_msa.csv
 	# that happens annually, reshape to the msa-yera level, and save as ucr.csv
 	python make_ucr.py
 
-#all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json acs_2013_msa_gender_wage.csv
-	#python geotag_export.py
 acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
 	python make_acs.py
 
@@ -147,28 +146,31 @@ ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv
 ############ End intermediate data targets
 
 export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv
-	$(PUT_TO_GIANTOAK_S3) prostitution_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) female_violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) violence_nibrs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) month_msa_wage_instruments.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) census_2000_msa_industry_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) acs.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) prostitution_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) female_violence_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) violence_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) month_msa_wage_instruments.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) census_2000_msa_industry_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) acs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	zip ad_prices_price_level.zip ad_prices_price_level.csv
-	$(PUT_TO_GIANTOAK_S3) ad_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
-	zip ad_price_ad_level.zip ad_price_ad_level.csv
-	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) ad_prices.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	zip ad_zero_prices.zip ad_zero_prices.csv
-	$(PUT_TO_GIANTOAK_S3) ad_zero_prices.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
-	zip provider_panel.zip provider_panel.csv
-	$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://giantoakmemex/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://giantoakmemex/sex_ad_analysis/ # The metro level wage distribution by gender
-	$(PUT_TO_GIANTOAK_S3) counts.csv s3://giantoakmemex/sex_ad_analysis/
-	$(PUT_TO_GIANTOAK_S3) region_features.csv s3://giantoakmemex/sex_ad_analysis/
+	$(PUT_TO_GIANTOAK_S3) ad_zero_prices.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/ # The metro level wage distribution by gender
+	$(PUT_TO_GIANTOAK_S3) counts.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/
+	$(PUT_TO_GIANTOAK_S3) region_features.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/
 
-monthly_panel.csv: msa_panel.py all_merged.csv
-	python msa_panel.py
+	# Export final results
+	zip ad_price_ad_level.zip ad_price_ad_level.csv
+	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	zip provider_panel.zip provider_panel.csv
+	$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	$(PUT_TO_GIANTOAK_S3) msa_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+
+#####
+# These are leftover targets from before the rewrite
 panel_analysis: monthly_panel.csv monthly_panel.r
 	R --vanilla < monthly_panel.r
 
@@ -192,6 +194,8 @@ tempus: all_merged.csv msa_panel.py zero_prices.py
 	# zero_prices to clean up and remove 
 	python msa_panel.py
 	python zero_prices.py
+# These are leftover targets from before the rewrite
+#####
 
 ### Below here are simultaneously created files. The approach to these is
 # to make each of these dependent on the file that actually has a rule defined above
