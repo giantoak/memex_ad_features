@@ -123,7 +123,7 @@ lemas.csv: make_lemas.py ucr_lemas_msa.csv
 ucr.csv: make_ucr.py ucr_lemas_msa.csv
 	# Take ucr_lemas_msa data from Greg, keep only the ucr information
 	# that happens annually, reshape to the msa-yera level, and save as ucr.csv
-	python make_lemas.py
+	python make_ucr.py
 
 #all_merged.csv: geotag_export.py violence_nibrs.csv female_violence_nibrs.csv month_msa_wage_instruments.csv analytical_report_acs.json acs_2013_msa_gender_wage.csv
 	#python geotag_export.py

@@ -25,7 +25,7 @@ del e['qtr']
 
 
 cw = pandas.read_csv('msa_crosswalk.csv')
-wages=pandas.read_csv('metro_level.csv')
+wages=pandas.read_csv('census_2000_msa_industry_gender_wage.csv')
 industry_remap={
 # This dictionary maps naics2 from IPUMS to the QCEW format
 '11':'11',
