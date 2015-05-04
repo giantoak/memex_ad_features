@@ -64,9 +64,10 @@ cat('data read to mem\n')
 a$hhwt<-a$hhwt / 100
 a$perwt<-a$perwt / 100
 #a$strata <- 100000*a$statefip + a$puma  
-a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
+a<-a[a$incwage > 5000,] # Restrict to only people with earnings more than about half of the minimum wage
 # Note: incwage is in dollars
-a<-a[a$uhrswork > 30,] # Restrict to only full time workers
+a<-a[a$uhrswork >= 35,] # Restrict to only full time workers
+a<-a[a$age >= 16 & a$age < 65,] # Restrict to workers 16-64, per Autor, Katz, and Kearney: http://economics.mit.edu/files/580
 cat('subsetting done!\n')
 # a<-a[a$wkswork2 >= 5,] # Restrict to year round workers
 

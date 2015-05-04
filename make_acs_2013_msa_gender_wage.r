@@ -45,8 +45,10 @@ a$perwt<-a$perwt / 100
 #a$strata <- 100000*a$statefip + a$puma  
 #a<-a[a$incwage > 0,] # Restrict to only people with positive wage earnings
 ## Note: incwage is in dollars
-#a<-a[a$uhrswork > 30,] # Restrict to only full time workers
-a$worker <- a$wkswork2 > 5 & a$incwage > 0 & a$uhrswork > 30
+a<-a[a$incwage > 5000,] # Restrict to only people with earnings more than about half of the minimum wage
+# Note: incwage is in dollars
+a<-a[a$uhrswork >= 35,] # Restrict to only full time workers
+a<-a[a$age >= 16 & a$age < 65,] # Restrict to workers 16-64, per Autor, Katz, and Kearney: http://economics.mit.edu/files/580
 # a 'worker' is someone who works 48+ weeks, has positive wage earnings,
 # and works 30+ hours per week
 cat('subsetting done!\n')

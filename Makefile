@@ -1,7 +1,7 @@
 ### System Variables
 HTTP_GET = wget
 GET_FROM_DEEPDIVE_S3 = s3cmd -c ~/mdata.cfg get --skip-existing
-PUT_TO_GIANTOAK_S3 = $(PUT_TO_GIANTOAK_S3)
+PUT_TO_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg put -P
 ### Download Related targets
 
 ### Data from Tempus export
