@@ -101,3 +101,8 @@ price_index.loc[price_index['ad_counts'].isnull(),'ad_counts'] = 0
 
 del price_index['normalization']
 price_index.to_csv('cpi_crosssection.csv', index=False)
+
+for i in [10, 100, 1000, 2000, 5000, 7000, 10000]:
+    print('__________')
+    print('Within-MSA standard deviation of price index when restricting to MSA-months with more than %s counts:'% i)
+    print(price_index.groupby(['census_msa_code','year','month']).filter(lambda x: x['ad_counts'].sum() > i).groupby('census_msa_code')['price_index'].std().describe())
