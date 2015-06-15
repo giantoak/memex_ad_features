@@ -167,6 +167,8 @@ export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_ge
 	# Export final results
 	zip ad_price_ad_level.zip ad_price_ad_level.csv
 	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	zip ad_price_price_level.zip ad_prices_price_level.csv
+	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	zip provider_panel.zip provider_panel.csv
 	$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
