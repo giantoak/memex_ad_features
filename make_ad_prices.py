@@ -151,20 +151,28 @@ out = pandas.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id',
 
 out.to_csv('ad_price_ad_level.csv', index=False)
 
-minute_values=pandas.Series((data['minutes'].value_counts()/out.shape[0] > .0001).index.map(int))
-minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
-minute_string_series.index = minute_values
-def get_prices(x):
-    out = pandas.Series(np.nan,index=minute_values)
-    for mins in minute_values:
-        matching_prices = x[x['minutes'] == mins]['price']
-        if len(matching_prices):
-            out[mins] = matching_prices.mean()
-    return out
+del out['cluster_id']
+del out['date_str']
+out = ts.merge(out, how='outer')
 
-me = data.groupby('ad_id').apply(get_prices)
-price_ratios = pandas.Series(np.nan, index=minute_values)
-for m in minute_values:
-    hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
-    m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
-    price_ratios[m] = hour_price/m_price
+del out['census_msa_code']
+out = msa.merge(out, how='outer')
+out.to_csv('ad_price_ad_level_all.csv', index=False)
+
+#minute_values=pandas.Series((data['minutes'].value_counts()/out.shape[0] > .0001).index.map(int))
+#minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
+#minute_string_series.index = minute_values
+#def get_prices(x):
+    #out = pandas.Series(np.nan,index=minute_values)
+    #for mins in minute_values:
+        #matching_prices = x[x['minutes'] == mins]['price']
+        #if len(matching_prices):
+            #out[mins] = matching_prices.mean()
+    #return out
+
+#me = data.groupby('ad_id').apply(get_prices)
+#price_ratios = pandas.Series(np.nan, index=minute_values)
+#for m in minute_values:
+    #hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
+    #m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
+    #price_ratios[m] = hour_price/m_price

@@ -148,7 +148,7 @@ ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv
 cpi_crosssection.csv: make_cpicrosssection.py ad_price_ad_level.csv
 	python make_cpicrosssection.py
 
-export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv
+export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv ad_price_ad_level_all.csv
 	$(PUT_TO_GIANTOAK_S3) prostitution_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	$(PUT_TO_GIANTOAK_S3) female_violence_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	$(PUT_TO_GIANTOAK_S3) violence_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
@@ -167,6 +167,8 @@ export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_ge
 	# Export final results
 	zip ad_price_ad_level.zip ad_price_ad_level.csv
 	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	zip ad_price_ad_level_all.zip ad_price_ad_level_all.csv
+	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level_all.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	zip ad_price_price_level.zip ad_prices_price_level.csv
 	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	zip provider_panel.zip provider_panel.csv
@@ -219,4 +221,5 @@ prostitution_nibrs.csv: female_violence_nibrs.csv
 prostitution.csv: female_violence.csv
 ad_zero_prices.csv: ad_prices_price_level.csv
 ad_price_ad_level.csv: ad_prices_price_level.csv
+ad_price_ad_level_all.csv: ad_prices_price_level.csv
 lemas.csv: ucr.csv
