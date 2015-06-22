@@ -20,5 +20,13 @@ month_msa_aggregate_prices.reset_index(inplace=True)
 month_msa_aggregate_prices['date_str'] = month_msa_aggregate_prices.apply(lambda x: str(x['month']) + '-' + str(x['year']), axis=1)
 import datetime
 month_msa_aggregate_prices['dp']=month_msa_aggregate_prices['date_str'].apply(lambda x: pd.Period(x, 'M'))
+
+
+#### Do MSA-month aggregations of incall/outcall rates
+month_msa_ad_types = data.groupby(['month','year','census_msa_code'])['is_massage_parlor_ad','incall','no_incall','outcall','no_outcall','incalloutcall','no_incalloutcall'].mean()
+month_msa_ad_types.reset_index(inplace=True)
+month_msa_aggregate_prices = month_msa_aggregate_prices.merge(month_msa_ad_types)
+
+
 month_msa_aggregate_prices.to_csv('msa_month_ad_aggregates.csv', index=False)
 

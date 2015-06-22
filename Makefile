@@ -33,7 +33,10 @@ data/forGiantOak3/msa_locations.tsv: data/forGiantOak3/doc-provider-timestamp.ts
 	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/msa_locations_round2.tsv.gz
 	gunzip msa_locations_round2.tsv.gz
 	mv msa_locations_round2.tsv data/forGiantOak3/msa_locations.tsv
-
+data/forGiantOak6/incall-new.tsv:
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/forGiantOak6.tgz
+	tar xvf forGiantOak6.tgz -C data/
+	rm forGiantOak6.tgz
 data/forGiantOak3/isssexad.tsv:
 	# Get the sex ad flag from deep dive
 	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
@@ -142,6 +145,7 @@ msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv 
 	python make_msa_characteristics.py
 
 ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv data/forGiantOak3/ismassageparlorad.tsv
+
 	python make_ad_prices.py
 ############ End intermediate data targets
 
@@ -223,3 +227,5 @@ ad_zero_prices.csv: ad_prices_price_level.csv
 ad_price_ad_level.csv: ad_prices_price_level.csv
 ad_price_ad_level_all.csv: ad_prices_price_level.csv
 lemas.csv: ucr.csv
+data/forGiantOak6/incalloutcall-new.tsv: data/forGiantOak6/incall-new.tsv
+data/forGiantOak6/outcall-new.tsv: data/forGiantOak6/incall-new.tsv

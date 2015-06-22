@@ -12,6 +12,12 @@ import json
 import numpy as np
 
 data = pd.read_csv('ad_price_ad_level.csv')
+market_segments = ['sex_ad','is_massage_parlor_ad']
+time = ['month','year']
+place = ['census_msa_code']
+time_place_market_segments = place + time + market_segments
+time_place = place + time
+place_market_segments = place + market_segments
 
 # Create month/year values
 data = data[~data['date_str'].isnull()]
@@ -23,10 +29,10 @@ data['month'] = data['date'].apply(lambda x: int(x.strftime('%m')))
 data['year'] = data['date'].apply(lambda x: int(x.strftime('%Y')))
 data = data[data['year'] > 2010]
 
-product_ratios = pd.DataFrame(data.groupby(['sex_ad','is_massage_parlor_ad']).size()/data.shape[0], columns=['product_weight'])
+product_ratios = pd.DataFrame(data.groupby(market_segments).size()/data.shape[0], columns=['product_weight'])
 product_ratios.reset_index(inplace=True)
 
-msa_ratios = pd.DataFrame(data.groupby(['census_msa_code']).size()/data.shape[0], columns=['msa_weight'])
+msa_ratios = pd.DataFrame(data.groupby(place).size()/data.shape[0], columns=['msa_weight'])
 msa_ratios.reset_index(inplace=True)
 
 # Create empty price index frame to account for missing data:
@@ -53,7 +59,7 @@ def gmean(x):
     """
     return np.exp(np.log(x).mean())
 
-m=data.groupby(['census_msa_code','year','month','sex_ad','is_massage_parlor_ad'])['price_per_hour'].aggregate({'gmean':gmean,'size':np.size})
+m=data.groupby(time_place_market_segments)['price_per_hour'].aggregate({'gmean':gmean,'size':np.size})
 # This is the key groupby command. It computes a geometric mean and also
 # the number of ads in a given place/time
 m.reset_index(inplace=True)
@@ -61,14 +67,14 @@ print(panel_frame.shape)
 print(m.shape)
 m=pd.merge(panel_frame, m, how='left')
 print(m.shape)
-m.set_index(['census_msa_code','year','month','sex_ad','is_massage_parlor_ad'], inplace=True)
+m.set_index(time_place_market_segments, inplace=True)
 m.sort_index(ascending=True, inplace=True) # Sort by index, so that groupby shift makes sense
 
 m.loc[m['size'].isnull(),'size'] = 0
-counts=pd.DataFrame(m.groupby(level=['census_msa_code','year','month'])['size']
+counts=pd.DataFrame(m.groupby(level=time_place)['size']
         .sum()).reset_index().rename(columns={'size':'ad_counts'})
 
-m['gmean_lag']=m.groupby(level=['census_msa_code','sex_ad','is_massage_parlor_ad'])['gmean'].shift()
+m['gmean_lag']=m.groupby(level=place_market_segments)['gmean'].shift()
 
 # Now we need to merge these numbers into a full panel of month/msa so
 # we don't skip periods. Then pick back up with M here...
@@ -76,7 +82,7 @@ m['price_multiple'] = m['gmean']/m['gmean_lag']
 
 # Once we have this price multiple, we can compute the index by cumprod
 # the price_multiple 
-m['basic_price_index']=m.groupby(level=['census_msa_code','sex_ad','is_massage_parlor_ad'])['price_multiple'].cumprod() # Turn the price ratios into indexes
+m['basic_price_index']=m.groupby(level=place_market_segments)['price_multiple'].cumprod() # Turn the price ratios into indexes
 m.reset_index(inplace=True)
 m=m.merge(product_ratios)
 m['weighted_basic_price_index'] = m['basic_price_index']*m['product_weight'] 
@@ -84,7 +90,7 @@ def sum_existing_weights(x):
     return x['weighted_basic_price_index'].sum()/x['product_weight'].sum()
 
 # Multiply product weights by basic price index, getting ready to sum these numbers to an index
-price_index = pd.DataFrame(m.groupby(['census_msa_code','year','month']).apply(sum_existing_weights), columns=['price_index'])
+price_index = pd.DataFrame(m.groupby(time_place).apply(sum_existing_weights), columns=['price_index'])
 annual_normalization=pd.DataFrame(price_index.xs(2013, level='year')
         .groupby(level=['census_msa_code'])['price_index']
         .mean()).reset_index() 

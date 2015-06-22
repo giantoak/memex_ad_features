@@ -99,6 +99,32 @@ out[out['date_str'] == '\N'] = np.nan
 massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'], nrows=nrows)
 out = out.merge(massage, how='left')
 
+# Merge in incall
+incall = pandas.read_csv('data/forGiantOak6/incall-new.tsv', sep='\t', header=None, names=['ad_id', 'incall_input'], nrows=nrows)
+out = out.merge(incall, how='left')
+del incall
+out['incall'] = out['incall_input'] == 1
+out['no_incall'] = out['incall_input'] == -1
+del out['incall_input']
+
+# Merge in outcall
+outcall = pandas.read_csv('data/forGiantOak6/outcall-new.tsv', sep='\t', header=None, names=['ad_id', 'outcall_input'], nrows=nrows)
+out = out.merge(outcall, how='left')
+del outcall
+out['outcall'] = out['outcall_input'] == 1
+out['no_outcall'] = out['outcall_input'] == -1
+del out['outcall_input']
+
+# Merge in incalloutcall
+incalloutcall = pandas.read_csv('data/forGiantOak6/incalloutcall-new.tsv', sep='\t', header=None, names=['ad_id', 'incalloutcall_input'], nrows=nrows)
+out = out.merge(incalloutcall, how='left')
+del incalloutcall
+out['incalloutcall'] = out['incalloutcall_input'] == 1
+out['no_incalloutcall'] = out['incalloutcall_input'] == -1
+del out['incalloutcall_input']
+
+
+
 del out['unit']
 del out['timeValue']
 out.to_csv('ad_prices_price_level.csv', index=False)
@@ -146,8 +172,13 @@ price_level_no_hourly['price_per_hour'] = price_level_no_hourly_prices
 price_level = pandas.concat([price_level_hourly, price_level_no_hourly], axis=0)
 price_level.sort('1hr', ascending=False, inplace=True)
 ad_level_prices = pandas.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
-ad_level = price_level.drop_duplicates('ad_id')[['ad_id','sex_ad','census_msa_code','cluster_id','date_str','is_massage_parlor_ad','1hr']]
+ad_level = price_level.drop_duplicates('ad_id')[['ad_id','sex_ad','census_msa_code','cluster_id','date_str','is_massage_parlor_ad','1hr','incall','no_incall','outcall','no_outcall','incalloutcall','no_incalloutcall']]
 out = pandas.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
+# Clean up some unused data...
+del data
+del price_level
+del ad_level
+del ad_level_prices
 
 out.to_csv('ad_price_ad_level.csv', index=False)
 
