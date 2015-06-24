@@ -95,6 +95,7 @@ out = out.merge(ts, how='left')
 out[out['cluster_id'] == '\N'] = np.nan
 out[out['date_str'] == '\N'] = np.nan
 
+
 # Merge in massage parlor flag
 massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'], nrows=nrows)
 out = out.merge(massage, how='left')
@@ -154,7 +155,34 @@ del out
 data = pandas.read_csv('ad_prices_price_level.csv')
 print(data.shape)
 # Begin computing price per hour:
-# If we have a 1 hour price, that's it. Otherwise, 
+# If we have a 1 hour price, that's it. Otherwise, multiply all the
+# quoted prices by a 'multiplier' which represents the average ratio of
+# hourly price to the given time period price
+
+# The below blocks of code compute 'price_ratios' which is the ratio of
+# average prices for 1 hour for other ads that also posted the same
+# price
+minute_values=pandas.Series((data['minutes'].value_counts()/data.shape[0] > .0001).index.map(int))
+minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
+minute_string_series.index = minute_values
+def get_prices(x):
+    out = pandas.Series(np.nan,index=minute_values)
+    for mins in minute_values:
+        matching_prices = x[x['minutes'] == mins]['price']
+        if len(matching_prices):
+            out[mins] = matching_prices.mean()
+    return out
+me = data.groupby('ad_id').apply(get_prices) # This is REALLLLY slow
+price_ratios = pandas.Series(np.nan, index=minute_values)
+for m in minute_values:
+    hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
+    m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
+    price_ratios[m] = hour_price/m_price
+
+print('Computed price ratios for acts of given length to acts of 1 hour')
+print(price_ratios)
+
+# Now split the data by whether there's a posted price of 1 hr
 data['1hr'] = data['time_str'] == '1 HOUR'
 a = data.groupby('ad_id')['1hr'].sum()
 a = a>0
@@ -162,11 +190,12 @@ del data['1hr']
 a = pandas.DataFrame(a)
 data = pandas.merge(data, a, left_on='ad_id', right_index=True)
 price_level_hourly = pandas.DataFrame(data[data['1hr']])
-price_level_hourly['price_per_hour'] = price_level_hourly['price']
+price_level_hourly['price_per_hour'] = price_level_hourly['price'] # If there's an hourly price, use it
 price_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
 price_level_no_hourly.index = price_level_no_hourly['ad_id']
-price_level_no_hourly['price_per_hour'] = 60*price_level_no_hourly['price']/price_level_no_hourly['minutes'].astype('float')
-#price_level_no_hourly_prices = pandas.DataFrame(data[~data['1hr']].groupby('ad_id')['price_per_hour'].mean())
+# Otherwise use the multiplier
+price_level_no_hourly['multiplier'] = price_level_no_hourly['minutes'].apply(lambda x: price_ratios[x])
+price_level_no_hourly['price_per_hour'] = price_level_no_hourly['price'] * price_level_no_hourly['multiplier']
 price_level_no_hourly_prices = pandas.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
 price_level_no_hourly['price_per_hour'] = price_level_no_hourly_prices
 price_level = pandas.concat([price_level_hourly, price_level_no_hourly], axis=0)
@@ -175,35 +204,20 @@ ad_level_prices = pandas.DataFrame(price_level.groupby('ad_id')['price_per_hour'
 ad_level = price_level.drop_duplicates('ad_id')[['ad_id','sex_ad','census_msa_code','cluster_id','date_str','is_massage_parlor_ad','1hr','incall','no_incall','outcall','no_outcall','incalloutcall','no_incalloutcall']]
 out = pandas.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
 # Clean up some unused data...
+print('cleaning up old data...')
 del data
 del price_level
 del ad_level
 del ad_level_prices
 
-out.to_csv('ad_price_ad_level.csv', index=False)
+# Filter out spam guys with > 200 ads in our sample period and save
+out.groupby('cluster_id').filter(lambda x: x.shape[0] <= 200).to_csv('ad_price_ad_level.csv',index=False)
 
 del out['cluster_id']
 del out['date_str']
-out = ts.merge(out, how='outer')
+#out = ts.merge(out, how='outer')
 
 del out['census_msa_code']
-out = msa.merge(out, how='outer')
-out.to_csv('ad_price_ad_level_all.csv', index=False)
+#out = msa.merge(out, how='outer')
+#out.to_csv('ad_price_ad_level_all.csv', index=False)
 
-#minute_values=pandas.Series((data['minutes'].value_counts()/out.shape[0] > .0001).index.map(int))
-#minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
-#minute_string_series.index = minute_values
-#def get_prices(x):
-    #out = pandas.Series(np.nan,index=minute_values)
-    #for mins in minute_values:
-        #matching_prices = x[x['minutes'] == mins]['price']
-        #if len(matching_prices):
-            #out[mins] = matching_prices.mean()
-    #return out
-
-#me = data.groupby('ad_id').apply(get_prices)
-#price_ratios = pandas.Series(np.nan, index=minute_values)
-#for m in minute_values:
-    #hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
-    #m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
-    #price_ratios[m] = hour_price/m_price
