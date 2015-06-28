@@ -61,6 +61,7 @@ else:
     sexad = pandas.read_csv('data/forGiantOak3/isssexad.tsv', sep='\t', header=None, nrows=nrows)
     sexad.rename(columns={0:'ad_id', 1:'sex_ad'}, inplace=True)
 data = pandas.merge(data, sexad, on='ad_id', how='left')
+del sexad
 #data = data[data['sex_ad'] == 1] # remove non- sex ads
 ##print('There are %s prices after dropping Non-sex ad prices' % data.shape[0])
 
@@ -69,11 +70,13 @@ data = pandas.merge(data, sexad, on='ad_id', how='left')
 massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, nrows=nrows)
 massage.rename(columns={0:'ad_id', 1:'massage_ad'}, inplace=True)
 data = pandas.merge(data, massage, on='ad_id', how='left')
+del massage
 
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
 print('The %s extracted prices pertain to %s observations' % (data.shape[0], counts.shape[0]))
 counts.rename(columns={'ad_id':'prices_from_ad'}, inplace=True)
 out = pandas.merge(data, counts,left_on='ad_id', right_index=True)
+del counts
 
 # Begin using MSA data
 if False:
@@ -85,6 +88,7 @@ if False:
 else:
     msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'], nrows=nrows)
 out = pandas.merge(out, msa, how='left') # Add census MSA code to the fixed price info
+del msa
 
 # Merge in cluster ID
 if False:
@@ -92,6 +96,7 @@ if False:
 else:
     ts = pandas.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster_id','date_str'], nrows=nrows)
 out = out.merge(ts, how='left')
+del ts
 out[out['cluster_id'] == '\N'] = np.nan
 out[out['date_str'] == '\N'] = np.nan
 
@@ -99,6 +104,7 @@ out[out['date_str'] == '\N'] = np.nan
 # Merge in massage parlor flag
 massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'], nrows=nrows)
 out = out.merge(massage, how='left')
+del massage
 
 # Merge in incall
 incall = pandas.read_csv('data/forGiantOak6/incall-new.tsv', sep='\t', header=None, names=['ad_id', 'incall_input'], nrows=nrows)
@@ -211,7 +217,10 @@ del ad_level
 del ad_level_prices
 
 # Filter out spam guys with > 200 ads in our sample period and save
-out.groupby('cluster_id').filter(lambda x: x.shape[0] <= 200).to_csv('ad_price_ad_level.csv',index=False)
+spam = pandas.DataFrame(out.groupby('cluster_id').apply(lambda x: x.shape[0] > 200), columns=['spam'])
+spam.reset_index(inplace=True)
+out = out.merge(spam)
+out.to_csv('ad_price_ad_level.csv', index=False)
 
 del out['cluster_id']
 del out['date_str']

@@ -160,6 +160,8 @@ export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_ge
 	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	$(PUT_TO_GIANTOAK_S3) census_2000_msa_industry_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	$(PUT_TO_GIANTOAK_S3) acs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) ucr.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
+	$(PUT_TO_GIANTOAK_S3) lemas.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	zip ad_prices_price_level.zip ad_prices_price_level.csv
 	$(PUT_TO_GIANTOAK_S3) ad_prices.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
 	zip ad_zero_prices.zip ad_zero_prices.csv
