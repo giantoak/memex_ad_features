@@ -68,6 +68,18 @@ cols_18.txt:
 	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/35036-0001-Data.txt.gz
 	gunzip -f 35036-0001-Data.txt.gz
 
+36120-0003-Data.txt:
+	# Get data from ICPSR for the National Incident Based Reporting
+	# system for 2013, the offense level file
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/36120-0003-Data.txt.gz
+	gunzip -f 36120-0003-Data.txt.gz
+
+36120-0005-Data.txt:
+	# Get data from ICPSR for the National Incident Based Reporting
+	# system for 2013, the victim level file
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/36120-0005-Data.txt.gz
+	gunzip -f 36120-0005-Data.txt.gz
+
 ICPSR_34603/DS0001/34603-0001-Data.txt:
 	# Download one of the raw ICPSR extract files for NIBRS
 	# computations
@@ -144,7 +156,7 @@ provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
 msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
-ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv data/forGiantOak3/ismassageparlorad.tsv
+ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv data/forGiantOak3/ismassageparlorad.tsv data/forGiantOak6/incall-new.tsv
 
 	python make_ad_prices.py
 ############ End intermediate data targets

@@ -13,6 +13,17 @@ msa_ad_aggregates = pd.read_csv('msa_month_ad_aggregates.csv')
 ucr = pd.read_csv('ucr.csv')
 #nibrs = pd.read_csv('nibrs_monthly.csv')
 
+violence_nibrs = pd.read_csv('violence_nibrs.csv')
+violence_nibrs.rename(columns={'mean':'share_of_incidents_violent','sum':'number_of_indicents_violent','size':'number_of_incidents_total'}, inplace=True)
+female_violence_nibrs = pd.read_csv('female_violence_nibrs.csv')
+female_violence_nibrs.rename(columns={'mean':'share_of_incidents_violent_to_women','sum':'number_of_indicents_violent_to_women'}, inplace=True)
+del female_violence_nibrs['size']
+prostitution_nibrs = pd.read_csv('prostitution_nibrs.csv')
+prostitution_nibrs.rename(columns={'mean':'share_of_incidents_prostitution','sum':'number_of_indicents_prostitution'}, inplace=True)
+del prostitution_nibrs['size']
+nibrs = pd.merge(violence_nibrs,female_violence_nibrs)
+nibrs = nibrs.merge(prostitution_nibrs)
+
 # Begin computing MSA-month aggregates of provider-level information
 provider_panel = pd.read_csv('provider_panel.csv')
 # Need to roll some of these statistics up to the msa-month level, if
@@ -29,6 +40,7 @@ provider_counts_total = provider_panel.groupby(['census_msa_code','year','month'
 # provider across providers in a msa-month
 
 out = pd.merge(msa_ad_aggregates, ucr, how='outer')
+out = pd.merge(out, nibrs)
 out = out.merge(provider_stats, right_index=True, left_on = ['census_msa_code','year','month'])
 out = out.merge(provider_counts_with_price, right_index=True, left_on = ['census_msa_code','year','month'])
 out = out.merge(provider_counts_total, right_index=True, left_on = ['census_msa_code','year','month'])

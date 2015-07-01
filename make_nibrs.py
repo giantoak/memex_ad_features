@@ -910,27 +910,46 @@ keep_list = [
 '''
 locs = tuple([column_locations[i] for i in keep_list])
 names = keep_list
+#m=pandas.read_fwf('35036-0001-Data.txt', colspecs=locs, names=names, nrows=400)
 m=pandas.read_fwf('35036-0001-Data.txt', colspecs=locs, names=names)
+m['year'] = 2012
 #m2=pandas.read_fwf('ICPSR_34603/DS0001/34603-0001-Data.txt', colspecs=locs, names=names, nrows=400) # 2011
 m2=pandas.read_fwf('ICPSR_34603/DS0001/34603-0001-Data.txt', colspecs=locs, names=names) # 2011
+m2['year'] = 2011
 m=pandas.concat([m, m2], axis=0)
 m['prostitution'] = m['V20061'].isin([401])
 m['female_violence'] = ((m['V40191'] == 0) & (m['V40171'] == 1) & (m['V20061'].isin([131, 132, 133])))
 m['violence'] = ((m['V40171'] == 1) & (m['V20061'].isin([131, 132, 133])))
+m=m[['year','ORI','prostitution','female_violence','violence']]
 
-#jefftest=pandas.read_fwf('ICPSR_30770/DS0005/30770-0005-Data.txt', colspecs=locs, names=names, nrows=400) # 2010 -> This needs a new code book
+# Now work with 2013
+vlocs = {
+        'ORI':(4,13),
+        'INCIDENT':(13,25),
+        'DATE':(25,33),
+        'UCR_OFFENSE_CODE':(36,39), # One of several, but for consistency we're just using the first... #V4007
+        'SEX':(81,82), # 'F' or 'M'
+        'TYPE':(66,67), # V4017, 'I' is individual, 'B' is business, etc
+        }
+victim_2013 = pandas.read_fwf('36120-0005-Data.txt', colspecs= tuple(vlocs.values()), names=vlocs.keys(), nrows=None)
+victim_2013['year'] = victim_2013['DATE'].apply(lambda x: int(str(x)[0:4]))
+# Final DF needs: year, prostitution, female_violence, violence, ORI
+victim_2013['prostitution'] = victim_2013['UCR_OFFENSE_CODE'].isin(['40A'])
+victim_2013['violence'] = ((victim_2013['UCR_OFFENSE_CODE'].isin(['13A','13B','13C'])) & (victim_2013['TYPE'] == 'I'))
+victim_2013['female_violence'] = ((victim_2013['violence']) & (victim_2013['SEX'] == 'F') )
+m=pandas.concat([m, victim_2013[['year','ORI','prostitution','female_violence','violence']]])
+
 # Goals: compute counts of geographic-level total violent acts, violent
 # acts towarsd women, and domestic violence acts
 #cross_walk = pandas.read_stata('ICPSR_04634/DS0001/04634-0001-Data.dta')
 cross_walk = pandas.read_csv('crosswalk_tract_msa.csv')
 
-# This code explores whether data columns appear to match 2012
+##This code explores whether data columns appear to match 2012
 #import ipdb
 #for i in keep_list:
     #if i is not 'B3011':
         #values_2012 = m[i].value_counts().index.values
         #values = m2[i].value_counts().index.values
-        #ipdb.set_trace()
         #for v in values.tolist():
             #if v in values_2012.tolist():
                 #print(values)
@@ -964,7 +983,7 @@ cross_walk = cross_walk[cross_walk['_merge'] == 'matched (3)']
 cross_walk['census_msa_code'] = cross_walk.MSA.apply(lambda x: '31000US%s' % str(int(x)))
 m = pandas.merge( m, cross_walk[['ORI9','census_msa_code']], left_on='ORI', right_on='ORI9') # Merge acts onto MSAs by ORI code
 #
-b=m.groupby('census_msa_code')[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
+b=m.groupby(['census_msa_code','year'])[['prostitution','female_violence','violence']].aggregate([numpy.size, numpy.mean, numpy.sum])
 #b.rename(columns={'codes':'census_msa_code'}, inplace=True)
 b['violence'].to_csv('violence_nibrs.csv')
 b['female_violence'].to_csv('female_violence_nibrs.csv')
