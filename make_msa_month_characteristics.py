@@ -39,9 +39,18 @@ provider_counts_total = provider_panel.groupby(['census_msa_code','year','month'
 # avg_price_of_active_clusters_in_month - Averaging the price of a
 # provider across providers in a msa-month
 
+def census(v1, v2):
+    l1 = set(v1['census_msa_code'].tolist())
+    l2 = set(v2['census_msa_code'].tolist())
+    print('First input: %s' % len(l1))
+    print('Second input: %s' % len(l2))
+    print('Intersection: %s' % len(l1.intersection(l2)))
+#ipdb.set_trace()
+wage_instruments = pd.read_csv('month_msa_wage_instruments.csv')
 out = pd.merge(msa_ad_aggregates, ucr, how='outer')
-out = pd.merge(out, nibrs)
-out = out.merge(provider_stats, right_index=True, left_on = ['census_msa_code','year','month'])
-out = out.merge(provider_counts_with_price, right_index=True, left_on = ['census_msa_code','year','month'])
-out = out.merge(provider_counts_total, right_index=True, left_on = ['census_msa_code','year','month'])
+out = pd.merge(out, nibrs, how='outer')
+out = pd.merge(out, wage_instruments, how='outer')
+out = out.merge(provider_stats, right_index=True, left_on = ['census_msa_code','year','month'], how='outer')
+out = out.merge(provider_counts_with_price, right_index=True, left_on = ['census_msa_code','year','month'], how='outer')
+out = out.merge(provider_counts_total, right_index=True, left_on = ['census_msa_code','year','month'], how='outer')
 out.to_csv('msa_month_characteristics.csv', index=False)
