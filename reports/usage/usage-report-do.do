@@ -165,6 +165,8 @@ egen msa_quarter = group(census_msa_code quarter)
 save "report_data.dta", replace
 insheet using responses.csv, delimiter(";") clear   
 keep msa total_calls
+sum total_calls
+local raw_avg_calls=r(mean)
 save "calls.dta", replace
 use report_data, clear
 merge m:1 msa  using calls.dta, gen(calls_merge)
@@ -179,20 +181,20 @@ drop if msa_num==.
 
 gen online_user = .
 replace online_user = 0.214 if msa=="Houston-The Woodlands-Sugar Land, TX MSA"
-replace online_user = 0.145 if msa=="Kansas City, MO-KS"
-replace online_user = 0.135 if msa=="Las Vegas-Henderson-Paradise, NV"
-replace online_user = 0.076 if msa=="Boston-Cambridge-Newton, MA-NH"
-replace online_user = 0.066 if msa=="Miami-Fort Lauderdale-West Palm Beach, FL"
-replace online_user = 0.049 if msa=="Minneapolis-St. Paul-Bloomington, MN-WI"
-replace online_user = 0.049 if msa=="Phoenix-Mesa-Scottsdale, AZ"
-replace online_user = 0.039 if msa=="New York-Newark-Jersey City, NY-NJ-PA"
-replace online_user = 0.037 if msa=="Portland-Vancouver-Hillsboro, OR-WA"
-replace online_user = 0.031 if msa=="San Diego-Carlsbad, CA"
-replace online_user = 0.026 if msa=="Salt Lake City, UT"
-replace online_user = 0.024 if msa=="Chicago-Naperville-Elgin, IL-IN-WI"
+replace online_user = 0.145 if msa=="Kansas City, MO-KS MSA"
+replace online_user = 0.135 if msa=="Las Vegas-Henderson-Paradise, NV MSA"
+replace online_user = 0.076 if msa=="Boston-Cambridge-Newton, MA-NH MSA"
+replace online_user = 0.066 if msa=="Miami-Fort Lauderdale-West Palm Beach, FL MSA"
+replace online_user = 0.049 if msa=="Minneapolis-St. Paul-Bloomington, MN-WI MSA"
+replace online_user = 0.049 if msa=="Phoenix-Mesa-Scottsdale, AZ MSA"
+replace online_user = 0.039 if msa=="New York-Newark-Jersey City, NY-NJ-PA MSA"
+replace online_user = 0.037 if msa=="Portland-Vancouver-Hillsboro, OR-WA MSA"
+replace online_user = 0.031 if msa=="San Diego-Carlsbad, CA MSA"
+replace online_user = 0.026 if msa=="Salt Lake City, UT MSA"
+replace online_user = 0.024 if msa=="Chicago-Naperville-Elgin, IL-IN-WI MSA"
 replace online_user = 0.018 if msa=="Baltimore-Columbia-Towson, MD MSA"
 replace online_user = 0.018 if msa=="Atlantic City-Hammonton, NJ MSA"
-replace online_user = 0.006 if msa=="San Francisco-Oakland-Hayward, CA"
+replace online_user = 0.006 if msa=="San Francisco-Oakland-Hayward, CA MSA"
 
 /*gen responses_per_ad = .*/
 /*replace responses_per_ad = 31 if msa_num=="Houston-The Woodlands-Sugar Land, TX MSA"*/
@@ -214,20 +216,20 @@ replace online_user = 0.006 if msa=="San Francisco-Oakland-Hayward, CA"
 /*Use the 'unique calls/texts' as the measure of responses per ad*/
 gen responses_per_ad = .
 replace responses_per_ad = 19 if msa=="Houston-The Woodlands-Sugar Land, TX MSA"
-replace responses_per_ad = 35 if msa=="Kansas City, MO-KS"
-replace responses_per_ad = 26 if msa=="Las Vegas-Henderson-Paradise, NV"
-replace responses_per_ad = 23 if msa=="Boston-Cambridge-Newton, MA-NH"
-replace responses_per_ad = 26 if msa=="Miami-Fort Lauderdale-West Palm Beach, FL"
-replace responses_per_ad = 24 if msa=="Minneapolis-St. Paul-Bloomington, MN-WI"
-replace responses_per_ad = 62 if msa=="Phoenix-Mesa-Scottsdale, AZ"
-replace responses_per_ad = 7 if msa=="New York-Newark-Jersey City, NY-NJ-PA"
-replace responses_per_ad = 49 if msa=="Portland-Vancouver-Hillsboro, OR-WA"
-replace responses_per_ad = 20 if msa=="San Diego-Carlsbad, CA"
-replace responses_per_ad = 48 if msa=="Salt Lake City, UT"
-replace responses_per_ad = 20 if msa=="Chicago-Naperville-Elgin, IL-IN-WI"
+replace responses_per_ad = 35 if msa=="Kansas City, MO-KS MSA"
+replace responses_per_ad = 26 if msa=="Las Vegas-Henderson-Paradise, NV MSA"
+replace responses_per_ad = 23 if msa=="Boston-Cambridge-Newton, MA-NH MSA"
+replace responses_per_ad = 26 if msa=="Miami-Fort Lauderdale-West Palm Beach, FL MSA"
+replace responses_per_ad = 24 if msa=="Minneapolis-St. Paul-Bloomington, MN-WI MSA"
+replace responses_per_ad = 62 if msa=="Phoenix-Mesa-Scottsdale, AZ MSA"
+replace responses_per_ad = 7 if msa=="New York-Newark-Jersey City, NY-NJ-PA MSA"
+replace responses_per_ad = 49 if msa=="Portland-Vancouver-Hillsboro, OR-WA MSA"
+replace responses_per_ad = 20 if msa=="San Diego-Carlsbad, CA MSA"
+replace responses_per_ad = 48 if msa=="Salt Lake City, UT MSA"
+replace responses_per_ad = 20 if msa=="Chicago-Naperville-Elgin, IL-IN-WI MSA"
 replace responses_per_ad = 17 if msa=="Baltimore-Columbia-Towson, MD MSA"
 replace responses_per_ad = 24 if msa=="Atlantic City-Hammonton, NJ MSA"
-replace responses_per_ad = 18 if msa=="San Francisco-Oakland-Hayward, CA"
+replace responses_per_ad = 18 if msa=="San Francisco-Oakland-Hayward, CA MSA"
 * Estimating usage rates in locations that we do not already have them
 reg online_user rapepc violentpc unemployment lt_highschool highschool some_college college_plus frac_white avg_commute massage female_wage_inst_p50 male_wage_inst_p50 population chl_rate gon_rate syp_rate, r
 ****How do we want to handle negative usage rates?***
@@ -236,9 +238,11 @@ rename yhat online_user_impute
 bysort msa: sum online_user_impute
 save temp.dta, replace
 
-reg responses_per_ad rapepc violentpc unemployment lt_highschool highschool some_college college_plus frac_white avg_commute massage female_wage_inst_p50 male_wage_inst_p50 population chl_rate gon_rate syp_rate, r
+gen lresponses_per_ad = log(responses_per_ad)
+reg lresponses_per_ad rapepc violentpc unemployment lt_highschool highschool some_college college_plus frac_white avg_commute massage female_wage_inst_p50 male_wage_inst_p50 population chl_rate gon_rate syp_rate, r
 predict yhat, xb
-rename yhat responses_per_ad_impute
+rename yhat lresponses_per_ad_impute
+gen responses_per_ad_impute = exp(lresponses_per_ad_impute)
 
 bys msa_month cluster_id: egen adcount_mon_id = count(sex_ad)
 gen spam_new = 0
@@ -255,7 +259,7 @@ preserve
 	** Need to figure out how to automate making the legend font size vsmall
 	
 	
-	collapse (mean) responses_per_ad_impute ad_mean_monthly population adcount_mon_id online_user online_user_impute usage (firstnm) msa, by(msa_month)
+	collapse (mean) ad_count_msa responses_per_ad_impute ad_mean_monthly population adcount_mon_id online_user online_user_impute usage (firstnm) msa, by(msa_month)
 	replace msa = subinstr(msa, "MSA", "", .)
 	encode msa, gen(msa_num)
 	outsheet using "graph_data.csv", comma replace
@@ -301,15 +305,34 @@ kdensity p1 if spam_new==1 , addplot(kdensity p1 if spam_new==0)
 * Jeff
 ***
 insheet using "graph_data.csv", clear
+local raw_avg_calls = (19 + 35 + 26 + 23 + 26 + 24 + 62 + 7 + 49 + 20 + 48 + 20 + 17 + 24 + 18)/(15*2)
 gen revenue = usage * ad_mean_monthly
-collapse (mean) adcount_mon_id online_user_impute usage revenue, by(msa)
+collapse (mean) ad_count_msa ad_mean_monthly adcount_mon_id online_user_impute usage revenue responses_per_ad_impute, by(msa)
+gen weighted_responses = responses_per_ad_impute * adcount_mon_id
+sum weighted_responses
+local weighted_sum_responses = r(mean)
+sum adcount_mon_id
+local sum_of_ad_counts = r(mean)
+local avg_counts = `weighted_sum_responses'/(`sum_of_ad_counts'*2)
+* Note: divide by two because these were total calls from two ads each
+di "Weighted average response rate"
+di `avg_counts'
+di "Raw average response rate"
+
+gen revenue_v2 = `avg_counts' * ad_count_msa * ad_mean_monthly
+
 preserve
     keep msa online_user_impute
     outsheet using usage_rates.csv, comma replace
 restore
 preserve
     keep msa revenue
-    outsheet using revenue.csv, comma replace
+    outsheet using revenue_old.csv, comma replace
+restore
+preserve
+    keep msa revenue_v2
+	rename revenue_v2 revenue
+    outsheet using revenue_new.csv, comma replace
 restore
 
 

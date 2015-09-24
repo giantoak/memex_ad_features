@@ -39,14 +39,48 @@ provider_counts_total = provider_panel.groupby(['census_msa_code','year','month'
 # avg_price_of_active_clusters_in_month - Averaging the price of a
 # provider across providers in a msa-month
 
-def census(v1, v2):
+# Test code 7/1
+census_names = pd.read_csv('qcew_msa.txt', sep='\t')
+def census(v1, v2, listall=True):
     l1 = set(v1['census_msa_code'].tolist())
     l2 = set(v2['census_msa_code'].tolist())
     print('First input: %s' % len(l1))
+    if listall:
+        names = []
+        for i in list(l1):
+            try:
+                names.append(msa_name_lookup[i])
+            except KeyError:
+                print('Error finding MSA for %s' % i)
+        print('\n'.join(names))
     print('Second input: %s' % len(l2))
+    if listall:
+        names = []
+        for i in list(l2):
+            try:
+                names.append(msa_name_lookup[i])
+            except KeyError:
+                print('Error finding MSA for %s' % i)
+        print('\n'.join(names))
     print('Intersection: %s' % len(l1.intersection(l2)))
+    print('Difference 2 minus 1: %s' % len(l2.difference(l1)))
+    if listall:
+        names = []
+        for i in list(l2.difference(l1)):
+            try:
+                names.append(msa_name_lookup[i])
+            except KeyError:
+                print('Error finding MSA for %s' % i)
+        print('\n'.join(names))
+census_names['census_msa_code']=census_names['qcew_code'].apply(lambda x: '31000US%s0' % x.replace('C','')) # 310000 is the MSA code
+msa_name_lookup = {row['census_msa_code']:row['msa'] for index, row in census_names.iterrows()}
+
+
+# End test code 7/1
 #ipdb.set_trace()
 wage_instruments = pd.read_csv('month_msa_wage_instruments.csv')
+wage_instruments['msa'] = wage_instruments['census_msa_code'].apply(lambda x: msa_name_lookup[x])
+msa_ad_aggregates = msa_ad_aggregates[~msa_ad_aggregates['census_msa_code'].isin(['Service','Pennsylvannia'])]
 out = pd.merge(msa_ad_aggregates, ucr, how='outer')
 out = pd.merge(out, nibrs, how='outer')
 out = pd.merge(out, wage_instruments, how='outer')
@@ -54,3 +88,4 @@ out = out.merge(provider_stats, right_index=True, left_on = ['census_msa_code','
 out = out.merge(provider_counts_with_price, right_index=True, left_on = ['census_msa_code','year','month'], how='outer')
 out = out.merge(provider_counts_total, right_index=True, left_on = ['census_msa_code','year','month'], how='outer')
 out.to_csv('msa_month_characteristics.csv', index=False)
+out = out.merge(census_names)

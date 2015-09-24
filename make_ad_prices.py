@@ -88,7 +88,7 @@ if False:
 else:
     msa = pandas.read_csv('data/forGiantOak3/msa_locations.tsv', sep='\t', header=None, names=['ad_id','census_msa_code'], nrows=nrows)
 out = pandas.merge(out, msa, how='left') # Add census MSA code to the fixed price info
-del msa
+#del msa
 
 # Merge in cluster ID
 if False:
@@ -96,7 +96,7 @@ if False:
 else:
     ts = pandas.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv', sep='\t', header=None, names=['ad_id','cluster_id','date_str'], nrows=nrows)
 out = out.merge(ts, how='left')
-del ts
+#del ts
 out[out['cluster_id'] == '\N'] = np.nan
 out[out['date_str'] == '\N'] = np.nan
 
@@ -180,13 +180,16 @@ def get_prices(x):
     return out
 me = data.groupby('ad_id').apply(get_prices) # This is REALLLLY slow
 price_ratios = pandas.Series(np.nan, index=minute_values)
+price_ratios_counts = pandas.Series(np.nan, index=minute_values)
 for m in minute_values:
     hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
     m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
     price_ratios[m] = hour_price/m_price
+    price_ratios_counts[m] = me[(~me[m].isnull()) & (~me[m].isnull())].shape[0]
 
 print('Computed price ratios for acts of given length to acts of 1 hour')
 print(price_ratios)
+print(price_ratios_counts)
 
 # Now split the data by whether there's a posted price of 1 hr
 data['1hr'] = data['time_str'] == '1 HOUR'
@@ -220,13 +223,54 @@ del ad_level_prices
 spam = pandas.DataFrame(out.groupby('cluster_id').apply(lambda x: x.shape[0] > 200), columns=['spam'])
 spam.reset_index(inplace=True)
 out = out.merge(spam)
+
+# Add site filter
+out['site'] = out['ad_id'].apply(lambda x: x.split(':')[0])
+
+# Compute the cluster size
+out=out.merge(out.groupby('cluster_id').size().to_frame('cluster_count').reset_index())
 out.to_csv('ad_price_ad_level.csv', index=False)
 
+# Now begin rebuilding DF by merging in original raw files, so we can
+# see how much stuff is missing...
 del out['cluster_id']
 del out['date_str']
-#out = ts.merge(out, how='outer')
+out = ts.merge(out, how='outer')
 
 del out['census_msa_code']
-#out = msa.merge(out, how='outer')
-#out.to_csv('ad_price_ad_level_all.csv', index=False)
+out = msa.merge(out, how='outer')
 
+# Merge in massage parlor flag
+del out['is_massage_parlor_ad']
+massage = pandas.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, names=['ad_id','is_massage_parlor_ad'], nrows=nrows)
+out = out.merge(massage, how='right')
+del massage
+
+# Merge in incall
+del out['incall']
+incall = pandas.read_csv('data/forGiantOak6/incall-new.tsv', sep='\t', header=None, names=['ad_id', 'incall_input'], nrows=nrows)
+out = out.merge(incall, how='right')
+del incall
+out['incall'] = out['incall_input'] == 1
+out['no_incall'] = out['incall_input'] == -1
+del out['incall_input']
+
+# Merge in outcall
+del out['outcall']
+outcall = pandas.read_csv('data/forGiantOak6/outcall-new.tsv', sep='\t', header=None, names=['ad_id', 'outcall_input'], nrows=nrows)
+out = out.merge(outcall, how='right')
+del outcall
+out['outcall'] = out['outcall_input'] == 1
+out['no_outcall'] = out['outcall_input'] == -1
+del out['outcall_input']
+
+# Merge in incalloutcall
+del out['incalloutcall']
+incalloutcall = pandas.read_csv('data/forGiantOak6/incalloutcall-new.tsv', sep='\t', header=None, names=['ad_id', 'incalloutcall_input'], nrows=nrows)
+out = out.merge(incalloutcall, how='right')
+del incalloutcall
+out['incalloutcall'] = out['incalloutcall_input'] == 1
+out['no_incalloutcall'] = out['incalloutcall_input'] == -1
+del out['incalloutcall_input']
+
+out.to_csv('ad_price_ad_level_all.csv', index=False)

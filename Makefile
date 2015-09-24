@@ -185,8 +185,8 @@ export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_ge
 	# Export final results
 	zip ad_price_ad_level.zip ad_price_ad_level.csv
 	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
-	zip ad_price_ad_level_all.zip ad_price_ad_level_all.csv
-	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level_all.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	#zip ad_price_ad_level_all.zip ad_price_ad_level_all.csv
+	#$(PUT_TO_GIANTOAK_S3) ad_price_ad_level_all.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	zip ad_price_price_level.zip ad_prices_price_level.csv
 	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	zip provider_panel.zip provider_panel.csv
@@ -196,9 +196,15 @@ export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_ge
 	$(PUT_TO_GIANTOAK_S3) cpi_crosssection.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 
 #####
+reports/usage/graph_data.csv: reports/usage/usage-report-do.do ad_price_ad_level.csv msa_characteristics.csv msa_month_characteristics.csv
+	stata-mp < reports/usage/usage-report-do.do
+usage: reports/usage/graph_data.csv reports/usage/graphs.R
+	R --vanilla < reports/usage/graphs.R
+
+#####
 # These are leftover targets from before the rewrite
 panel_analysis: monthly_panel.csv monthly_panel.r
-	R --vanilla < monthly_panel.r
+	R --vanilla < reports/usage/monthly_panel.r
 
 zp_analysis: zero_price_msa_aggregates.csv msa_level_analysis.r
 	# Creates:

@@ -9,7 +9,7 @@ data = data[~data['date_str'].isnull()]
 data = data[~data['census_msa_code'].isnull()]
 data['date'] = data['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S' ))
 data.index = pd.DatetimeIndex(data['date'])
-data.reindex(inplace=True)
+data = data.reindex()
 data['month'] = data['date'].apply(lambda x: int(x.strftime('%m')))
 data['year'] = data['date'].apply(lambda x: int(x.strftime('%Y')))
 data = data[data['year'] > 2010]
@@ -45,7 +45,7 @@ f = f.merge(h, how='left', left_index=True, right_index=True)
 f.reset_index(inplace=True)
 f['date'] = f.apply(lambda x: datetime.datetime(year=x['year'], month=x['month'], day=1), axis=1)
 f.index=pd.DatetimeIndex(f['date'])
-f.reindex(inplace=True)
+f=f.reindex()
 # Create an empty data frame of cluster-msa-month data to merge in
 # active providers
 t=pd.DatetimeIndex(start=datetime.datetime(year=2010, month=1, day=1),freq='M',periods=60)

@@ -20,7 +20,7 @@ print('Parsing info')
 data= data[data['date_str'] != '\N']
 data['date'] = data['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S' ))
 data.index = pandas.DatetimeIndex(data['date']) 
-data.reindex(inplace=True)
+data=data.reindex(inplace=True)
 counts = pandas.DataFrame(data.groupby('ad_id')['ad_id'].count())
 counts.rename(columns={'ad_id':'count'}, inplace=True)
 ##out=data.resample('M', how='mean')
