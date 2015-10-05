@@ -224,15 +224,12 @@ cleanish:
 
 clean:
 	rm -fv *.csv
-	rm -fv data/*
 	rm -fv 2014_qtrly_singlefile.zip
 	rm -fv 2013_qtrly_singlefile.zip
 	rm -fv 2012_qtrly_singlefile.zip
 	rm -fv 2011_qtrly_singlefile.zip
-	rm -fv cols_17.txt
 	rm -fv usa_00017.dat
 	rm -fv usa_00018.dat
-	rm -fv cols_18.txt
 	rm -fv 35036-0001-Data.txt
 	rm -fv 36120-0003-Data.txt
 	rm -fv 36120-0005-Data.txt
