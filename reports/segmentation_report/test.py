@@ -2,6 +2,8 @@ import pandas
 import numpy as np
 d = pandas.read_csv('temp.csv') # ad_price_ad_level.csv, but with cluster_count column
 d=d[~d['spam']]
+d=d[d['price_per_hour'] <= 1000]
+msa_characteristics = pandas.read_csv('../../msa_characteristics.csv')
 
 census_names = pandas.read_csv('../../qcew_msa.txt', sep='\t')
 census_names['census_msa_code']=census_names['qcew_code'].apply(lambda x: '31000US%s0' % x.replace('C','')) # 310000 is the MSA code
@@ -12,6 +14,7 @@ def lookup(x):
     except:
         return(np.nan)
 d['msa'] = d['census_msa_code'].apply(lookup)
+d=d.merge(msa_characteristics[['census_msa_code','population']])
 d['log_price_per_hour'] = np.log(d['price_per_hour'])
 
 def desc(name):
@@ -87,7 +90,7 @@ print('Price variance between markets: %s' % (between_std))
 print('Fraction of variance between markets: %s' % (between_std/(within_std + between_std) )) # 4.8%
 
 # Tabulate sex vs massage parlor ads
-sex_vs_massage = d.groupby(['sex_ad','is_massage_parlor_ad'])['price_per_hour'].aggregate({'mean':np.mean, 'std. error':lambda x: np.std(x)/np.sqrt(len(x)), 'N':np.size}).unstack('sex_ad').T.swaplevel(0,1).sort_index(ascending=[True, False])
+sex_vs_massage = d.groupby(['is_massage_parlor_ad'])['price_per_hour'].aggregate({'mean':np.mean, 'std. error':lambda x: np.std(x)/np.sqrt(len(x)), 'N':np.size}).unstack('sex_ad').T.swaplevel(0,1).sort_index(ascending=[True, False])
 print(sex_vs_massage)
 sex_vs_massage.to_csv('sex_ad_vs_massage.csv')
 
@@ -105,7 +108,10 @@ entity_size.to_csv('entity_size.csv')
 
 # Tabulate price by MSA
 msa_stats = d.groupby('msa')['price_per_hour'].describe().unstack('msa').T.sort('mean') 
-msa_stats.to_csv('msa_stats.csv')
+msa_stats = msa_stats.merge(msa_characteristics[['msa','population']], left_index=True, right_on='msa', how='left')
+msa_stats['ads_per_100k_capita'] = msa_stats['mean']*100000/msa_stats['population']
+msa_stats = msa_stats[~msa_stats['ads_per_100k_capita'].isnull()]
+msa_stats[['msa','count','ads_per_100k_capita','mean','std','min','50%','max']].rename(columns={'msa':'MSA','count':'Obs.','ads_per_100k_capita':'Ads/100k Pop.','mean':'Mean','std':'Std.','min':'Min', '50%':'50%-ile','max':'Max'}).to_csv('msa_stats.csv', index=False)
 
 log_price_vs_count = np.corrcoef(np.log(d['price_per_hour']), np.log(d['cluster_count']))
 print('The correlation coefficient is: %0.3f' % log_price_vs_count[0][1])
