@@ -235,6 +235,10 @@ clean:
 	rm -fv 36120-0005-Data.txt
 	rm -fv 34603-0001-Data.txt.gz
 	rm -fv ICPSR_34603/DS0001/34603-0001-Data.txt
+	rm -fv forGiantOak3.tgz
+	rm -fv forGiantOak6.tgz
+	rm -rfv data/forGiantOak3/
+	rm -rfv data/forGiantOak6/
 
 ############ End cleaning targets
 
