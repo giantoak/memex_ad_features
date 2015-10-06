@@ -19,6 +19,28 @@ if False:
 else:
     data = pd.read_csv('data/forGiantOak3/rates2.tsv', sep='\t', header=None, nrows=nrows)
 
+
+def all_call_merge(df, merge_dir):
+    """
+    Merge in incall, outcall, incalloutcall
+    :param df: Dataframe that needs calls merged in
+    :param str merge_dir: 'right' or 'left'
+    :return: DataFrame with merged calls
+    """
+    for call_type in ['incall', 'outcall', 'incalloutcall']:
+        fpath = 'data/forGiantOak6/{}-new.tsv'.format(call_type)
+        call_input = '{}_input'.format(call_type)
+        no_call_type = 'no_{}'.format(call_type)
+
+        df = df.merge(pd.read_csv(fpath, sep='\t', header=None, names=['ad_id', call_input], nrows=nrows),
+                      how=merge_dir)
+        df[call_type] = df[call_input] == 1
+        df[no_call_type] = df[call_input] == -1
+        del df[call_input]
+
+    return df
+
+
 print('There are %s observations' % data.shape[0])  # about 2.1M
 data.rename(columns={0: 'ad_id', 1: 'rate'}, inplace=True)
 data['time_str'] = data['rate'].apply(lambda x: x.split(',')[1])
@@ -32,24 +54,16 @@ data['minutes'] = np.nan
 data.minutes.loc[data['unit'] == 'MINS'] = data.timeValue.loc[data['unit'] == 'MINS'].astype(np.integer)
 data.minutes.loc[data['unit'] == 'HOUR'] = 60*data.timeValue.loc[data['unit'] == 'HOUR'].astype(np.integer)
 
-data['price'] = data['price'].apply(lambda x: x.replace('$', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('roses', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('rose', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('bucks', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('kisses', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('kiss', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('dollars', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('dollar', ''))
-data['price'] = data['price'].apply(lambda x: x.replace('dlr', ''))
-data = data[data['price'].apply(lambda x: 'euro' not in x)]
-data = data[data['price'].apply(lambda x: 'eur' not in x)]
-data = data[data['price'].apply(lambda x: 'eu' not in x)]
-data = data[data['price'].apply(lambda x: 's' not in x)]
-data = data[data['price'].apply(lambda x: '¥' not in x)]
-data = data[data['price'].apply(lambda x: '\xef\xbc\x90' not in x)]
-data = data[data['price'].apply(lambda x: 'aud' not in x)]
+dollar_synonyms = ['$', 'roses', 'rose', 'bucks', 'kisses', 'kiss', 'dollars', 'dollar', 'dlr']
+for d_s in dollar_synonyms:
+    data.ix[:, 'price'] = data['price'].apply(lambda x: x.replace(d_s, ''))
+
+other_currencies = ['euro', 'eur', 'eu', 's', '¥', '\xef\xbc\x90', 'aud']
+for o_c in other_currencies:
+    data = data.ix[data['price'].apply(lambda x: o_c not in x)]
+
 print('There are %s prices after dropping foreign prices' % data.shape[0])
-data['price'] = data['price'].astype('int')
+data.ix[:, 'price'] = data['price'].astype('int')
 # This code is useful for dealing with the 'price' string problem in
 # sam's rates_locs file from 12/29
 
@@ -116,32 +130,8 @@ massage = pd.read_csv('data/forGiantOak3/ismassageparlorad.tsv',
 out = out.merge(massage, how='left')
 del massage
 
-# Merge in incall
-incall = pd.read_csv('data/forGiantOak6/incall-new.tsv',
-                     sep='\t', header=None, names=['ad_id', 'incall_input'], nrows=nrows)
-out = out.merge(incall, how='left')
-del incall
-out['incall'] = out['incall_input'] == 1
-out['no_incall'] = out['incall_input'] == -1
-del out['incall_input']
 
-# Merge in outcall
-outcall = pd.read_csv('data/forGiantOak6/outcall-new.tsv',
-                      sep='\t', header=None, names=['ad_id', 'outcall_input'], nrows=nrows)
-out = out.merge(outcall, how='left')
-del outcall
-out['outcall'] = out['outcall_input'] == 1
-out['no_outcall'] = out['outcall_input'] == -1
-del out['outcall_input']
-
-# Merge in incalloutcall
-incalloutcall = pd.read_csv('data/forGiantOak6/incalloutcall-new.tsv',
-                            sep='\t', header=None, names=['ad_id', 'incalloutcall_input'], nrows=nrows)
-out = out.merge(incalloutcall, how='left')
-del incalloutcall
-out['incalloutcall'] = out['incalloutcall_input'] == 1
-out['no_incalloutcall'] = out['incalloutcall_input'] == -1
-del out['incalloutcall_input']
+out = all_call_merge(out, 'left')
 
 
 del out['unit']
@@ -264,34 +254,9 @@ massage = pd.read_csv('data/forGiantOak3/ismassageparlorad.tsv',
 out = out.merge(massage, how='right')
 del massage
 
-# Merge in incall
 del out['incall']
-incall = pd.read_csv('data/forGiantOak6/incall-new.tsv',
-                     sep='\t', header=None, names=['ad_id', 'incall_input'], nrows=nrows)
-out = out.merge(incall, how='right')
-del incall
-out['incall'] = out['incall_input'] == 1
-out['no_incall'] = out['incall_input'] == -1
-del out['incall_input']
-
-# Merge in outcall
 del out['outcall']
-outcall = pd.read_csv('data/forGiantOak6/outcall-new.tsv',
-                      sep='\t', header=None, names=['ad_id', 'outcall_input'], nrows=nrows)
-out = out.merge(outcall, how='right')
-del outcall
-out['outcall'] = out['outcall_input'] == 1
-out['no_outcall'] = out['outcall_input'] == -1
-del out['outcall_input']
-
-# Merge in incalloutcall
 del out['incalloutcall']
-incalloutcall = pd.read_csv('data/forGiantOak6/incalloutcall-new.tsv',
-                            sep='\t', header=None, names=['ad_id', 'incalloutcall_input'], nrows=nrows)
-out = out.merge(incalloutcall, how='right')
-del incalloutcall
-out['incalloutcall'] = out['incalloutcall_input'] == 1
-out['no_incalloutcall'] = out['incalloutcall_input'] == -1
-del out['incalloutcall_input']
+out = all_call_merge(out, 'right')
 
 out.to_csv('ad_price_ad_level_all.csv', index=False)
