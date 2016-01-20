@@ -229,7 +229,8 @@ fv = pd.read_csv('female_violence.csv')
 fv.rename(columns={'size': 'total_reports'}, inplace=True)  # Rename 'size' column to total reports, the total number of crime reports in the MSA over 2 years
 fv.rename(columns={'mean': 'female_violence_fraction'}, inplace=True)  # column represents fraction of all crime reports which were violence against women
 fv.rename(columns={'sum': 'female_violence_counts'}, inplace=True)  # column represents total number of reports of violence against women
-out = pd.merge(out, fv[['total_reports', 'female_violence_fraction', 'female_violence_counts', 'codes']], on='codes', how='left')
+out = pd.merge(out, fv[['total_reports', 'female_violence_fraction', 'female_violence_counts', 'codes']],
+               on='codes', how='left')
 
 v = pd.read_csv('violence.csv')
 del v['size'] # This is the total number of reports, which is the same as from female violence
@@ -266,7 +267,7 @@ aggregated.columns = ['property', 'rape', 'violent']
 out = pd.merge(out, aggregated, left_on=['census_msa_code', 'year'], right_index=True, how='left')  # Merge UCR data
 
 lemas = pd.read_csv('ucr_lemas_msa.csv')
-lemas=lemas[['msa_parents', 'swnauthemp', 'swnftemp']]
+lemas = lemas[['msa_parents', 'swnauthemp', 'swnftemp']]
 lemas.rename(columns={'msa_parents': 'census_msa_code'}, inplace=True)
 a2 = lemas.groupby(['census_msa_code'])['swnauthemp', 'swnftemp'].sum()
 out = pd.merge(out, a2, left_on='census_msa_code', right_index=True, how='left')  # Merge LEMAS data

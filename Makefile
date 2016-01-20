@@ -3,6 +3,9 @@ HTTP_GET = wget
 GET_FROM_DEEPDIVE_S3 = s3cmd -c ~/mdata.cfg get --skip-existing
 PUT_TO_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg put -P
 EXPORT_BUCKET = giantoakmemex
+
+.PHONY: cleanish clean local export
+
 ### Download Related targets
 
 ### Data from Tempus export
@@ -161,8 +164,12 @@ ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv
 	python make_ad_prices.py
 ############ End intermediate data targets
 
+############ Begin final targets
+
 cpi_crosssection.csv: make_cpicrosssection.py ad_price_ad_level.csv
 	python make_cpicrosssection.py
+
+local: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv ad_price_ad_level_all.csv
 
 export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv ad_price_ad_level_all.csv
 	$(PUT_TO_GIANTOAK_S3) prostitution_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
@@ -194,6 +201,46 @@ export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_ge
 	$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	$(PUT_TO_GIANTOAK_S3) msa_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	$(PUT_TO_GIANTOAK_S3) cpi_crosssection.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+
+############ End final targets
+
+############ Begin cleaning targets
+
+cleanish:
+	rm -fv ad_prices_price_level.csv
+	rm -fv ad_zero_prices.csv
+	rm -fv census_2000_msa_industry_gender_wage.csv
+	rm -fv acs_2013_msa_gender_wage.csv
+	rm -fv ad_zero_prices.csv acs.csv
+	rm -fv month_msa_wage_instruments.csv
+	rm -fv acs.csv prostitution_nibrs.csv
+	rm -fv female_violence_nibrs.csv
+	rm -fv violence_nibrs.csv
+	rm -fv provider_panel.csv
+	rm -fv msa_month_characteristics.csv
+	rm -fv msa_characteristics.csv
+	rm -fv cpi_crosssection.csv
+	rm -fv ad_price_ad_level_all.csv
+
+clean:
+	rm -fv *.csv
+	rm -fv 2014_qtrly_singlefile.zip
+	rm -fv 2013_qtrly_singlefile.zip
+	rm -fv 2012_qtrly_singlefile.zip
+	rm -fv 2011_qtrly_singlefile.zip
+	rm -fv usa_00017.dat
+	rm -fv usa_00018.dat
+	rm -fv 35036-0001-Data.txt
+	rm -fv 36120-0003-Data.txt
+	rm -fv 36120-0005-Data.txt
+	rm -fv 34603-0001-Data.txt.gz
+	rm -fv ICPSR_34603/DS0001/34603-0001-Data.txt
+	rm -fv forGiantOak3.tgz
+	rm -fv forGiantOak6.tgz
+	rm -rfv data/forGiantOak3/
+	rm -rfv data/forGiantOak6/
+
+############ End cleaning targets
 
 #####
 reports/usage/graph_data.csv: reports/usage/usage-report-do.do ad_price_ad_level.csv msa_characteristics.csv msa_month_characteristics.csv

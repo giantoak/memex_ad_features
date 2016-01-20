@@ -1,5 +1,6 @@
 """
-This started from code from Sam on 1/8/2015 to grab his calls to the census data explorer and put them in a unified structure
+This started from code from Sam on 1/8/2015 to grab his calls to the census data explorer
+and put them in a unified structure
 
 JAB
 """
@@ -7,7 +8,7 @@ JAB
 import pandas
 # import datetime
 # import ipdb
-# import json
+# import ujson as json
 import numpy as np
 
 acs = pandas.read_csv('acs_2015_03_18.csv')
@@ -151,8 +152,8 @@ msas['census_msa_code'] = msas['qcew_code'].apply(lambda x: '31000US%s0' % x.rep
 # code
 for i in tables_list:
     msas[i] = np.nan  # Create a column
-    msas[i] = msas.apply(lambda x: census_lookup(x['census_msa_code'],i), axis=1)    # Do census lookups
-msas['population'] = msas["B15003001"] # Total population
+    msas[i] = msas.apply(lambda x: census_lookup(x['census_msa_code'], i), axis=1)    # Do census lookups
+msas['population'] = msas["B15003001"]  # Total population
 msas['unemployment'] = msas["B23025005"]/msas["B23025002"]
 msas['lt_highschool'] = msas[less_than_hs_educations].sum(axis=1)/msas['population']
 msas['highschool'] = msas[hs_educations].sum(axis=1)/msas['population']
@@ -199,7 +200,7 @@ msa_sex = msa_sex.unstack('sex')
 # Note: this leaves us with a DF with the right shape, but it has a
 # multiindex for columns when we really need most things to NOT be
 # there...
-msa_sex.columns.names=['main', 'sex']
+msa_sex.columns.names = ['main', 'sex']
 del msa_sex['sex']
 female = msa_sex.xs(2, level='sex', axis=1)
 male = msa_sex.xs(1, level='sex', axis=1)
