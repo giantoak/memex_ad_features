@@ -106,12 +106,16 @@ entity_size = entity_size[['mean','std. error', 'N']]
 print(entity_size)
 entity_size.to_csv('entity_size.csv')
 
+ipdb.set_trace()
+msa_stats = d.groupby('msa')['price_per_hour'].aggregate({'Obs.':np.size, 'Mean':np.mean,'Std.':np.std, '10%':lambda x: np.percentile(x, 10), '90%':lambda x: np.percentile(x, 90), '50%':lambda x: np.percentile(x, 50)})
 # Tabulate price by MSA
-msa_stats = d.groupby('msa')['price_per_hour'].describe().unstack('msa').T.sort('mean') 
+#msa_stats = d.groupby('msa')['price_per_hour'].describe().unstack('msa').T.sort('mean') 
 msa_stats = msa_stats.merge(msa_characteristics[['msa','population']], left_index=True, right_on='msa', how='left')
-msa_stats['ads_per_100k_capita'] = msa_stats['mean']*100000/msa_stats['population']
+msa_stats['ads_per_100k_capita'] = msa_stats['Mean']*100000/msa_stats['population']
 msa_stats = msa_stats[~msa_stats['ads_per_100k_capita'].isnull()]
-msa_stats[['msa','count','ads_per_100k_capita','mean','std','min','50%','max']].rename(columns={'msa':'MSA','count':'Obs.','ads_per_100k_capita':'Ads/100k Pop.','mean':'Mean','std':'Std.','min':'Min', '50%':'50%-ile','max':'Max'}).to_csv('msa_stats.csv', index=False)
+msa_stats = msa_stats.rename(columns={'msa':'MSA','ads_per_100k_capita':'Ads/100k Pop.'})
+msa_stats = msa_stats.sort('Mean', ascending=True)
+msa_stats[['MSA','Obs.','Ads/100k Pop.','Mean','Std.','10%','50%','90%']].to_csv('msa_stats.csv', index=False)
 
 log_price_vs_count = np.corrcoef(np.log(d['price_per_hour']), np.log(d['cluster_count']))
 print('The correlation coefficient is: %0.3f' % log_price_vs_count[0][1])
