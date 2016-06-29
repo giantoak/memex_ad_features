@@ -1,9 +1,9 @@
 ### System Variables
 HTTP_GET = wget
-GET_FROM_DEEPDIVE_S3 = s3cmd -c ~/mdata.cfg get --skip-existing
-PUT_TO_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg put -P
+GET_FROM_DEEPDIVE_S3 = aws s3 cp --profile stanford
+PUT_TO_GIANTOAK_S3 = aws s3 cp
 EXPORT_BUCKET = giantoakmemex
-GET_FROM_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg get --skip-existing
+GET_FROM_GIANTOAK_S3 = aws s3 cp
 
 .PHONY: cleanish clean local export
 
@@ -23,13 +23,19 @@ ucr_lemas_msa.csv:
 ### Data from Steve Bach
 data/bach/phones.csv:
 	mkdir -p data/bach/
-	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/phones.csv
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/phones.csv .
 	mv phones.csv data/bach/
 data/bach/phones_by_month.csv:
 	mkdir -p data/bach/
-	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/phones_by_month.csv
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/phones_by_month.csv .
 	mv phones_by_month.csv data/bach/
 
+### Data from TGG
+data/TGG/provider_prices.csv:
+	mkdir -p data/TGG/
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/ter_datasets.7z .
+	7z e -odata/TGG/ ter_datasets.7z  
+	rm ter_datasets.7z
 ### Data from Stanford
 data/forGiantOak3/doc-provider-timestamp.tsv:
 	# Get data from the Deep Dive data drop, and extract it
@@ -40,21 +46,36 @@ data/forGiantOak3/doc-provider-timestamp.tsv:
 	gunzip -f data/forGiantOak3/rates2.tsv.gz
 data/forGiantOak3/ismassageparlorad.tsv:
 	# Get massage parlor extraction from the Deep Dive data drop, and extract it
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/ismassageparlorad.tsv.gz
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/ismassageparlorad.tsv.gz .
 	gunzip -f ismassageparlorad.tsv.gz
 	mv ismassageparlorad.tsv data/forGiantOak3/
 data/forGiantOak3/msa_locations.tsv: data/forGiantOak3/doc-provider-timestamp.tsv
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/msa_locations_round2.tsv.gz
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/msa_locations_round2.tsv.gz .
 	gunzip msa_locations_round2.tsv.gz
 	mv msa_locations_round2.tsv data/forGiantOak3/msa_locations.tsv
 data/forGiantOak6/incall-new.tsv:
-	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/forGiantOak6.tgz
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_beta/forGiantOak6.tgz .
 	tar xvf forGiantOak6.tgz -C data/
 	rm forGiantOak6.tgz
 data/forGiantOak3/isssexad.tsv:
 	# Get the sex ad flag from deep dive
-	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv
+	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/isssexad.tsv 
 	mv isssexad.tsv data/forGiantOak3/
+escort_cdr_2:
+	mkdir -p data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/age-combined.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/cbsa-combined.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/content.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/doc_id_mapping.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/email-text.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/ethnicities-dom.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/flags.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/locations-combined.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/massage_places-combined.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/phones-combined.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/post_date-dom.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/rates-text.tsv.bz2 data/escort_cdr_2/
+	$(GET_FROM_DEEPDIVE_S3) s3://memex-data/escort_cdr_2/cdr/service-text.tsv.bz2 data/escort_cdr_2/
 
 ## Publicly available data sources
 cols_17.txt:
@@ -122,96 +143,34 @@ ICPSR_34603/DS0001/34603-0001-Data.txt:
 
 #### Begin intermediate data targets
 
-female_violence_nibrs.csv: make_nibrs.py crosswalk_tract_msa.csv ICPSR_34603/DS0001/34603-0001-Data.txt 35036-0001-Data.txt
-	# The female violence tabulations come from reading NIBRS data from
-	# ICPSR as well as a crosswalk file from Greg DeAngelo
-	python make_nibrs.py
-
-month_msa_wage_instruments.csv: make_month_msa_wage_instruments.py census_2000_msa_industry_gender_wage.csv msa_crosswalk.csv 2011.q1-q4.singlefile.csv
-	# This opportunity index is based on 2000 census data and computed
-	# based on QCEW data
-	python make_month_msa_wage_instruments.py
-
-msa_crosswalk.csv: msa_crosswalk.py
-	python msa_crosswalk.py
-	# Hand recode counties bewteen Census 2000 in IPUMS and 2013 FIPS
-	# used by QCEW
-	# NOTE: this depends on 'ipums_msa.txt' and 'qcew_msa.txt' which
-	# are in the git repository and don't need to be downloaded
-
-census_2000_msa_industry_gender_wage.csv: make_census_2000_msa_industry_gender_wage.r cols_17.txt usa_00017.dat
-	R --vanilla < make_census_2000_msa_industry_gender_wage.r
-
-acs_2013_msa_gender_wage.csv: make_acs_2013_msa_gender_wage.r cols_18.txt usa_00018.dat
-	R --vanilla < make_acs_2013_msa_gender_wage.r
-
-lemas.csv: make_lemas.py ucr_lemas_msa.csv
-	# Take ucr_lemas_msa data from Greg, keep only the lemas information
-	# that happens once in the sample, and save as lemas.csv
-	python make_lemas.py
-
-ucr.csv: make_ucr.py ucr_lemas_msa.csv
-	# Take ucr_lemas_msa data from Greg, keep only the ucr information
-	# that happens annually, reshape to the msa-yera level, and save as ucr.csv
-	python make_ucr.py
-
-acs.csv: make_acs.py acs_2013_msa_gender_wage.csv acs_2015_03_18.csv
-	python make_acs.py
-
-msa_month_characteristics.csv: make_msa_month_characteristics.py ucr.csv month_msa_wage_instruments.csv msa_month_ad_aggregates.csv provider_panel.csv
-	python make_msa_month_characteristics.py
-
-msa_month_ad_aggregates.csv: make_msa_month_ad_aggregates.py ad_price_ad_level.csv 
-	python make_msa_month_ad_aggregates.py
-
-provider_panel.csv: ad_price_ad_level.csv make_provider_panel.py
-	python make_provider_panel.py
-
-msa_characteristics.csv: make_msa_characteristics.py acs.csv violence_nibrs.csv female_violence_nibrs.csv prostitution_nibrs.csv ucr.csv lemas.csv ad_price_ad_level.csv
+msa_characteristics.csv: make_msa_characteristics.py ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
-ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv data/forGiantOak3/ismassageparlorad.tsv data/forGiantOak6/incall-new.tsv
+ad_prices_price_level.csv: make_ad_prices.py data/forGiantOak3/msa_locations.tsv data/forGiantOak3/doc-provider-timestamp.tsv data/forGiantOak3/isssexad.tsv data/forGiantOak3/ismassageparlorad.tsv data/forGiantOak6/incall-new.tsv data/bach/phones.csv data/bach/phones_by_month.csv
 
 	python make_ad_prices.py
+phone_characteristics.csv: make_phone_characteristics.py data/bach/phones.csv 
+	cp data/bach/phones.csv phone_characteristics.csv
 ############ End intermediate data targets
 
 ############ Begin final targets
 
-cpi_crosssection.csv: make_cpicrosssection.py ad_price_ad_level.csv
-	python make_cpicrosssection.py
-
 local: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv ad_price_ad_level_all.csv
 
-export: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv ad_price_ad_level_all.csv
-	$(PUT_TO_GIANTOAK_S3) prostitution_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) female_violence_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) violence_nibrs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) month_msa_wage_instruments.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) census_2000_msa_industry_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) acs.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) ucr.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) lemas.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	zip ad_prices_price_level.zip ad_prices_price_level.csv
-	$(PUT_TO_GIANTOAK_S3) ad_prices.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	zip ad_zero_prices.zip ad_zero_prices.csv
-	$(PUT_TO_GIANTOAK_S3) ad_zero_prices.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/intermediate/
-	$(PUT_TO_GIANTOAK_S3) acs_2013_msa_gender_wage.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/ # The metro level wage distribution by gender
-	$(PUT_TO_GIANTOAK_S3) counts.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/
-	$(PUT_TO_GIANTOAK_S3) region_features.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/
+export: msa_characteristics.csv ad_price_ad_level.csv ad_price_ad_level_all.csv phone_characteristics.csv 
 
 	# Export final results
 	zip ad_price_ad_level.zip ad_price_ad_level.csv
-	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
 	#zip ad_price_ad_level_all.zip ad_price_ad_level_all.csv
 	#$(PUT_TO_GIANTOAK_S3) ad_price_ad_level_all.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
-	zip ad_price_price_level.zip ad_prices_price_level.csv
-	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
-	zip provider_panel.zip provider_panel.csv
-	$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
-	$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
-	$(PUT_TO_GIANTOAK_S3) msa_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
-	$(PUT_TO_GIANTOAK_S3) cpi_crosssection.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
+	#zip ad_price_price_level.zip ad_prices_price_level.csv
+	#$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	#zip provider_panel.zip provider_panel.csv
+	#$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	#$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	$(PUT_TO_GIANTOAK_S3) msa_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	$(PUT_TO_GIANTOAK_S3) phone_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
 
 ############ End final targets
 
@@ -298,12 +257,7 @@ data/forGiantOak3/links.tsv: data/forGiantOak3/doc-provider-timestamp.tsv
 data/forGiantOak3/phone_numbers.tsv: data/forGiantOak3/doc-provider-timestamp.tsv 
 data/forGiantOak3/rates2.tsv: data/forGiantOak3/doc-provider-timestamp.tsv 
 data/forGiantOak3/rates.tsv: data/forGiantOak3/doc-provider-timestamp.tsv 
-violence_nibrs.csv: female_violence_nibrs.csv
-prostitution_nibrs.csv: female_violence_nibrs.csv
-prostitution.csv: female_violence.csv
-ad_zero_prices.csv: ad_prices_price_level.csv
 ad_price_ad_level.csv: ad_prices_price_level.csv
 ad_price_ad_level_all.csv: ad_prices_price_level.csv
-lemas.csv: ucr.csv
 data/forGiantOak6/incalloutcall-new.tsv: data/forGiantOak6/incall-new.tsv
 data/forGiantOak6/outcall-new.tsv: data/forGiantOak6/incall-new.tsv

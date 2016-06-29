@@ -6,15 +6,16 @@ JAB
 
 import pandas as pd
 import datetime
-# import ipdb
-# import ujson as json
 import numpy as np
 
-acs = pd.read_csv('acs.csv')
-ucr_year = pd.read_csv('ucr.csv')
-ucr_avg = ucr_year.groupby('census_msa_code')[['property', 'rape', 'violent']].sum()
-ucr_avg.reset_index(inplace=True)
-lemas = pd.read_csv('lemas.csv')
+## This code brings in american community survey data as well as data
+## from uniform crime reporting and law enforcement staffing reporting,
+## but is ignored for classification
+#acs = pd.read_csv('acs.csv')
+#ucr_year = pd.read_csv('ucr.csv')
+#ucr_avg = ucr_year.groupby('census_msa_code')[['property', 'rape', 'violent']].sum()
+#ucr_avg.reset_index(inplace=True)
+#lemas = pd.read_csv('lemas.csv')
 
 # Begin working with prices
 prices = pd.read_csv('ad_price_ad_level.csv')
@@ -36,8 +37,10 @@ msa_aggregate_prices = prices.groupby('census_msa_code')['price_per_hour'].aggre
      'ad_p90_msa': lambda x: np.percentile(x, q=90)})
 msa_aggregate_prices.reset_index(inplace=True)
 
-out = ucr_avg.copy()
-out = out.merge(acs, how='outer')
-out = out.merge(lemas, how='outer')
-out = out.merge(msa_aggregate_prices, how='outer')
+#out = ucr_avg.copy()
+#out = out.merge(acs, how='outer')
+#out = out.merge(lemas, how='outer')
+#out = out.merge(msa_aggregate_prices, how='outer')
+
+out = out.copy()
 out.to_csv('msa_characteristics.csv', index=False)
