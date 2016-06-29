@@ -3,6 +3,7 @@ HTTP_GET = wget
 GET_FROM_DEEPDIVE_S3 = s3cmd -c ~/mdata.cfg get --skip-existing
 PUT_TO_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg put -P
 EXPORT_BUCKET = giantoakmemex
+GET_FROM_GIANTOAK_S3 = s3cmd -c ~/jeffgo.cfg get --skip-existing
 
 .PHONY: cleanish clean local export
 
@@ -18,6 +19,16 @@ crosswalk_tract_msa.csv:
 ucr_lemas_msa.csv:
 	# Get UCR data from Greg
 	$(HTTP_GET) http://$(EXPORT_BUCKET).s3.amazonaws.com/sex_ad_analysis/input/ucr_lemas_msa.csv
+
+### Data from Steve Bach
+data/bach/phones.csv:
+	mkdir -p data/bach/
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/phones.csv
+	mv phones.csv data/bach/
+data/bach/phones_by_month.csv:
+	mkdir -p data/bach/
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/sex_ad_analysis/input/phones_by_month.csv
+	mv phones_by_month.csv data/bach/
 
 ### Data from Stanford
 data/forGiantOak3/doc-provider-timestamp.tsv:

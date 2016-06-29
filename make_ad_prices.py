@@ -9,7 +9,7 @@ the implied fixed cost
 """
 import pandas as pd
 # import datetime
-# import ipdb
+import ipdb
 # import json
 import numpy as np
 nrows = None
@@ -167,34 +167,38 @@ print(data.shape)
 # quoted prices by a 'multiplier' which represents the average ratio of
 # hourly price to the given time period price
 
+try:
+    price_ratios = pd.read_csv('price_ratios.csv')
+except:
 # The below blocks of code compute 'price_ratios' which is the ratio of
 # average prices for 1 hour for other ads that also posted the same
 # price
-minute_values = pd.Series((data['minutes'].value_counts()/data.shape[0] > .0001).index.map(int))
-minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
-minute_string_series.index = minute_values
+    minute_values = pd.Series((data['minutes'].value_counts()/data.shape[0] > .0001).index.map(int))
+    minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
+    minute_string_series.index = minute_values
 
 
-def get_prices(x):
-    out = pd.Series(np.nan, index=minute_values)
-    for mins in minute_values:
-        matching_prices = x[x['minutes'] == mins]['price']
-        if len(matching_prices):
-            out[mins] = matching_prices.mean()
-    return out
+    def get_prices(x):
+        out = pd.Series(np.nan, index=minute_values)
+        for mins in minute_values:
+            matching_prices = x[x['minutes'] == mins]['price']
+            if len(matching_prices):
+                out[mins] = matching_prices.mean()
+        return out
 
-me = data.groupby('ad_id').apply(get_prices)  # This is REALLLLY slow
-price_ratios = pd.Series(np.nan, index=minute_values)
-price_ratios_counts = pd.Series(np.nan, index=minute_values)
-for m in minute_values:
-    hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
-    m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
-    price_ratios[m] = hour_price/m_price
-    price_ratios_counts[m] = me[(~me[m].isnull()) & (~me[m].isnull())].shape[0]
+    me = data.groupby('ad_id').apply(get_prices)  # This is REALLLLY slow
+    price_ratios = pd.Series(np.nan, index=minute_values)
+    price_ratios_counts = pd.Series(np.nan, index=minute_values)
+    for m in minute_values:
+        hour_price = me[(~me[60].isnull()) & (~me[m].isnull())][60].mean()
+        m_price = me[(~me[m].isnull()) & (~me[m].isnull())][m].mean()
+        price_ratios[m] = hour_price/m_price
+        price_ratios_counts[m] = me[(~me[m].isnull()) & (~me[m].isnull())].shape[0]
 
-print('Computed price ratios for acts of given length to acts of 1 hour')
-print(price_ratios)
-print(price_ratios_counts)
+    print('Computed price ratios for acts of given length to acts of 1 hour')
+    print(price_ratios)
+    print(price_ratios_counts)
+    price_ratios.to_csv('price_ratios.csv', index=False)
 
 # Now split the data by whether there's a posted price of 1 hr
 data['1hr'] = data['time_str'] == '1 HOUR'
@@ -223,13 +227,19 @@ out = pd.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how
 print('cleaning up old data...')
 del data
 del price_level
+del price_level_hourly
+del price_level_no_hourly
+del price_level_no_hourly_prices
 del ad_level
 del ad_level_prices
+for col in ['sex_ad','is_massage_parlor_ad','1hr','incall','no_incall','outcall','no_outcall','incalloutcall','no_incalloutcall']:
+    out[col] = out[col].astype('bool')
 
 # Filter out spam guys with > 200 ads in our sample period and save
 spam = pd.DataFrame(out.groupby('cluster_id').apply(lambda x: x.shape[0] > 200), columns=['spam'])
 spam.reset_index(inplace=True)
 out = out.merge(spam)
+del spam
 
 # Add site filter
 out['site'] = out['ad_id'].apply(lambda x: x.split(':')[0])
@@ -243,9 +253,19 @@ out.to_csv('ad_price_ad_level.csv', index=False)
 del out['cluster_id']
 del out['date_str']
 out = ts.merge(out, how='outer')
+del ts
 
 del out['census_msa_code']
+for col in ['is_massage_parlor_ad','1hr','incall','no_incall','outcall','no_outcall','incalloutcall','no_incalloutcall']:
+    out[col] = out[col].fillna(False).to_sparse()
+import gc
+gc.collect()
 out = msa.merge(out, how='outer')
+
+phones=pd.read_csv('data/forGiantOak3/phone_numbers.tsv', sep='\t', header=None, names=['ad_id','phone'])
+steve_phones = pd.read_csv('data/bach/phones.csv')
+phones = phones.merge(steve_phones, how='left')
+out = out.merge(phones, how='left')
 
 # Merge in massage parlor flag
 del out['is_massage_parlor_ad']
@@ -257,6 +277,7 @@ del massage
 del out['incall']
 del out['outcall']
 del out['incalloutcall']
+ipdb.set_trace()
 out = all_call_merge(out, 'right')
 
 out.to_csv('ad_price_ad_level_all.csv', index=False)
