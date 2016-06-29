@@ -42,5 +42,5 @@ msa_aggregate_prices.reset_index(inplace=True)
 #out = out.merge(lemas, how='outer')
 #out = out.merge(msa_aggregate_prices, how='outer')
 
-out = out.copy()
+out = msa_aggregate_prices.copy()
 out.to_csv('msa_characteristics.csv', index=False)

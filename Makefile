@@ -161,16 +161,16 @@ export: msa_characteristics.csv ad_price_ad_level.csv ad_price_ad_level_all.csv 
 
 	# Export final results
 	zip ad_price_ad_level.zip ad_price_ad_level.csv
-	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/pipeline/output/ --acl public-read
 	#zip ad_price_ad_level_all.zip ad_price_ad_level_all.csv
 	#$(PUT_TO_GIANTOAK_S3) ad_price_ad_level_all.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/
 	#zip ad_price_price_level.zip ad_prices_price_level.csv
-	#$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	#$(PUT_TO_GIANTOAK_S3) ad_price_ad_level.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --acl public-read
 	#zip provider_panel.zip provider_panel.csv
-	#$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
-	#$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
-	$(PUT_TO_GIANTOAK_S3) msa_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
-	$(PUT_TO_GIANTOAK_S3) phone_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --set-acl public-read
+	#$(PUT_TO_GIANTOAK_S3) provider_panel.zip s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --acl public-read
+	#$(PUT_TO_GIANTOAK_S3) msa_month_characteristics.csv s3://$(EXPORT_BUCKET)/sex_ad_analysis/output/ --acl public-read
+	$(PUT_TO_GIANTOAK_S3) msa_characteristics.csv s3://$(EXPORT_BUCKET)/pipeline/output/ --acl public-read
+	$(PUT_TO_GIANTOAK_S3) phone_characteristics.csv s3://$(EXPORT_BUCKET)/pipeline/output/ --acl public-read
 
 ############ End final targets
 
