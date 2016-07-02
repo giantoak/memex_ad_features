@@ -11,7 +11,9 @@ The different data targets are managed by the [`Makefile`.](https://github.com/g
 **Currently**, the Makefile spits out a number of different CSV files. **Eventually** it will dump these files into HDFS for general consumption.
 
 ### Target Dependencies
-![Markdown Target Dependencies](makefile_graph.svg "Makefile sources and targets")
+The below dependency graph is intended to provide an overview of the makefile and chain of targets that it can create. If it doesn't render correctly, know that all is well! Just click on the "missing" icon to get to the file itself.
+
+![Markdown Target Dependencies](https://github.com/giantoak/memex_ad_features/blob/master/makefile_graph.svg "Makefile sources and targets")
 
 ## Target Plans
 We will be pairing down this version of the makefile to focus on a limited number of targets. Specifically:
