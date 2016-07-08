@@ -5,7 +5,6 @@ import re
 # obviously very sensitive to the way the header is structured,
 # so not intended for use beyond this hackathon...
 # (9/19/14)
-import pandas as pd
 
 csv_full = ''
 

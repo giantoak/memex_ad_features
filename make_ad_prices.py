@@ -8,9 +8,7 @@ It then creates a data set of only ads with two prices "doubles" with
 the implied fixed cost 
 """
 import pandas as pd
-# import datetime
 import ipdb
-# import json
 import numpy as np
 nrows = None
 
