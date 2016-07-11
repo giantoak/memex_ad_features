@@ -49,8 +49,8 @@ print('There are %s observations after dropping no duration prices' % data.shape
 data['timeValue'] = data['time_str'].apply(lambda x: x.split(' ')[0])
 data['unit'][data['unit'] == 'HOURS'] = 'HOUR'
 data['minutes'] = np.nan
-data.minutes.loc[data['unit'] == 'MINS'] = data.timeValue.loc[data['unit'] == 'MINS'].astype(np.integer)
-data.minutes.loc[data['unit'] == 'HOUR'] = 60*data.timeValue.loc[data['unit'] == 'HOUR'].astype(np.integer)
+data.minutes.loc[data['unit'] == 'MINS'] = data.timeValue.loc[data['unit'] == 'MINS'].astype(np.int64)
+data.minutes.loc[data['unit'] == 'HOUR'] = 60*data.timeValue.loc[data['unit'] == 'HOUR'].astype(np.int64)
 
 dollar_synonyms = ['$', 'roses', 'rose', 'bucks', 'kisses', 'kiss', 'dollars', 'dollar', 'dlr']
 for d_s in dollar_synonyms:
@@ -168,9 +168,9 @@ print(data.shape)
 try:
     price_ratios = pd.read_csv('price_ratios.csv')
 except:
-# The below blocks of code compute 'price_ratios' which is the ratio of
-# average prices for 1 hour for other ads that also posted the same
-# price
+    # The below blocks of code compute 'price_ratios' which is the ratio of
+    #  average prices for 1 hour for other ads that also posted the same
+    #  price
     minute_values = pd.Series((data['minutes'].value_counts()/data.shape[0] > .0001).index.map(int))
     minute_string_series = minute_values.map(lambda x: 'price_%s_mins' % x)
     minute_string_series.index = minute_values
@@ -215,11 +215,22 @@ price_level_no_hourly['price_per_hour'] = price_level_no_hourly['price'] * price
 price_level_no_hourly_prices = pd.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
 price_level_no_hourly['price_per_hour'] = price_level_no_hourly_prices
 price_level = pd.concat([price_level_hourly, price_level_no_hourly], axis=0)
-price_level.sort('1hr', ascending=False, inplace=True)
-ad_level_prices = pd.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
-ad_level = price_level.drop_duplicates('ad_id')[['ad_id', 'sex_ad', 'census_msa_code', 'cluster_id', 'date_str',
-                                                 'is_massage_parlor_ad', '1hr', 'incall', 'no_incall', 'outcall',
-                                                 'no_outcall', 'incalloutcall', 'no_incalloutcall']]
+price_level.sort_values('1hr', ascending=False, inplace=True)
+ad_level_prices = pd.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(),
+                               columns=['price_per_hour'])
+ad_level = price_level.drop_duplicates('ad_id')[['ad_id',
+                                                 'sex_ad',
+                                                 'census_msa_code',
+                                                 'cluster_id',
+                                                 'date_str',
+                                                 'is_massage_parlor_ad',
+                                                 '1hr',
+                                                 'incall',
+                                                 'no_incall',
+                                                 'outcall',
+                                                 'no_outcall',
+                                                 'incalloutcall',
+                                                 'no_incalloutcall']]
 out = pd.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
 # Clean up some unused data...
 print('cleaning up old data...')
