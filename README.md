@@ -64,7 +64,7 @@ Values should be calculated quarterly (perhaps monthly? Or a *rolling average*?)
     * [ ] `ad_std_msa` - Standard deviation of price within MSA
     * [ ] `ad_p<X>_msa`, where `<X> = range(0, 100, 5)` - value at the Xth price percentile
   * Lattice flag data per geographic area
-  <!--
+  <!---
     * [ ] `ad_incall_msa` - percent of ads with incall by MSA
     * [ ] `ad_outcall_msa` - percent of ads with outcall by MSA
     * [ ] `ad_<ethnicity>_msa` - percent of ads with given `<ethnicity>` (each ethnicity will have its own column)
@@ -107,11 +107,5 @@ Values should be calculated quarterly (perhaps monthly? Or a *rolling average*?)
     * [ ] Standard deviation per phone number
     * [ ] HHI phone numbers? (how many different phone numbers do you have per ad? How many unique prices?)
 
-
-### Diagnostic Validation Tasks
-* Imputed one
-
-
 ## Future Possibilities
-
 * MSA-level values, cross-tabbed by gender using ACS data
