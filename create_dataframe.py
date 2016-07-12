@@ -30,7 +30,7 @@ class CreateDataFrame:
         flags = self.get_data_frame_from_csv(self.config['flags'][0], columns=self.config['flags'][1])
         rates = self.get_data_frame_from_csv(self.config['rates'][0], columns=self.config['rates'][1])
         service = self.get_data_frame_from_csv(self.config['service'][0], columns=self.config['service'][1])
-        doc_id = self.get_data_frame_from_csv(self.config['doc_id'][0], columns=self.config['doc_id'][1])
+        doc_id = self.get_data_frame_from_csv(self.config['doc_id'][0],  columns=self.config['doc_id'][1])
 
         # Next mege together by ad id
         return_dataframe = pandas.merge(doc_id, age, on='ad_id', how='left')

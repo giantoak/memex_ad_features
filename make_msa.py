@@ -32,7 +32,7 @@ class MakeMSA:
         return df_msa_rates.groupby('msa_name')['rate_per_hour'].aggregate({'rate_count': len,
                                                                             'rate_mean': numpy.mean,
                                                                             'rate_std': numpy.std,
-                                                                            'rate_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
+                                                                            'rate_ad_p05_msa':  lambda x: numpy.percentile(x, q=5),
                                                                             'rate_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
                                                                             'rate_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
                                                                             'rate_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
