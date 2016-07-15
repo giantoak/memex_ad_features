@@ -22,16 +22,16 @@ We will be pairing down this version of the makefile to focus on a limited numbe
 Note that most ad-level metrics are relatively unimportant. User facing systems already have basic ad information and extracted information. So the theme of what we're going to contribute here is either we're going to impute price for ads or we're going to contribute measures which depend in part on aggregated statistics such as...
   
 #### Non-imputed features (we can look these up when they exist)
-* [ ] Ad price at ad level (`price_per_hour` in `make_ad_prices.py`) (@gstub)
+* [X] Ad price at ad level (`price_per_hour` in `make_ad_prices.py`) (@gstub)
   * [ ] For ads with multiple prices, hold out 10% of the one-hour prices, impute the value of the held out set,
     test the size of the match (Jeff, validates parent)
 * [ ] Price relative to geographic area (supertask)
   * [ ] Price relative to the **city** average (lowest level of geographic agg. provided by Lattice) (@gstub)
-  * [ ] Price relative to the **MSA** average (`price_per_hour` - `ad_p50_msa`)/`ad_std_msa` (@gstub)
+  * [X] Price relative to the **MSA** average (`price_per_hour` - `ad_p50_msa`)/`ad_std_msa` (@gstub)
   * [ ] Price relative to the **state** average (@gstub)
   * [ ] Find out what list ofcities Lattice is using (@pmlandwehr)
     * [ ] Find the mapping from that list of cities to the MSAs. (@pmlandwehr) (**DO NOT** get hung up on this.)
-* [ ] Price quantile relative to geographic area (i.e. is this ad at the 25th percentile?  30th perentile?) (@gstub)
+* [X] Price quantile relative to geographic area (i.e. is this ad at the 25th percentile?  30th perentile?) (@gstub)
 * [ ] Price for phone number *X* relative to the median price for phone number *X*. (@gstub)
 * [ ] Flag difference from MSA average. (i.e. if 30% of ads in an MSA are flagged "Juvenile" the MSA average is .3, so a non-"Juvenile" flagged ad will have a value of -0.3 and a "Juvenile" flagged at 0.7)
 * [ ] Total number of extracted prices (possibly not included in data at this point, but good to have)
