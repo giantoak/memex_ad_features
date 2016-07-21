@@ -87,18 +87,11 @@ Values should be calculated quarterly (perhaps monthly? Or a *rolling average*?)
 *No* metrics at this level are in the original makefile, but we have been moving in that direction. (See, for instance, [`make_phone_characteristics.py`](https://github.com/giantoak/memex_ad_features/blob/master/make_phone_characteristics.py) and [`make_phone_level.py`](https://github.com/giantoak/memex_ad_features/blob/master/make_phone_level.py).) These metrics come from [Steve Bach's computations.](https://github.com/HazyResearch/memex-analysis)
   * [ ] Talk to Senthil about the future pipeline for these features. (@jeffborowitz)
   * [ ] All values in `data/bach/phones.csv`. (Not in repo)
-    * [ ] `n_ads` - Number of ads posted by this phone number in sample
-    * [ ] `n_distinct_locations` - Number of unique cities
+    * [X] `n_ads` - Number of ads posted by this phone number in sample
+    * [X] `n_distinct_locations` - Number of unique cities
     * [ ] `location_tree_length` - a measure of how far apart the phone number appears around the US
-    * [ ] `n_incall` - Number of ads posted by this phone number that are incalls.
-    * [ ] `n_outcall` - Number of ads posted by this phone number that are outcalls.
-    * [ ] Other metrics… (needs to be broken down)
-  * [ ] All values in `data/bach/phones_by_month.csv`. (Not in repo)
-    * [ ] `n_ads` - Number of ads posted by this phone number in sample
-    * [ ] `n_distinct_locations` - Number of unique cities
-    * [ ] `location_tree_length` - a measure of how far apart the phone number appears around the US
-    * [ ] `n_incall` - Number of ads posted by this phone number that are incalls.
-    * [ ] `n_outcall` - Number of ads posted by this phone number that are outcalls.
+    * [X] `n_incall` - Number of ads posted by this phone number that are incalls.
+    * [X] `n_outcall` - Number of ads posted by this phone number that are outcalls.
     * [ ] Other metrics… (needs to be broken down)
   * [ ] Price metrics
     * [ ] Share of ads under this phone that have prices
