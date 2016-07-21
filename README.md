@@ -94,10 +94,10 @@ Values should be calculated quarterly (perhaps monthly? Or a *rolling average*?)
     * [X] `n_outcall` - Number of ads posted by this phone number that are outcalls.
     * [ ] Other metrics… (needs to be broken down)
   * [ ] Price metrics
-    * [ ] Share of ads under this phone that have prices
-    * [ ] Media price per phone number
-    * [ ] Average price per phone number
-    * [ ] Standard deviation per phone number
+    * [X] Share of ads under this phone that have prices
+    * [X] Media price per phone number
+    * [X] Average price per phone number
+    * [X] Standard deviation per phone number
     * [ ] HHI phone numbers? (how many different phone numbers do you have per ad? How many unique prices?)
 
 ## Future Possibilities
