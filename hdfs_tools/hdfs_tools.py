@@ -1,6 +1,6 @@
 def _get_temp_dir():
     import tempfile
-    return tempfile.tempdir()
+    return tempfile.gettempdir()
 
 
 def _get_temp_fpath():
@@ -20,14 +20,6 @@ def _validated_snakebite_client(client=None):
     return Client('memex-nn2.xdata.data-tactics-corp.com', 8020, use_trash=False)
 
 
-def _run_copy(copy_file_generator):
-    from tqdm import tqdm
-    copy_results = []
-    for x in tqdm(copy_file_generator):
-        copy_results.append(x)
-    return copy_results
-
-
 def copy_hdfs_files_to_local(source_fpaths, dest_dir, client=None):
     """
 
@@ -36,13 +28,20 @@ def copy_hdfs_files_to_local(source_fpaths, dest_dir, client=None):
     :param snakebite.Client client:
     :returns: `list` --
     """
+    from tqdm import tqdm
+
     client = _validated_snakebite_client()
 
     if dest_dir is None:
         dest_dir = _get_temp_dir()
 
     copy_file_generator = client.copyToLocal(source_fpaths, dest_dir)
-    return _run_copy(copy_file_generator)
+
+    copy_results = []
+    for x in tqdm(copy_file_generator, total=len(source_fpaths)):
+        copy_results.append(x)
+
+    return copy_results
 
 
 def copy_hdfs_file_to_local(source_fpath, dest_fpath=None, client=None):
@@ -94,12 +93,12 @@ def copy_local_to_hdfs(source_path, target_path):
 
 
 def copy_month_of_lattice_extracts(year_month_str, target_dir=None):
-    return copy_hdfs_files_to_local(
-        ['/user/lattice/extract/{}/complete/*.json.gz'.format(year_month_str)],
+    return copy_hdfs_dir_to_local(
+        '/user/lattice/extract/{}/complete/*.json.gz'.format(year_month_str),
         target_dir)
 
 
 def copy_all_lattice_extracts(target_dir=None):
-    return copy_hdfs_files_to_local(
-        ['/user/lattice/extract/*/complete/*.json.gz'],
+    return copy_hdfs_dir_to_local(
+        '/user/lattice/extract/*/complete/*.json.gz',
         target_dir)
