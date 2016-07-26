@@ -148,8 +148,17 @@ price_imputation_model.pkl: fit_price_imputation.py ad_price_ad_level.csv
 ad_price_imputed.csv: impute.py price_imputation_model.pkl price_imputation_text_extractor.pkl
 	python impute.py
 CP1_train_ads.json:
-	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET).s3.amazonaws.com/CP1_train_ads.json
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_train_ads.json
 
+
+true_negatives_text.json:
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_negatives_KH_unofficial-4.zip .
+	unzip -F CP1_negatives_KH_unofficial-4.zip
+	rm CP1_negatives_KH_unofficial-4.zip
+	mv  CP1_negatives_KH_unofficial-4 true_negatives_text.json
+
+true_negatives_price.csv: true_negatives_text impute_true_negatives.py
+	python impute_true_negatives.py
 true_positives_text.json: parse_cp.py CP1_train_ads.json
 	python parse_cp.py
 true_positives_price.csv: true_positives_text.json impute_true_positives.py
