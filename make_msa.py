@@ -1,5 +1,6 @@
 import pandas
 import numpy
+import datetime
 
 class MakeMSA:
 
@@ -160,6 +161,52 @@ class MakeMSA:
             return False
 
         return True
+
+    def plot_prices(self):
+        # First get rates, post date and msa
+        df = self.dataframe[['rate', 'post_date', 'msa_name']].dropna(0)
+
+        # Calculate the rate per hour
+        df['rate_per_hour'] = df['rate'].apply(lambda x: self.calculate_rate(x))
+
+        # Drop nan once more to get rid of prices we couldn't calculate
+        df = df.dropna(0)
+
+        # We don't need the original rate column anymore
+        df = df.drop('rate', 1)
+
+        # Convert post date column to datetime
+        df['post_date'] =  pandas.to_datetime(df['post_date'], format='%Y-%m-%d')
+
+        # Change the date to represent quarters
+        df['post_date'] = df['post_date'].apply(lambda x: self.get_quarter(x))
+
+        # Group by msa and post date
+        df = df.groupby(['msa_name', 'post_date']).filter(lambda x: len(x) > 300)
+
+        # Find the msa with the proper amount of rates
+
+
+        df['test'] = df['']
+
+    def get_quarter(self, value):
+        day = 1
+        year = value.year
+        month = value.month
+
+        if month > 0 and month < 4:
+            month = 1
+        elif month > 3 and month < 7:
+            month = 4
+        elif month > 6 and month < 10:
+            month = 7
+        else:
+            month = 10
+
+        value = pandas.Timestamp(datetime.date(year, month, day))
+        return value
+
+
     """ **** CURRENTLY NOT USED***
     def get_incall_outcall(self):
         # First get only the service and msa from the dataframe
