@@ -2,7 +2,7 @@ def parse_lattice_json_line(line):
     """
     Parse a line of lattice JSON, trimming out non-lattice fields and flattening nested fields.
     :param str line:
-    :returns: `dict` -- parsed and shrunk line of lattice JSON.
+    :returns: `list` -- list of "unpacked" JSON dicts: values are not lists but rather single entries.
     """
     import ujson as json
     from collections import defaultdict
@@ -50,12 +50,25 @@ def parse_lattice_json_line(line):
         else:
             value_list = [x['value'] for x in jsn['extractions'][key]['results']
                           if 'value' in x]
-            if key in ['lattice-content', 'lattice-crawltime', 'lattice-title']:
-                new_jsn_dict[key[8:]] = value_list[0]
-            else:
-                new_jsn_dict[key[8:]] = value_list
+            new_jsn_dict[key[8:]] = value_list
 
-    return new_jsn_dict
+
+    # Iterate through the JSON dict,
+    # appending copy dicts that unpack lists of values
+    jsn_dict_list = [new_jsn_dict]
+    i = 0
+    while i < len(jsn_dict_list):
+        for key in jsn_dict_list[i]:
+            if isinstance(jsn_dict_list[i][key], list):
+                for value in jsn_dict_list[i][key][1:]:
+                    jsn_copy = jsn_dict_list[i].copy()
+                    jsn_copy[key] = value
+                    jsn_dict_list.append(jsn_copy)
+                jsn_dict_list[i][key] = jsn_dict_list[i][key][0]
+        i += 1
+
+
+    return jsn_dict_list
 
 
 def stream_lattice_json_gzip_file_to_file(gzip_fpath):
