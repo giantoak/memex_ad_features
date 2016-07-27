@@ -2,7 +2,7 @@ def parse_lattice_json_line(line):
     """
     Parse a line of lattice JSON, trimming out non-lattice fields and flattening nested fields.
     :param str line:
-    :returns: `str` -- parsed and shrunk line of lattice JSON.
+    :returns: `dict` -- parsed and shrunk line of lattice JSON.
     """
     import ujson as json
     from collections import defaultdict
