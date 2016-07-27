@@ -13,74 +13,86 @@ class MakeMSA:
         :return: All msa features
         """
 
-        # Get the rates
-        msa_rate = self.get_rates()
-        # Get the rate features
-        df_msa_rate = self.calculate_msa_rate_features(msa_rate)
-        # Get the ages
-        msa_age = self.get_ages()
-        # Get the age features
-        df_msa_age = self.calculate_msa_age_features(msa_age)
-        # Join the two and return
-        return df_msa_rate.join(df_msa_age, how='outer')
+        # Since calculating with NaN is problematic and it slows down the processing, let's create two dataframes. One for rates without NaN and one for ages without NaN
+        rate_dataframe = self.dataframe.dropna(subset=['rate'])
+        age_dataframe = self.dataframe.dropna(subset=['age'])
 
-    def calculate_msa_rate_features(self, df_msa_rates):
+        # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
+        rate_dataframe['rate_per_hour'] = rate_dataframe['rate'].apply(lambda x: self.calculate_rate(x))
+        rate_dataframe = rate_dataframe.drop('rate', 1)
+        rate_dataframe = rate_dataframe.dropna(subset=['rate_per_hour'])
+
+        # Now do rates and age for city
+        city_stats_rate = self.calculate_rate_features(rate_dataframe, 'city')
+        city_stats_age = self.calculate_age_features(age_dataframe, 'city')
+        city_stats = city_stats_rate.join(city_stats_age, how='outer')
+
+        # Now do rates and age for state
+        state_stats_rate = self.calculate_rate_features(rate_dataframe, 'state')
+        state_stats_age = self.calculate_age_features(age_dataframe, 'state')
+        state_stats = state_stats_rate.join(state_stats_age, how='outer')
+
+        return {'state_stats': state_stats, 'city_stats': city_stats}
+
+    def calculate_rate_features(self, df, column):
         """
 
-        :param df_msa_rates:
-        :return: MSA rate features
+        :param df: dataframe
+        :param column: Column to perfom the aggragation on
+        :return:
         """
-        return df_msa_rates.groupby('msa_name')['rate_per_hour'].aggregate({'rate_count': len,
-                                                                            'rate_mean': numpy.mean,
-                                                                            'rate_std': numpy.std,
-                                                                            'rate_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
-                                                                            'rate_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
-                                                                            'rate_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
-                                                                            'rate_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
-                                                                            'rate_ad_p25_msa': lambda x: numpy.percentile(x, q=25),
-                                                                            'rate_ad_p30_msa': lambda x: numpy.percentile(x, q=30),
-                                                                            'rate_ad_p35_msa': lambda x: numpy.percentile(x, q=35),
-                                                                            'rate_ad_p40_msa': lambda x: numpy.percentile(x, q=40),
-                                                                            'rate_ad_p45_msa': lambda x: numpy.percentile(x, q=45),
-                                                                            'rate_ad_p50_msa': lambda x: numpy.percentile(x, q=50),
-                                                                            'rate_ad_p55_msa': lambda x: numpy.percentile(x, q=55),
-                                                                            'rate_ad_p60_msa': lambda x: numpy.percentile(x, q=60),
-                                                                            'rate_ad_p65_msa': lambda x: numpy.percentile(x, q=65),
-                                                                            'rate_ad_p70_msa': lambda x: numpy.percentile(x, q=70),
-                                                                            'rate_ad_p75_msa': lambda x: numpy.percentile(x, q=75),
-                                                                            'rate_ad_p80_msa': lambda x: numpy.percentile(x, q=80),
-                                                                            'rate_ad_p85_msa': lambda x: numpy.percentile(x, q=85),
-                                                                            'rate_ad_p90_msa': lambda x: numpy.percentile(x, q=90),
-                                                                            'rate_ad_p95_msa': lambda x: numpy.percentile(x, q=95)})
+        return df.groupby(column)['rate_per_hour'].aggregate({'rate_count': len,
+                                                              'rate_mean': numpy.mean,
+                                                              'rate_std': numpy.std,
+                                                              'rate_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
+                                                              'rate_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
+                                                              'rate_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
+                                                              'rate_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
+                                                              'rate_ad_p25_msa': lambda x: numpy.percentile(x, q=25),
+                                                              'rate_ad_p30_msa': lambda x: numpy.percentile(x, q=30),
+                                                              'rate_ad_p35_msa': lambda x: numpy.percentile(x, q=35),
+                                                              'rate_ad_p40_msa': lambda x: numpy.percentile(x, q=40),
+                                                              'rate_ad_p45_msa': lambda x: numpy.percentile(x, q=45),
+                                                              'rate_ad_p50_msa': lambda x: numpy.percentile(x, q=50),
+                                                              'rate_ad_p55_msa': lambda x: numpy.percentile(x, q=55),
+                                                              'rate_ad_p60_msa': lambda x: numpy.percentile(x, q=60),
+                                                              'rate_ad_p65_msa': lambda x: numpy.percentile(x, q=65),
+                                                              'rate_ad_p70_msa': lambda x: numpy.percentile(x, q=70),
+                                                              'rate_ad_p75_msa': lambda x: numpy.percentile(x, q=75),
+                                                              'rate_ad_p80_msa': lambda x: numpy.percentile(x, q=80),
+                                                              'rate_ad_p85_msa': lambda x: numpy.percentile(x, q=85),
+                                                              'rate_ad_p90_msa': lambda x: numpy.percentile(x, q=90),
+                                                              'rate_ad_p95_msa': lambda x: numpy.percentile(x, q=95)})
 
-    def calculate_msa_age_features(self, df_msa_ages):
+    def calculate_age_features(self, df, column):
         """
 
-        :param df_msa_ages:
-        :return: Age features
+        :param df:
+        :param column: Column to perform the aggragation on
+        :return:
         """
-        return df_msa_ages.groupby('msa_name')['age'].aggregate({'age_count': len,
-                                                                 'age_mean': numpy.mean,
-                                                                 'age_std': numpy.std,
-                                                                 'age_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
-                                                                 'age_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
-                                                                 'age_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
-                                                                 'age_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
-                                                                 'age_ad_p25_msa': lambda x: numpy.percentile(x, q=25),
-                                                                 'age_ad_p30_msa': lambda x: numpy.percentile(x, q=30),
-                                                                 'age_ad_p35_msa': lambda x: numpy.percentile(x, q=35),
-                                                                 'age_ad_p40_msa': lambda x: numpy.percentile(x, q=40),
-                                                                 'age_ad_p45_msa': lambda x: numpy.percentile(x, q=45),
-                                                                 'age_ad_p50_msa': lambda x: numpy.percentile(x, q=50),
-                                                                 'age_ad_p55_msa': lambda x: numpy.percentile(x, q=55),
-                                                                 'age_ad_p60_msa': lambda x: numpy.percentile(x, q=60),
-                                                                 'age_ad_p65_msa': lambda x: numpy.percentile(x, q=65),
-                                                                 'age_ad_p70_msa': lambda x: numpy.percentile(x, q=70),
-                                                                 'age_ad_p75_msa': lambda x: numpy.percentile(x, q=75),
-                                                                 'age_ad_p80_msa': lambda x: numpy.percentile(x, q=80),
-                                                                 'age_ad_p85_msa': lambda x: numpy.percentile(x, q=85),
-                                                                 'age_ad_p90_msa': lambda x: numpy.percentile(x, q=90),
-                                                                 'age_ad_p95_msa': lambda x: numpy.percentile(x, q=95)})
+        return df.groupby(column)['age'].aggregate({'age_count': len,
+                                                    'age_mean': numpy.mean,
+                                                    'age_std': numpy.std,
+                                                    'age_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
+                                                    'age_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
+                                                    'age_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
+                                                    'age_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
+                                                    'age_ad_p25_msa': lambda x: numpy.percentile(x, q=25),
+                                                    'age_ad_p30_msa': lambda x: numpy.percentile(x, q=30),
+                                                    'age_ad_p35_msa': lambda x: numpy.percentile(x, q=35),
+                                                    'age_ad_p40_msa': lambda x: numpy.percentile(x, q=40),
+                                                    'age_ad_p45_msa': lambda x: numpy.percentile(x, q=45),
+                                                    'age_ad_p50_msa': lambda x: numpy.percentile(x, q=50),
+                                                    'age_ad_p55_msa': lambda x: numpy.percentile(x, q=55),
+                                                    'age_ad_p60_msa': lambda x: numpy.percentile(x, q=60),
+                                                    'age_ad_p65_msa': lambda x: numpy.percentile(x, q=65),
+                                                    'age_ad_p70_msa': lambda x: numpy.percentile(x, q=70),
+                                                    'age_ad_p75_msa': lambda x: numpy.percentile(x, q=75),
+                                                    'age_ad_p80_msa': lambda x: numpy.percentile(x, q=80),
+                                                    'age_ad_p85_msa': lambda x: numpy.percentile(x, q=85),
+                                                    'age_ad_p90_msa': lambda x: numpy.percentile(x, q=90),
+                                                    'age_ad_p95_msa': lambda x: numpy.percentile(x, q=95)})
 
     def get_rates(self):
         """
@@ -88,7 +100,7 @@ class MakeMSA:
         :return:
         """
         # Get only rates and msa
-        df = self.dataframe[['rate', 'msa_name']].dropna(0)
+        df = self.dataframe[['rate', 'city', 'state']].dropna(0)
 
         # Calculate the rate per hour
         df['rate_per_hour'] = df['rate'].apply(lambda x: self.calculate_rate(x))
@@ -105,7 +117,7 @@ class MakeMSA:
         :return: Data frame with MSA and Age
         """
         # Get only ages and msa
-        return self.dataframe[['age', 'msa_name']].dropna(0)
+        return self.dataframe[['age', 'city']].dropna(0)
 
 
 
@@ -115,24 +127,35 @@ class MakeMSA:
         :param rate: Comma delimted rate from rate file
         :return: Hourly rate
         """
-        # Split the rate by comma leaving the price and the unit.
-        rate_info = rate.split(',')
-        price = rate_info[0]
-        # Remove any currency characters from the price
-        price = self.strip_characters(price)
 
-        # Make sure the price is a number
-        if self.is_valid_number(price):
-            unit_info = rate_info[1].split(' ')
-            unit = unit_info[0]
-            type = unit_info[1]
+        if type(rate) is list:
+            calculated_rates = []
+            for r in rate:
+                # Split the rate by comma leaving the price and the unit.
+                rate_info = r.split(',')
+                price = rate_info[0]
+                # Remove any currency characters from the price
+                price = self.strip_characters(price)
 
-            if type == 'MINS':
-                return (60 / float(unit)) * float(price)
-            elif type == 'HOUR':
-                return float(price)
-            elif type == 'HOURS':
-                return float(price) / float(unit)
+                # Make sure the price is a number
+                if self.is_valid_number(price):
+                    unit_info = rate_info[1].split(' ')
+                    unit = unit_info[0]
+                    duration = unit_info[1]
+
+                    if duration == 'MINS':
+                        calculated_rates.append((60 / float(unit)) * float(price))
+                    elif duration == 'HOUR':
+                        # If it's an hour stop calculating and return it
+                        return float(price)
+                    elif duration == 'HOURS':
+                        calculated_rates.append(float(price) / float(unit))
+
+            # Now average our rates
+            if calculated_rates:
+                return sum(calculated_rates) / float(len(calculated_rates))
+            else:
+                return None
         else:
             return None
 

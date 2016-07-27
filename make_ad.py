@@ -1,8 +1,9 @@
 import pandas
 
 class MakeAd:
-    def __init__(self, msa_features, ad_dataframe):
-        self.msa_features = msa_features
+    def __init__(self, city_features, state_features, ad_dataframe):
+        self.city_features = city_features
+        self.state_features = state_features
         self.ad_dataframe = ad_dataframe
 
     def get_ad_features(self):
@@ -10,49 +11,60 @@ class MakeAd:
         Will get the specified ad features
         :return: Dataframe containing ad features
         """
-        # Get only rates from data frame
-        df = self.ad_dataframe[['rate']].dropna(0)
+        # Since we need the rate to do any calculations drop all values from the ad that do not have a rate
+        dataframe = self.ad_dataframe.dropna(subset=['rate'])
 
-        # Calculate the rate per hour
-        df['rate_per_hour'] = df['rate'].apply(lambda x: self.calculate_rate(x))
-        df = df.dropna(0)
-
-        # Drop rate columns from both dataframes as it's not needed anymore
-        df = df.drop('rate', 1)
-        self.ad_dataframe = self.ad_dataframe.drop('rate', 1)
-
-        # Join the new dataframe with rates with all of our current information - this way every ad has a rate
-        df = df.join(self.ad_dataframe,how='left')
+        # Calculate the rate per hour then drop the old rate column and get rid of NaN values
+        dataframe['rate_per_hour'] = dataframe['rate'].apply(lambda x: self.calculate_rate(x))
+        dataframe = dataframe.dropna(subset=['rate_per_hour'])
+        dataframe = dataframe.drop('rate', 1)
 
         # Now get relative price
-        df['relative_price_to_msa'] = df.apply(lambda x: self.calculate_price_relative(x['rate_per_hour'], x['msa_name']), axis=1)
+        dataframe['relative_price_to_city'] = dataframe.apply(lambda x: self.calculate_price_relative_city(x['rate_per_hour'], x['city']), axis=1)
+        dataframe['relative_price_to_state'] = dataframe.apply(lambda x: self.calculate_price_relative_state(x['rate_per_hour'], x['state']), axis=1)
 
         # Now get relative quantile
-        df['relative_quantile_to_msa'] = df.apply(lambda x: self.calculate_quantile_relative(x['rate_per_hour'], x['msa_name']), axis=1)
+        dataframe['relative_quantile_to_city'] = dataframe.apply(lambda x: self.calculate_quantile_relative_city(x['rate_per_hour'], x['city']), axis=1)
+        dataframe['relative_quantile_to_state'] = dataframe.apply(lambda x: self.calculate_quantile_relative_state(x['rate_per_hour'], x['state']), axis=1)
 
-        return df
+        return dataframe
 
 
-    def calculate_price_relative(self, rate, msa_name):
+    def calculate_price_relative_city(self, rate, city_name):
         """
         Get the price relative to the area
         :param rate: Rate of ad
-        :param msa_name: MSA name
+        :param city_name: city name
         :return:
         """
-        if pandas.isnull(msa_name):
+        if pandas.isnull(city_name):
             return None
         else:
-            df = self.msa_features.loc[self.msa_features['msa_name'] == msa_name]
+            df = self.city_features.loc[self.city_features['city'] == city_name]
             # (Price - mean) / standard deviation
             relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
             return relative_price
 
-    def calculate_quantile_relative(self, rate, msa_name):
+    def calculate_price_relative_state(self, rate, state_name):
+        """
+        Get the price relative to the area
+        :param rate: Rate of ad
+        :param msa_name: state name
+        :return:
+        """
+        if pandas.isnull(state_name):
+            return None
+        else:
+            df = self.state_features.loc[self.state_features['state'] == state_name]
+            # (Price - mean) / standard deviation
+            relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
+            return relative_price
+
+    def calculate_quantile_relative_city(self, rate, city_name):
         """
         Gets the quantile the rate is in
         :param rate: Rate of the ad
-        :param msa_name: MSA for the specified rate
+        :param city_name: city for the specified rate
         :return: Quantile of rate
         """
         quantiles = ['rate_ad_p05_msa',
@@ -75,24 +87,68 @@ class MakeAd:
                      'rate_ad_p90_msa',
                      'rate_ad_p95_msa']
 
-        if pandas.isnull(msa_name):
+        if pandas.isnull(city_name):
             return None
         else:
-            df = self.msa_features.loc[self.msa_features['msa_name'] == msa_name]
+            dataframe = self.city_features.loc[self.city_features['city'] == city_name]
 
             # If the rate is less than or equal to the lowest quantile
-            if rate <= df.iloc[0]['rate_ad_p05_msa']:
+            if rate <= dataframe.iloc[0]['rate_ad_p05_msa']:
                 return 5
             # If the rate is greater than or equal to the highest quantile
-            elif rate >= df.iloc[0]['rate_ad_p95_msa']:
+            elif rate >= dataframe.iloc[0]['rate_ad_p95_msa']:
                 return 95
             # My logic here is to go through each quantile, once we find where the rate is between then return that quantile
             else:
                 for i in xrange(1, 17, 1):
-                    if rate >= df.iloc[0][quantiles[i]] and rate < df.iloc[0][quantiles[i + 1]]:
+                    if rate >= dataframe.iloc[0][quantiles[i]] and rate < dataframe.iloc[0][quantiles[i + 1]]:
                         # Since counting starts at 0, add 1 and then multiply by 5
                         return (i + 1) * 5
 
+    def calculate_quantile_relative_state(self, rate, state_name):
+        """
+        Gets the quantile the rate is in
+        :param rate: Rate of the ad
+        :param state_name: state for the specified rate
+        :return: Quantile of rate
+        """
+        quantiles = ['rate_ad_p05_msa',
+                     'rate_ad_p10_msa',
+                     'rate_ad_p15_msa',
+                     'rate_ad_p20_msa',
+                     'rate_ad_p25_msa',
+                     'rate_ad_p30_msa',
+                     'rate_ad_p35_msa',
+                     'rate_ad_p40_msa',
+                     'rate_ad_p45_msa',
+                     'rate_ad_p50_msa',
+                     'rate_ad_p55_msa',
+                     'rate_ad_p60_msa',
+                     'rate_ad_p65_msa',
+                     'rate_ad_p70_msa',
+                     'rate_ad_p75_msa',
+                     'rate_ad_p80_msa',
+                     'rate_ad_p85_msa',
+                     'rate_ad_p90_msa',
+                     'rate_ad_p95_msa']
+
+        if pandas.isnull(state_name):
+            return None
+        else:
+            dataframe = self.state_features.loc[self.state_features['state'] == state_name]
+
+            # If the rate is less than or equal to the lowest quantile
+            if rate <= dataframe.iloc[0]['rate_ad_p05_msa']:
+                return 5
+            # If the rate is greater than or equal to the highest quantile
+            elif rate >= dataframe.iloc[0]['rate_ad_p95_msa']:
+                return 95
+            # My logic here is to go through each quantile, once we find where the rate is between then return that quantile
+            else:
+                for i in xrange(1, 17, 1):
+                    if rate >= dataframe.iloc[0][quantiles[i]] and rate < dataframe.iloc[0][quantiles[i + 1]]:
+                        # Since counting starts at 0, add 1 and then multiply by 5
+                        return (i + 1) * 5
 
     def calculate_rate(self, rate):
         """
@@ -100,26 +156,38 @@ class MakeAd:
         :param rate: Comma delimted rate from rate file
         :return: Hourly rate
         """
-        # Split the rate by comma leaving the price and the unit.
-        rate_info = rate.split(',')
-        price = rate_info[0]
-        # Remove any currency characters from the price
-        price = self.strip_characters(price)
 
-        # Make sure the price is a number
-        if self.is_valid_number(price):
-            unit_info = rate_info[1].split(' ')
-            unit = unit_info[0]
-            type = unit_info[1]
+        if type(rate) is list:
+            calculated_rates = []
+            for r in rate:
+                # Split the rate by comma leaving the price and the unit.
+                rate_info = r.split(',')
+                price = rate_info[0]
+                # Remove any currency characters from the price
+                price = self.strip_characters(price)
 
-            if type == 'MINS':
-                return (60 / float(unit)) * float(price)
-            elif type == 'HOUR':
-                return float(price)
-            elif type == 'HOURS':
-                return float(price) / float(unit)
+                # Make sure the price is a number
+                if self.is_valid_number(price):
+                    unit_info = rate_info[1].split(' ')
+                    unit = unit_info[0]
+                    duration = unit_info[1]
+
+                    if duration == 'MINS':
+                        calculated_rates.append((60 / float(unit)) * float(price))
+                    elif duration == 'HOUR':
+                        # If it's an hour stop calculating and return it
+                        return float(price)
+                    elif duration == 'HOURS':
+                        calculated_rates.append(float(price) / float(unit))
+
+            # Now average our rates
+            if calculated_rates:
+                return sum(calculated_rates) / float(len(calculated_rates))
+            else:
+                return None
         else:
             return None
+
 
     def strip_characters(self, value):
         """
