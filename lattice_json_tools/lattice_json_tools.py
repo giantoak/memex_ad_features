@@ -18,13 +18,19 @@ def parse_lattice_json_line(line):
             # four contexts:
             # city, country, state, and location
             # Each context has four identifiers:
-            # name, wikidiata_id, lat, and lon
+            # name, wikidata_id, lat, and lon
             context_dict = defaultdict(list)
 
             for result in jsn['extractions']['lattice-location']['results']:
                 context_data = result['context']
 
                 for c_type in context_data:
+
+                    # skip contexts that aren't city or state
+                    # per discussion w/ Gabriel & Jeff about which contexts matter.
+                    if c_type not in ['city', 'state']:
+                        continue
+
                     # skip missing entries
                     if context_data[c_type]['name'] is None:
                         continue
