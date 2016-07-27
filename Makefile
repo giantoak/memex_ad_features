@@ -142,7 +142,27 @@ ICPSR_34603/DS0001/34603-0001-Data.txt:
 #### End Download related targets
 
 #### Begin intermediate data targets
+price_imputation_model.pkl: fit_price_imputation.py ad_price_ad_level.csv 
+	python fit_price_imputation.py
 
+ad_price_imputed.csv: impute.py price_imputation_model.pkl price_imputation_text_extractor.pkl
+	python impute.py
+CP1_train_ads.json:
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_train_ads.json
+
+
+true_negatives_text.json:
+	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_negatives_KH_unofficial-4.zip .
+	unzip -F CP1_negatives_KH_unofficial-4.zip
+	rm CP1_negatives_KH_unofficial-4.zip
+	mv  CP1_negatives_KH_unofficial-4 true_negatives_text.json
+
+true_negatives_price.csv: true_negatives_text impute_true_negatives.py
+	python impute_true_negatives.py
+true_positives_text.json: parse_cp.py CP1_train_ads.json
+	python parse_cp.py
+true_positives_price.csv: true_positives_text.json impute_true_positives.py
+	python impute_true_positives.py
 msa_characteristics.csv: make_msa_characteristics.py ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
@@ -155,7 +175,7 @@ phone_characteristics.csv: make_phone_characteristics.py data/bach/phones.csv
 
 ############ Begin final targets
 
-local: ad_prices_price_level.csv ad_zero_prices.csv census_2000_msa_industry_gender_wage.csv acs_2013_msa_gender_wage.csv ad_zero_prices.csv acs.csv month_msa_wage_instruments.csv acs.csv prostitution_nibrs.csv female_violence_nibrs.csv violence_nibrs.csv provider_panel.csv msa_month_characteristics.csv msa_characteristics.csv cpi_crosssection.csv ad_price_ad_level_all.csv
+local: ad_prices_price_level.csv ad_zero_prices.csv   ad_zero_prices.csv msa_characteristics.csv ad_price_ad_level_all.csv
 
 export: msa_characteristics.csv ad_price_ad_level.csv ad_price_ad_level_all.csv phone_characteristics.csv 
 
@@ -261,3 +281,4 @@ ad_price_ad_level.csv: ad_prices_price_level.csv
 ad_price_ad_level_all.csv: ad_prices_price_level.csv
 data/forGiantOak6/incalloutcall-new.tsv: data/forGiantOak6/incall-new.tsv
 data/forGiantOak6/outcall-new.tsv: data/forGiantOak6/incall-new.tsv
+price_imputation_text_extractor.pkl: price_imputation_model.pkl
