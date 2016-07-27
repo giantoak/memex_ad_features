@@ -67,7 +67,6 @@ def parse_lattice_json_line(line):
                 jsn_dict_list[i][key] = jsn_dict_list[i][key][0]
         i += 1
 
-
     return jsn_dict_list
 
 
@@ -85,7 +84,9 @@ def stream_lattice_json_gzip_file_to_file(gzip_fpath):
     outfile = NamedTemporaryFile(mode='w', delete=False)
     with gzip.open(gzip_fpath) as infile:
         for line in infile:
-            outfile.write(json.dumps(parse_lattice_json_line(line)) + '\n')
+            jsn_list = parse_lattice_json_line(line)
+            for jsn in jsn_list:
+                outfile.write(json.dumps(jsn) + '\n')
     outfile.close()
 
     return outfile.name
