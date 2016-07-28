@@ -1,9 +1,12 @@
 from distutils.command.config import config
 
+import datetime
 import pandas
 import csv
 from make_msa import MakeMSA
-import json
+import ujson
+import gzip
+import ipdb
 
 class CreateDataFrame:
     def __init__(self, config):
@@ -19,11 +22,18 @@ class CreateDataFrame:
         self.age_append = pandas.DataFrame()
         self.entity_append = pandas.DataFrame()
 
-        for filename in config['filenames']:
-            with open(filename) as f:
-                dataframe = pandas.DataFrame(json.loads(line) for line in f)
-
+        jsns = []
+        for filename in config['filenames'][0:2]:
+            print(filename)
+            print(datetime.datetime.now())
+            data = [ujson.loads(line) for line in gzip.open(filename)]
+            dataframe = pandas.DataFrame(data[0])
+            #del dataframe['title']
+            #for i in dataframe.columns:
+                #if '_lat_' in i:
+                    #del dataframe[i]
             self.dataframe = self.dataframe.append(dataframe, ignore_index=True)
+            ipdb.set_trace()
 
     def create_msa_data_frame(self):
         """

@@ -4,10 +4,11 @@ from make_ad import MakeAd
 from make_entity import MakeEntity
 import pandas
 import json
+import glob
 
-config = {'filenames': ['/home/gabriel/Downloads/sample2.json',
-                        '/home/gabriel/Downloads/sample3.json',
-                        '/home/gabriel/Downloads/sample4.json']}
+
+#config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
+config = {'filenames': ['subset.json.gz']}
 
 class Run:
     def __init__(self):
