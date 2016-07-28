@@ -2,10 +2,9 @@ from distutils.command.config import config
 
 import datetime
 import pandas as pd
-import csv
-from make_msa import MakeMSA
 import ujson as json
 import gzip
+
 
 class CreateDataFrame:
     def __init__(self, config):
