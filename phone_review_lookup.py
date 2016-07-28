@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import pandas
+import pandas as pd
 import ipdb
 import numpy as np
 import phonenumbers
@@ -26,12 +26,12 @@ def parse_phone(x):
         return('')
     except Exception as e:
         ipdb.set_trace()
-ad_ids = pandas.read_csv('ad_id_list.csv', header=None, names=['ad_id'])
-phones = pandas.read_csv('data/escort_cdr_2/phones-combined.tsv', sep='\t', header=None, names=['ad_id','phone'])
+ad_ids = pd.read_csv('ad_id_list.csv', header=None, names=['ad_id'])
+phones = pd.read_csv('data/escort_cdr_2/phones-combined.tsv', sep='\t', header=None, names=['ad_id','phone'])
 phones['phone_1'] = phones['phone'].apply(lambda x: x.split('|')[0])
 
 # Repeat ad price stuff
-data = pandas.read_csv('data/escort_cdr_2/rates-text.tsv', sep='\t', header=None, names=['ad_id', 'rate'])
+data = pd.read_csv('data/escort_cdr_2/rates-text.tsv', sep='\t', header=None, names=['ad_id', 'rate'])
 print('There are %s observations' % data.shape[0])  # about 2.1M
 data.rename(columns={0: 'ad_id', 1: 'rate'}, inplace=True)
 data['time_str'] = data['rate'].apply(lambda x: x.split(',')[1])
@@ -59,17 +59,17 @@ data['1hr'] = data['time_str'] == '1 HOUR'
 a = data.groupby('ad_id')['1hr'].sum()
 a = a > 0
 del data['1hr']
-a = pandas.DataFrame(a)
+a = pd.DataFrame(a)
 price_ratios = {60:    1.000000,
         30 :   1.559643,
         15 :   1.694609,
         120:   0.620485,
         45 :   1.351469,
         }
-data = pandas.merge(data, a, left_on='ad_id', right_index=True)
-price_level_hourly = pandas.DataFrame(data[data['1hr']])
+data = pd.merge(data, a, left_on='ad_id', right_index=True)
+price_level_hourly = pd.DataFrame(data[data['1hr']])
 price_level_hourly['price_per_hour'] = price_level_hourly['price']  # If there's an hourly price, use it
-price_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
+price_level_no_hourly = pd.DataFrame(data[~data['1hr']])
 price_level_no_hourly.index = price_level_no_hourly['ad_id']
 # Otherwise use the multiplier
 try:
@@ -78,25 +78,25 @@ except:
     print('error using price ratio multiplier... setting price per hour equal to quoted price')
     price_level_no_hourly['multiplier'] = 1
 price_level_no_hourly['price_per_hour'] = price_level_no_hourly['price'] * price_level_no_hourly['multiplier']
-price_level_no_hourly_prices = pandas.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
+price_level_no_hourly_prices = pd.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
 price_level_no_hourly['price_per_hour'] = price_level_no_hourly_prices
-price_level = pandas.concat([price_level_hourly, price_level_no_hourly], axis=0)
+price_level = pd.concat([price_level_hourly, price_level_no_hourly], axis=0)
 price_level.sort('1hr', ascending=False, inplace=True)
-ad_level_prices = pandas.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
+ad_level_prices = pd.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
 #ad_level = price_level.drop_duplicates('ad_id')[['ad_id', 'sex_ad', 'census_msa_code', 'cluster_id', 'date_str',
                                                  #'is_massage_parlor_ad', '1hr', 'incall', 'no_incall', 'outcall',
                                                  #'no_outcall', 'incalloutcall', 'no_incalloutcall']]
-#data = pandas.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
+#data = pd.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
 
 
 ad_level_prices= ad_level_prices.reset_index()
 ad_level_prices[['ad_id','price_per_hour']].to_csv('ad_price_ad_level.csv', index=False)
-ads = pandas.merge(ad_ids, phones[['ad_id','phone_1']], how='left')
-ads = pandas.merge(ads, ad_level_prices[['ad_id','price_per_hour']], how='left')
+ads = pd.merge(ad_ids, phones[['ad_id','phone_1']], how='left')
+ads = pd.merge(ads, ad_level_prices[['ad_id','price_per_hour']], how='left')
 
 start = datetime.datetime.now()
-prices = pandas.read_csv('data/TGG/provider_prices.csv')
-stats = pandas.read_csv('data/TGG/provider_stats.csv')
+prices = pd.read_csv('data/TGG/provider_prices.csv')
+stats = pd.read_csv('data/TGG/provider_stats.csv')
 del stats['source']
 del stats['service']
 out = prices.merge(stats, how='left')

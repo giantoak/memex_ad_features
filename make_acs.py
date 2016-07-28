@@ -5,13 +5,10 @@ and put them in a unified structure
 JAB
 """
 
-import pandas
-# import datetime
-# import ipdb
-# import ujson as json
+import pandas as pd
 import numpy as np
 
-acs = pandas.read_csv('acs_2015_03_18.csv')
+acs = pd.read_csv('acs_2015_03_18.csv')
 acs_geos = acs.geoid.tolist()
 missing_geographies = []
 
@@ -147,7 +144,7 @@ commute_centers = [
               100,  # "B08303013",  # 90 or more minutes
               ]
 
-msas = pandas.read_csv('qcew_msa.txt', sep='\t')  # Read in a list of census MSAs
+msas = pd.read_csv('qcew_msa.txt', sep='\t')  # Read in a list of census MSAs
 msas['census_msa_code'] = msas['qcew_code'].apply(lambda x: '31000US%s0' % x.replace('C', ''))  # 310000 is the MSA
 # code
 for i in tables_list:
@@ -169,7 +166,7 @@ for col in msas.columns:
 # Finished merging in data from ACS published tables
 
 # Begin merging data from custom ACS tabs
-acs_wage_tabs = pandas.read_csv('acs_2013_msa_gender_wage.csv')
+acs_wage_tabs = pd.read_csv('acs_2013_msa_gender_wage.csv')
 acs_wage_tabs['census_msa_code']=acs_wage_tabs['met2013'].apply(lambda x: '31000US%s' % str(int(x)))  # 310000 is the MSA code
 del acs_wage_tabs['met2013']
 acs_wage_tabs.rename(columns={
@@ -193,7 +190,7 @@ msa_sex = msas.merge(acs_wage_tabs, on='census_msa_code')
 # Begin reshaping on sex: this bit gets a little awkward
 subset = msa_sex[['sex', 'census_msa_code']]
 subset.to_records(index=False).tolist()
-index = pandas.MultiIndex.from_tuples(subset.to_records(index=False).tolist(), names=subset.columns.tolist())
+index = pd.MultiIndex.from_tuples(subset.to_records(index=False).tolist(), names=subset.columns.tolist())
 msa_sex.index = index
 msa_sex.reindex()
 msa_sex = msa_sex.unstack('sex')
@@ -233,5 +230,5 @@ male.rename(columns={
 duplicate_columns = [i for i in male.columns if 'male' not in i]
 for c in duplicate_columns:
     del male[c]
-msa_sex = pandas.concat([male, female], axis=1)
+msa_sex = pd.concat([male, female], axis=1)
 msa_sex.to_csv('acs.csv', index=False)  # Don't write the census_msa_code index, because the column already exists

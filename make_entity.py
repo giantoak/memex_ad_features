@@ -1,5 +1,5 @@
-import pandas
-import numpy
+import pandas as pd
+import numpy as np
 
 class MakeEntity:
     def __init__(self, dataframe, entity):
@@ -19,7 +19,7 @@ class MakeEntity:
         rate_dataframe = self.calculate_entity_rate_features(rate_dataframe)
 
         # Get a count of the ads
-        dataframe = pandas.value_counts(self.dataframe[self.entity]).to_frame()
+        dataframe = pd.value_counts(self.dataframe[self.entity]).to_frame()
         # Reset the index so we can use the entity column
         dataframe.reset_index(level=0, inplace=True)
 
@@ -50,23 +50,23 @@ class MakeEntity:
         :return: MSA rate features
         """
         return df_entity_rates.groupby(self.entity)['rate_per_hour'].aggregate({'rate_count': len,
-                                                                            'rate_mean': numpy.mean,
-                                                                            'rate_std': numpy.std,
-                                                                            'rate_median': lambda x: numpy.percentile(x, q=50)})
+                                                                            'rate_mean': np.mean,
+                                                                            'rate_std': np.std,
+                                                                            'rate_median': lambda x: np.percentile(x, q=50)})
 
     def get_unique_cities(self, value):
-        return len(pandas.value_counts(self.dataframe.loc[self.dataframe[self.entity]==value]['city']))
+        return len(pd.value_counts(self.dataframe.loc[self.dataframe[self.entity]==value]['city']))
 
     def get_unique_states(self, value):
-        return len(pandas.value_counts(self.dataframe.loc[self.dataframe[self.entity]==value]['state']))
+        return len(pd.value_counts(self.dataframe.loc[self.dataframe[self.entity]==value]['state']))
 
     # Save this code as we may use it later
     """def get_incall_count(self, phone):
-        return pandas.value_counts(self.dataframe.loc[self.dataframe['phone']==phone]['service'].str.contains('incall')).sum()
+        return pd.value_counts(self.dataframe.loc[self.dataframe['phone']==phone]['service'].str.contains('incall')).sum()
         #TODO only evaluate true
 
     def get_outcall_count(self, phone):
-        return pandas.value_counts(self.dataframe.loc[self.dataframe['phone']==phone]['service'].str.contains('outcall')).sum()"""
+        return pd.value_counts(self.dataframe.loc[self.dataframe['phone']==phone]['service'].str.contains('outcall')).sum()"""
 
     def calculate_rate(self, rate):
         """

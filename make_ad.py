@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 
 class MakeAd:
     def __init__(self, city_features, state_features, ad_dataframe):
@@ -37,7 +37,7 @@ class MakeAd:
         :param city_name: city name
         :return:
         """
-        if pandas.isnull(city_name):
+        if pd.isnull(city_name):
             return None
         else:
             df = self.city_features.loc[self.city_features['city'] == city_name]
@@ -52,7 +52,7 @@ class MakeAd:
         :param msa_name: state name
         :return:
         """
-        if pandas.isnull(state_name):
+        if pd.isnull(state_name):
             return None
         else:
             df = self.state_features.loc[self.state_features['state'] == state_name]
@@ -87,7 +87,7 @@ class MakeAd:
                      'rate_ad_p90_msa',
                      'rate_ad_p95_msa']
 
-        if pandas.isnull(city_name):
+        if pd.isnull(city_name):
             return None
         else:
             dataframe = self.city_features.loc[self.city_features['city'] == city_name]
@@ -132,7 +132,7 @@ class MakeAd:
                      'rate_ad_p90_msa',
                      'rate_ad_p95_msa']
 
-        if pandas.isnull(state_name):
+        if pd.isnull(state_name):
             return None
         else:
             dataframe = self.state_features.loc[self.state_features['state'] == state_name]

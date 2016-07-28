@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import pandas
+import pandas as pd
 import numpy as np
 import datetime
 import ipdb
@@ -13,8 +13,8 @@ import cPickle
 
 from scipy.sparse import hstack
 from sklearn.ensemble import RandomForestRegressor 
-data = pandas.read_csv('data/temp/ad_ids_with_price.csv')
-prices = pandas.read_csv('ad_price_ad_level.csv')
+data = pd.read_csv('data/temp/ad_ids_with_price.csv')
+prices = pd.read_csv('ad_price_ad_level.csv')
 #data1 = data.loc[np.random.choice(data.index, 100)]
 #data2 = data.loc[np.random.choice(data.index, 1000)]
 thresh = .0001
@@ -30,7 +30,7 @@ X = cv.fit_transform(data3['content'])
 y = data3['price_per_hour']
 rf_fitted=rf.fit(X, data3['price_per_hour'])
 sm=SelectFromModel(rf, prefit=True, threshold=thresh)
-good_features=pandas.Series({v:k for k, v in cv.vocabulary_.iteritems()})[sm.get_support()].values.tolist()
+good_features=pd.Series({v:k for k, v in cv.vocabulary_.iteritems()})[sm.get_support()].values.tolist()
 
 new_cv = CountVectorizer(vocabulary=good_features) # create a count vectorizer that only checks for existence of our "good" features
 cPickle.dump(new_cv,open('price_imputation_text_extractor.pkl','wb'))

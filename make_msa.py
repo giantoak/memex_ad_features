@@ -1,5 +1,5 @@
-import pandas
-import numpy
+import pandas as pd
+import numpy as np
 import datetime
 
 class MakeMSA:
@@ -42,27 +42,27 @@ class MakeMSA:
         :return:
         """
         return df.groupby(column)['rate_per_hour'].aggregate({'rate_count': len,
-                                                              'rate_mean': numpy.mean,
-                                                              'rate_std': numpy.std,
-                                                              'rate_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
-                                                              'rate_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
-                                                              'rate_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
-                                                              'rate_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
-                                                              'rate_ad_p25_msa': lambda x: numpy.percentile(x, q=25),
-                                                              'rate_ad_p30_msa': lambda x: numpy.percentile(x, q=30),
-                                                              'rate_ad_p35_msa': lambda x: numpy.percentile(x, q=35),
-                                                              'rate_ad_p40_msa': lambda x: numpy.percentile(x, q=40),
-                                                              'rate_ad_p45_msa': lambda x: numpy.percentile(x, q=45),
-                                                              'rate_ad_p50_msa': lambda x: numpy.percentile(x, q=50),
-                                                              'rate_ad_p55_msa': lambda x: numpy.percentile(x, q=55),
-                                                              'rate_ad_p60_msa': lambda x: numpy.percentile(x, q=60),
-                                                              'rate_ad_p65_msa': lambda x: numpy.percentile(x, q=65),
-                                                              'rate_ad_p70_msa': lambda x: numpy.percentile(x, q=70),
-                                                              'rate_ad_p75_msa': lambda x: numpy.percentile(x, q=75),
-                                                              'rate_ad_p80_msa': lambda x: numpy.percentile(x, q=80),
-                                                              'rate_ad_p85_msa': lambda x: numpy.percentile(x, q=85),
-                                                              'rate_ad_p90_msa': lambda x: numpy.percentile(x, q=90),
-                                                              'rate_ad_p95_msa': lambda x: numpy.percentile(x, q=95)})
+                                                              'rate_mean': np.mean,
+                                                              'rate_std': np.std,
+                                                              'rate_ad_p05_msa': lambda x: np.percentile(x, q=5),
+                                                              'rate_ad_p10_msa': lambda x: np.percentile(x, q=10),
+                                                              'rate_ad_p15_msa': lambda x: np.percentile(x, q=15),
+                                                              'rate_ad_p20_msa': lambda x: np.percentile(x, q=20),
+                                                              'rate_ad_p25_msa': lambda x: np.percentile(x, q=25),
+                                                              'rate_ad_p30_msa': lambda x: np.percentile(x, q=30),
+                                                              'rate_ad_p35_msa': lambda x: np.percentile(x, q=35),
+                                                              'rate_ad_p40_msa': lambda x: np.percentile(x, q=40),
+                                                              'rate_ad_p45_msa': lambda x: np.percentile(x, q=45),
+                                                              'rate_ad_p50_msa': lambda x: np.percentile(x, q=50),
+                                                              'rate_ad_p55_msa': lambda x: np.percentile(x, q=55),
+                                                              'rate_ad_p60_msa': lambda x: np.percentile(x, q=60),
+                                                              'rate_ad_p65_msa': lambda x: np.percentile(x, q=65),
+                                                              'rate_ad_p70_msa': lambda x: np.percentile(x, q=70),
+                                                              'rate_ad_p75_msa': lambda x: np.percentile(x, q=75),
+                                                              'rate_ad_p80_msa': lambda x: np.percentile(x, q=80),
+                                                              'rate_ad_p85_msa': lambda x: np.percentile(x, q=85),
+                                                              'rate_ad_p90_msa': lambda x: np.percentile(x, q=90),
+                                                              'rate_ad_p95_msa': lambda x: np.percentile(x, q=95)})
 
     def calculate_age_features(self, df, column):
         """
@@ -72,27 +72,27 @@ class MakeMSA:
         :return:
         """
         return df.groupby(column)['age'].aggregate({'age_count': len,
-                                                    'age_mean': numpy.mean,
-                                                    'age_std': numpy.std,
-                                                    'age_ad_p05_msa': lambda x: numpy.percentile(x, q=5),
-                                                    'age_ad_p10_msa': lambda x: numpy.percentile(x, q=10),
-                                                    'age_ad_p15_msa': lambda x: numpy.percentile(x, q=15),
-                                                    'age_ad_p20_msa': lambda x: numpy.percentile(x, q=20),
-                                                    'age_ad_p25_msa': lambda x: numpy.percentile(x, q=25),
-                                                    'age_ad_p30_msa': lambda x: numpy.percentile(x, q=30),
-                                                    'age_ad_p35_msa': lambda x: numpy.percentile(x, q=35),
-                                                    'age_ad_p40_msa': lambda x: numpy.percentile(x, q=40),
-                                                    'age_ad_p45_msa': lambda x: numpy.percentile(x, q=45),
-                                                    'age_ad_p50_msa': lambda x: numpy.percentile(x, q=50),
-                                                    'age_ad_p55_msa': lambda x: numpy.percentile(x, q=55),
-                                                    'age_ad_p60_msa': lambda x: numpy.percentile(x, q=60),
-                                                    'age_ad_p65_msa': lambda x: numpy.percentile(x, q=65),
-                                                    'age_ad_p70_msa': lambda x: numpy.percentile(x, q=70),
-                                                    'age_ad_p75_msa': lambda x: numpy.percentile(x, q=75),
-                                                    'age_ad_p80_msa': lambda x: numpy.percentile(x, q=80),
-                                                    'age_ad_p85_msa': lambda x: numpy.percentile(x, q=85),
-                                                    'age_ad_p90_msa': lambda x: numpy.percentile(x, q=90),
-                                                    'age_ad_p95_msa': lambda x: numpy.percentile(x, q=95)})
+                                                    'age_mean': np.mean,
+                                                    'age_std': np.std,
+                                                    'age_ad_p05_msa': lambda x: np.percentile(x, q=5),
+                                                    'age_ad_p10_msa': lambda x: np.percentile(x, q=10),
+                                                    'age_ad_p15_msa': lambda x: np.percentile(x, q=15),
+                                                    'age_ad_p20_msa': lambda x: np.percentile(x, q=20),
+                                                    'age_ad_p25_msa': lambda x: np.percentile(x, q=25),
+                                                    'age_ad_p30_msa': lambda x: np.percentile(x, q=30),
+                                                    'age_ad_p35_msa': lambda x: np.percentile(x, q=35),
+                                                    'age_ad_p40_msa': lambda x: np.percentile(x, q=40),
+                                                    'age_ad_p45_msa': lambda x: np.percentile(x, q=45),
+                                                    'age_ad_p50_msa': lambda x: np.percentile(x, q=50),
+                                                    'age_ad_p55_msa': lambda x: np.percentile(x, q=55),
+                                                    'age_ad_p60_msa': lambda x: np.percentile(x, q=60),
+                                                    'age_ad_p65_msa': lambda x: np.percentile(x, q=65),
+                                                    'age_ad_p70_msa': lambda x: np.percentile(x, q=70),
+                                                    'age_ad_p75_msa': lambda x: np.percentile(x, q=75),
+                                                    'age_ad_p80_msa': lambda x: np.percentile(x, q=80),
+                                                    'age_ad_p85_msa': lambda x: np.percentile(x, q=85),
+                                                    'age_ad_p90_msa': lambda x: np.percentile(x, q=90),
+                                                    'age_ad_p95_msa': lambda x: np.percentile(x, q=95)})
 
     def get_rates(self):
         """
@@ -199,7 +199,7 @@ class MakeMSA:
         df = df.drop('rate', 1)
 
         # Convert post date column to datetime
-        df['post_date'] =  pandas.to_datetime(df['post_date'], format='%Y-%m-%d')
+        df['post_date'] = pd.to_datetime(df['post_date'], format='%Y-%m-%d')
 
         # Change the date to represent quarters
         df['post_date'] = df['post_date'].apply(lambda x: self.get_quarter(x))
@@ -226,7 +226,7 @@ class MakeMSA:
         else:
             month = 10
 
-        value = pandas.Timestamp(datetime.date(year, month, day))
+        value = pd.Timestamp(datetime.date(year, month, day))
         return value
 
 

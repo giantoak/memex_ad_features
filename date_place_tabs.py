@@ -1,15 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import pandas
+import pandas as pd
 import numpy as np
 import datetime
-#dates = pandas.read_csv('data/escort_cdr_2/post_date-dom.tsv', sep='\t',names=['ad_id','date'])
+#dates = pd.read_csv('data/escort_cdr_2/post_date-dom.tsv', sep='\t',names=['ad_id','date'])
 #ads = 
 
 try:
-    ad_level_prices = pandas.read_csv('data/temp/ad_level_temp.csv')
+    ad_level_prices = pd.read_csv('data/temp/ad_level_temp.csv')
 except:
-    data = pandas.read_csv('data/escort_cdr_2/rates-text.tsv', sep='\t', header=None, names=['ad_id', 'rate'])
+    data = pd.read_csv('data/escort_cdr_2/rates-text.tsv', sep='\t', header=None, names=['ad_id', 'rate'])
     print('There are %s observations' % data.shape[0])  # about 2.1M
     data.rename(columns={0: 'ad_id', 1: 'rate'}, inplace=True)
     data['time_str'] = data['rate'].apply(lambda x: x.split(',')[1])
@@ -37,17 +37,17 @@ except:
     a = data.groupby('ad_id')['1hr'].sum()
     a = a > 0
     del data['1hr']
-    a = pandas.DataFrame(a)
+    a = pd.DataFrame(a)
     price_ratios = {60:    1.000000,
             30 :   1.559643,
             15 :   1.694609,
             120:   0.620485,
             45 :   1.351469,
             }
-    data = pandas.merge(data, a, left_on='ad_id', right_index=True)
-    price_level_hourly = pandas.DataFrame(data[data['1hr']])
+    data = pd.merge(data, a, left_on='ad_id', right_index=True)
+    price_level_hourly = pd.DataFrame(data[data['1hr']])
     price_level_hourly['price_per_hour'] = price_level_hourly['price']  # If there's an hourly price, use it
-    price_level_no_hourly = pandas.DataFrame(data[~data['1hr']])
+    price_level_no_hourly = pd.DataFrame(data[~data['1hr']])
     price_level_no_hourly.index = price_level_no_hourly['ad_id']
 # Otherwise use the multiplier
     try:
@@ -56,43 +56,43 @@ except:
         print('error using price ratio multiplier... setting price per hour equal to quoted price')
         price_level_no_hourly['multiplier'] = 1
     price_level_no_hourly['price_per_hour'] = price_level_no_hourly['price'] * price_level_no_hourly['multiplier']
-    price_level_no_hourly_prices = pandas.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
+    price_level_no_hourly_prices = pd.DataFrame(price_level_no_hourly.groupby('ad_id')['price_per_hour'].mean())
     price_level_no_hourly['price_per_hour'] = price_level_no_hourly_prices
-    price_level = pandas.concat([price_level_hourly, price_level_no_hourly], axis=0)
+    price_level = pd.concat([price_level_hourly, price_level_no_hourly], axis=0)
     price_level.sort('1hr', ascending=False, inplace=True)
-    ad_level_prices = pandas.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
+    ad_level_prices = pd.DataFrame(price_level.groupby('ad_id')['price_per_hour'].mean(), columns=['price_per_hour'])
 #ad_level = price_level.drop_duplicates('ad_id')[['ad_id', 'sex_ad', 'census_msa_code', 'cluster_id', 'date_str',
                                                      #'is_massage_parlor_ad', '1hr', 'incall', 'no_incall', 'outcall',
                                                      #'no_outcall', 'incalloutcall', 'no_incalloutcall']]
-#data = pandas.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
+#data = pd.merge(ad_level_prices, ad_level, left_index=True, right_on='ad_id', how='left')
 
 
     ad_level_prices= ad_level_prices.reset_index()
     ad_level_prices.to_csv('data/temp/ad_level_temp.csv', index=False)
-dates = pandas.read_csv('data/escort_cdr_2/post_date-dom.tsv', sep='\t',names=['ad_id','date_str'])
+dates = pd.read_csv('data/escort_cdr_2/post_date-dom.tsv', sep='\t',names=['ad_id','date_str'])
 #ads = 
 data=dates.merge(ad_level_prices, how='left')
 data['date'] = data['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-data.index = pandas.DatetimeIndex(data['date'])
+data.index = pd.DatetimeIndex(data['date'])
 data = data.reindex()
 ###
 #df.groupby([pd.Grouper(freq='1M',key='Date'),'Buyer']).sum()
-#http://pandas.pydata.org/pandas-docs/stable/groupby.html
+#http://pd.pydata.org/pandas-docs/stable/groupby.html
 
 names=['ad_id','location_text','some_code','city','city_again','state','country','city_type','source','lat','lon']
-locations= pandas.read_csv('data/escort_cdr_2/locations-combined.tsv', sep='\t', names=names)
+locations= pd.read_csv('data/escort_cdr_2/locations-combined.tsv', sep='\t', names=names)
 data = data.merge(locations[['ad_id','city','state','city_again','country']])
 data=data[data['country'] == 'United States']
 #counts=data['ad_id'].resample('M',how='count')
-city_panel=data.groupby([pandas.Grouper(freq='M',key='date'),'city']).size()
+city_panel=data.groupby([pd.Grouper(freq='M',key='date'),'city']).size()
 city_panel.to_csv('city_counts.csv')
-city_panel=data.groupby([pandas.Grouper(freq='Q',key='date'),'city']).size()
+city_panel=data.groupby([pd.Grouper(freq='Q',key='date'),'city']).size()
 city_panel.to_csv('city_counts_quarter.csv')
-state_panel=data.groupby([pandas.Grouper(freq='M',key='date'),'state']).size()
+state_panel=data.groupby([pd.Grouper(freq='M',key='date'),'state']).size()
 state_panel.to_csv('state_counts.csv')
-state_panel=data.groupby([pandas.Grouper(freq='Q',key='date'),'state']).size()
+state_panel=data.groupby([pd.Grouper(freq='Q',key='date'),'state']).size()
 state_panel.to_csv('state_counts_quarter.csv')
-city_again_panel=data.groupby([pandas.Grouper(freq='M',key='date'),'city_again']).size()
+city_again_panel=data.groupby([pd.Grouper(freq='M',key='date'),'city_again']).size()
 city_again_panel.to_csv('city_again_counts.csv')
-city_again_panel=data.groupby([pandas.Grouper(freq='Q',key='date'),'city_again']).size()
+city_again_panel=data.groupby([pd.Grouper(freq='Q',key='date'),'city_again']).size()
 city_again_panel.to_csv('city_again_counts_quarter.csv')

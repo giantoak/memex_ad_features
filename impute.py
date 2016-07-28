@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import pandas
+import pandas as pd
 import numpy as np
 import datetime
 import ipdb
@@ -22,11 +22,11 @@ prefix='lsdfka'
 for i in range(0, max_counts/step):
     print('Working on group %s to %s' % (step*i, str(step*(i + 1))))
     try:
-        data = pandas.read_csv('data/escort_cdr_2/content.tsv', sep='\t', skiprows = step*i, nrows=step, names=['ad_id','site','type','url','text','content'])
+        data = pd.read_csv('data/escort_cdr_2/content.tsv', sep='\t', skiprows = step*i, nrows=step, names=['ad_id','site','type','url','text','content'])
         data.loc[data['content'].isnull(), 'content']=''
         X=new_cv.transform(data['content'])
         price = rf_new.predict(X)
-        out = pandas.DataFrame({'imputed_price':price})
+        out = pd.DataFrame({'imputed_price':price})
         out['ad_id'] = data['ad_id']
         out.to_csv('tmp/partial_prices_%s_%s.csv' % (prefix,str(i)), index=False)
     except:
@@ -34,9 +34,9 @@ for i in range(0, max_counts/step):
 
 out_list = []
 for i in glob.glob('tmp/partial_price_%s*' %  prefix):
-    out_list.append(pandas.read_csv(i))
+    out_list.append(pd.read_csv(i))
 
-out = pandas.concat(out_list)
+out = pd.concat(out_list)
 out.to_csv('ad_price_imputed.csv', index=False)
 import os
 for i in glob.glob('tmp/partial_price_%s*' %  prefix):

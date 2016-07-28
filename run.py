@@ -2,10 +2,6 @@ from create_dataframe import CreateDataFrame
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
-import pandas
-import json
-import glob
-
 
 #config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
 config = {'filenames': ['subset.json.gz']}
@@ -54,11 +50,11 @@ class Run:
         :return:
         """
         self.run_location_features()
-        print 'Saved location features'
+        print('Saved location features')
         self.run_ad_features()
-        print 'Saved ad features'
+        print('Saved ad features')
         self.run_entity_features('phone')
-        print 'Saved entity features'
+        print('Saved entity features')
 
 Run().run()
 

@@ -1,13 +1,17 @@
-import pandas
+import pandas as pd
 import numpy as np
-d = pandas.read_csv('temp.csv') # ad_price_ad_level.csv, but with cluster_count column
-d=d[~d['spam']]
-d=d[d['price_per_hour'] <= 1000]
-msa_characteristics = pandas.read_csv('../../msa_characteristics.csv')
+import ipdb
 
-census_names = pandas.read_csv('../../qcew_msa.txt', sep='\t')
-census_names['census_msa_code']=census_names['qcew_code'].apply(lambda x: '31000US%s0' % x.replace('C','')) # 310000 is the MSA code
-msa_name_lookup = {row['census_msa_code']:row['msa'] for index, row in census_names.iterrows()}
+d = pd.read_csv('temp.csv') # ad_price_ad_level.csv, but with cluster_count column
+d = d[~d['spam']]
+d = d[d['price_per_hour'] <= 1000]
+msa_characteristics = pd.read_csv('../../msa_characteristics.csv')
+
+census_names = pd.read_csv('../../qcew_msa.txt', sep='\t')
+census_names['census_msa_code'] = census_names['qcew_code'].apply(lambda x: '31000US%s0' % x.replace('C', '')) # 310000 is the MSA code
+msa_name_lookup = {row['census_msa_code']: row['msa'] for index, row in census_names.iterrows()}
+
+
 def lookup(x):
     try:
         return(msa_name_lookup[x])
@@ -17,8 +21,9 @@ d['msa'] = d['census_msa_code'].apply(lookup)
 d=d.merge(msa_characteristics[['census_msa_code','population']])
 d['log_price_per_hour'] = np.log(d['price_per_hour'])
 
+
 def desc(name):
-    a=d.groupby(name)['price_per_hour'].describe()
+    a = d.groupby(name)['price_per_hour'].describe()
     print(a)
     print(a[True] - a[False])
 
@@ -107,20 +112,28 @@ print(entity_size)
 entity_size.to_csv('entity_size.csv')
 
 ipdb.set_trace()
-msa_stats = d.groupby('msa')['price_per_hour'].aggregate({'Obs.':np.size, 'Mean':np.mean,'Std.':np.std, '10%':lambda x: np.percentile(x, 10), '90%':lambda x: np.percentile(x, 90), '50%':lambda x: np.percentile(x, 50)})
+msa_stats = d.groupby('msa')['price_per_hour'].aggregate({'Obs.': np.size,
+                                                          'Mean': np.mean,
+                                                          'Std.': np.std,
+                                                          '10%': lambda x: np.percentile(x, 10),
+                                                          '90%': lambda x: np.percentile(x, 90),
+                                                          '50%': lambda x: np.percentile(x, 50)})
 # Tabulate price by MSA
 #msa_stats = d.groupby('msa')['price_per_hour'].describe().unstack('msa').T.sort('mean') 
-msa_stats = msa_stats.merge(msa_characteristics[['msa','population']], left_index=True, right_on='msa', how='left')
+msa_stats = msa_stats.merge(msa_characteristics[['msa', 'population']],
+                            left_index=True,
+                            right_on='msa',
+                            how='left')
 msa_stats['ads_per_100k_capita'] = msa_stats['Mean']*100000/msa_stats['population']
 msa_stats = msa_stats[~msa_stats['ads_per_100k_capita'].isnull()]
-msa_stats = msa_stats.rename(columns={'msa':'MSA','ads_per_100k_capita':'Ads/100k Pop.'})
+msa_stats = msa_stats.rename(columns={'msa': 'MSA', 'ads_per_100k_capita': 'Ads/100k Pop.'})
 msa_stats = msa_stats.sort('Mean', ascending=True)
-msa_stats[['MSA','Obs.','Ads/100k Pop.','Mean','Std.','10%','50%','90%']].to_csv('msa_stats.csv', index=False)
+msa_stats[['MSA', 'Obs.', 'Ads/100k Pop.', 'Mean', 'Std.', '10%', '50%', '90%']].to_csv('msa_stats.csv', index=False)
 
 log_price_vs_count = np.corrcoef(np.log(d['price_per_hour']), np.log(d['cluster_count']))
 print('The correlation coefficient is: %0.3f' % log_price_vs_count[0][1])
 
 # Markets are different, and occur at the site-MSA level
-site_characteristics=d.groupby('site')[['outcall','sex_ad','is_massage_parlor_ad']].mean()
+site_characteristics = d.groupby('site')[['outcall', 'sex_ad', 'is_massage_parlor_ad']].mean()
 print(site_characteristics)
 site_characteristics.to_csv('site_characteristics.csv')

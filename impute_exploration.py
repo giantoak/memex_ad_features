@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import pandas
+import pandas as pd
 import numpy as np
 import datetime
 import ipdb
@@ -13,9 +13,9 @@ from sklearn.linear_model import LinearRegression
 
 from scipy.sparse import hstack
 from sklearn.ensemble import RandomForestRegressor 
-data = pandas.read_csv('data/temp/ad_ids_with_price.csv')
-prices = pandas.read_csv('ad_price_ad_level.csv')
-#dates = pandas.read_csv('data/escort_cdr_2/post_date-dom.tsv', sep='\t', header=None, names=['ad_id','date_str'])
+data = pd.read_csv('data/temp/ad_ids_with_price.csv')
+prices = pd.read_csv('ad_price_ad_level.csv')
+#dates = pd.read_csv('data/escort_cdr_2/post_date-dom.tsv', sep='\t', header=None, names=['ad_id','date_str'])
 #dates['month'] = dates['date_str'].apply(lambda x: x[0:7].replace('-',''))
 #dates.loc[dates['month'].isnull(),'month']='missing'
 #data1 = data.loc[np.random.choice(data.index, 100)]
@@ -37,7 +37,7 @@ data3 = data3.merge(prices[['ad_id','price_per_hour']])
     #print('Completed %s in %s, found %s features' % ( d.shape[0], datetime.datetime.now()-start, d.shape[1]))
 
 
-#no_price = pandas.read_csv('data/temp/ad_ids_no_price.csv')
+#no_price = pd.read_csv('data/temp/ad_ids_no_price.csv')
 cv = CountVectorizer()
 X = cv.fit_transform(data3['content'])
 y = data3['price_per_hour']
@@ -62,7 +62,7 @@ if True:
                     print('starting RE: %s' % datetime.datetime.now()) 
                     data3['content'] = data3['content'].apply(lambda x: re.sub(r'(\b)[\d]{1,5}[hr]{0,3}(\b)',r'\1\2', x))
                     print('starting finished: %s' % datetime.datetime.now()) 
-                    #test = pandas.DataFrame({'word':cv.vocabulary_.keys(),  'index':cv.vocabulary_.values()})
+                    #test = pd.DataFrame({'word':cv.vocabulary_.keys(),  'index':cv.vocabulary_.values()})
                     #test['digits'] = test['word'].apply(lambda x: digits.match(x) is not None)
                     #old_num_features=X.shape[1]
                     #X=X[:,test['index'][~test['digits']]]
@@ -93,7 +93,7 @@ if True:
                         sm=SelectFromModel(rf, prefit=True, threshold=thresh)
                         # ####
                         # # This bit works poorly with dropping extra features
-                        # test = pandas.DataFrame({'word':cv.vocabulary_.keys(), 'importance':rf.feature_importances_, 'index':cv.vocabulary_.values()})
+                        # test = pd.DataFrame({'word':cv.vocabulary_.keys(), 'importance':rf.feature_importances_, 'index':cv.vocabulary_.values()})
                         # test['kept'] = sm.get_support()
                         # test=test.sort('importance', ascending=False)
                         # print(test.head())
@@ -131,7 +131,7 @@ if True:
                         out_list.append(out_dict)
                         print('_______')
 
-df=pandas.DataFrame(out_list)
+df=pd.DataFrame(out_list)
 ipdb.set_trace()
 
 

@@ -1,7 +1,7 @@
-import pandas
+import pandas as pd
 import locale
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
-data = pandas.read_csv('ad_price_ad_level_all.csv')
+data = pd.read_csv('ad_price_ad_level_all.csv')
 del data['incall']
 del data['no_incall']
 del data['outcall']
@@ -15,11 +15,11 @@ print('There are %s unique providers before censoring' % locale.format("%d",  da
 print('%s unique MSAs' % locale.format("%d",  data['census_msa_code'].unique().shape[0], grouping=True))
 print('The average price at the ad level: $%0.2f' % data['price_per_hour'].mean())
 print('The std deviation of  price at the ad level: $%0.2f' % data['price_per_hour'].std())
-a=data.groupby('census_msa_code')['price_per_hour'].describe()
-b=a.xs('mean', level=1)  
+a = data.groupby('census_msa_code')['price_per_hour'].describe()
+b = a.xs('mean', level=1)
 
-m=b[0:89].mean()
-s=b[0:89].std()
+m = b[0:89].mean()
+s = b[0:89].std()
 import numpy as np
 print('The average msa avg price: $%0.2f' % m)
 print('The between msa price std: $%0.2f' % s)

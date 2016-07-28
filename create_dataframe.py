@@ -1,12 +1,11 @@
 from distutils.command.config import config
 
 import datetime
-import pandas
+import pandas as pd
 import csv
 from make_msa import MakeMSA
-import ujson
+import ujson as json
 import gzip
-import ipdb
 
 class CreateDataFrame:
     def __init__(self, config):
@@ -16,18 +15,18 @@ class CreateDataFrame:
         :return:
         """
         self.config = config
-        self.dataframe = pandas.DataFrame()
-        self.city_append = pandas.DataFrame()
-        self.state_append = pandas.DataFrame()
-        self.age_append = pandas.DataFrame()
-        self.entity_append = pandas.DataFrame()
+        self.dataframe = pd.DataFrame()
+        self.city_append = pd.DataFrame()
+        self.state_append = pd.DataFrame()
+        self.age_append = pd.DataFrame()
+        self.entity_append = pd.DataFrame()
 
         jsns = []
         for filename in config['filenames'][0:2]:
             print(filename)
             print(datetime.datetime.now())
-            data = [ujson.loads(line) for line in gzip.open(filename)]
-            dataframe = pandas.DataFrame(data[0])
+            data = [json.loads(line) for line in gzip.open(filename)]
+            dataframe = pd.DataFrame(data[0])
             #del dataframe['title']
             #for i in dataframe.columns:
                 #if '_lat_' in i:
@@ -43,7 +42,7 @@ class CreateDataFrame:
         # Reset the dataframes we use for apending in case this class has already been used
         self.reset_append_dataframes()
 
-        dataframe = pandas.DataFrame()
+        dataframe = pd.DataFrame()
         dataframe['rate'] = self.dataframe['rate']
         dataframe['age'] = self.dataframe['age']
         dataframe['city'] = self.dataframe['location_city_name']
@@ -68,7 +67,7 @@ class CreateDataFrame:
         # Reset the dataframes we use for apending in case this class has already been used
         self.reset_append_dataframes()
 
-        dataframe = pandas.DataFrame()
+        dataframe = pd.DataFrame()
         dataframe['rate'] = self.dataframe['rate']
         dataframe['cdr_id'] = self.dataframe['_id']
         dataframe['city'] = self.dataframe['location_city_name']
@@ -89,7 +88,7 @@ class CreateDataFrame:
         # Reset the dataframes we use for apending in case this class has already been used
         self.reset_append_dataframes()
 
-        dataframe = pandas.DataFrame()
+        dataframe = pd.DataFrame()
         dataframe['rate'] = self.dataframe['rate']
         dataframe['cdr_id'] = self.dataframe['_id']
         dataframe['city'] = self.dataframe['location_city_name']
@@ -119,7 +118,7 @@ class CreateDataFrame:
         :param columns: Column headers
         :return: Dataframe from csv
         """
-        dataframe = pandas.read_csv(filename, sep=seperator)
+        dataframe = pd.read_csv(filename, sep=seperator)
 
         if columns:
             dataframe.columns = columns
@@ -132,7 +131,7 @@ class CreateDataFrame:
                 return city[0]
             else:
                 for i in xrange(1, len(city), 1):
-                    self.city_append = self.city_append.append(pandas.DataFrame([[city[i], state, rate, age]], columns=['city', 'state', 'rate', 'age']), ignore_index=True)
+                    self.city_append = self.city_append.append(pd.DataFrame([[city[i], state, rate, age]], columns=['city', 'state', 'rate', 'age']), ignore_index=True)
                 return city[0]
         else:
             return city
@@ -143,7 +142,7 @@ class CreateDataFrame:
                 return state[0]
             else:
                 for i in xrange(1, len(state), 1):
-                    self.state_append = self.state_append.append(pandas.DataFrame([[city, state[i], rate, age]], columns=['city', 'state', 'rate', 'age']), ignore_index=True)
+                    self.state_append = self.state_append.append(pd.DataFrame([[city, state[i], rate, age]], columns=['city', 'state', 'rate', 'age']), ignore_index=True)
                 return state[0]
         else:
             return state
@@ -154,7 +153,7 @@ class CreateDataFrame:
                 return float(age[0])
             else:
                 for i in xrange(1, len(age), 1):
-                    self.age_append = self.age_append.append(pandas.DataFrame([[float(age[i]), rate, city, state]], columns=['age', 'rate', 'city', 'state']), ignore_index=True)
+                    self.age_append = self.age_append.append(pd.DataFrame([[float(age[i]), rate, city, state]], columns=['age', 'rate', 'city', 'state']), ignore_index=True)
         else:
             return age
 
@@ -165,7 +164,7 @@ class CreateDataFrame:
                 return city[0]
             else:
                 for i in xrange(1, len(city), 1):
-                    self.city_append = self.city_append.append(pandas.DataFrame([[city[i], state, rate, cdr_id]], columns=['city', 'state', 'rate', 'cdr_id']), ignore_index=True)
+                    self.city_append = self.city_append.append(pd.DataFrame([[city[i], state, rate, cdr_id]], columns=['city', 'state', 'rate', 'cdr_id']), ignore_index=True)
                 return city[0]
         else:
             return city
@@ -176,7 +175,7 @@ class CreateDataFrame:
                 return state[0]
             else:
                 for i in xrange(1, len(state), 1):
-                    self.state_append = self.state_append.append(pandas.DataFrame([[city, state[i], rate, cdr_id]], columns=['city', 'state', 'rate', 'cdr_id']), ignore_index=True)
+                    self.state_append = self.state_append.append(pd.DataFrame([[city, state[i], rate, cdr_id]], columns=['city', 'state', 'rate', 'cdr_id']), ignore_index=True)
                 return state[0]
         else:
             return state
@@ -187,7 +186,7 @@ class CreateDataFrame:
                 return city[0]
             else:
                 for i in xrange(1, len(city), 1):
-                    self.city_append = self.city_append.append(pandas.DataFrame([[city[i], state, rate, cdr_id, entity_value]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                    self.city_append = self.city_append.append(pd.DataFrame([[city[i], state, rate, cdr_id, entity_value]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
                 return city[0]
         else:
             return city
@@ -198,7 +197,7 @@ class CreateDataFrame:
                 return state[0]
             else:
                 for i in xrange(1, len(state), 1):
-                    self.state_append = self.state_append.append(pandas.DataFrame([[city, state[i], rate, cdr_id, entity_value]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                    self.state_append = self.state_append.append(pd.DataFrame([[city, state[i], rate, cdr_id, entity_value]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
                 return state[0]
         else:
             return state
@@ -209,16 +208,16 @@ class CreateDataFrame:
                 return entity_value[0]
             else:
                 for i in xrange(1, len(entity_value), 1):
-                    self.entity_append = self.entity_append.append(pandas.DataFrame([[city, state, rate, cdr_id, entity_value[i]]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                    self.entity_append = self.entity_append.append(pd.DataFrame([[city, state, rate, cdr_id, entity_value[i]]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
                 return entity_value[0]
         else:
             return entity_value
 
     def reset_append_dataframes(self):
-        self.city_append = pandas.DataFrame()
-        self.state_append = pandas.DataFrame()
-        self.age_append = pandas.DataFrame()
-        self.entity_append = pandas.DataFrame()
+        self.city_append = pd.DataFrame()
+        self.state_append = pd.DataFrame()
+        self.age_append = pd.DataFrame()
+        self.entity_append = pd.DataFrame()
 
     """def strip_phone(self):
         return_data = []
