@@ -6,6 +6,18 @@ import ujson as json
 import gzip
 
 
+def _df_from_flattened_json(config, columns=None):
+    """
+
+    :param dict config:
+    :param str | list columns: columns to use
+    :returns: `pd.DataFrame` --
+    """
+    return pd.concat([pd.DataFrame.from_records([json.loads(line)
+                                                 for line in gzip.open(filename)],
+                                                columns=columns)
+                      for filename in config['filenames'][0:2]])
+
 class CreateDataFrame:
     def __init__(self, config):
         """
@@ -14,24 +26,11 @@ class CreateDataFrame:
         :return:
         """
         self.config = config
-        self.dataframe = pd.DataFrame()
-        self.city_append = pd.DataFrame()
-        self.state_append = pd.DataFrame()
-        self.age_append = pd.DataFrame()
-        self.entity_append = pd.DataFrame()
-
-        jsns = []
-        for filename in config['filenames'][0:2]:
-            print(filename)
-            print(datetime.datetime.now())
-            data = [json.loads(line) for line in gzip.open(filename)]
-            dataframe = pd.DataFrame(data[0])
-            #del dataframe['title']
-            #for i in dataframe.columns:
-                #if '_lat_' in i:
-                    #del dataframe[i]
-            self.dataframe = self.dataframe.append(dataframe, ignore_index=True)
-            ipdb.set_trace()
+        self.df = _df_from_flattened_json(config)
+        # self.city_append = None  # pd.DataFrame()
+        # self.state_append = None  # pd.DataFrame()
+        # self.age_append = None  # pd.DataFrame()
+        # self.entity_append = None  # pd.DataFrame()
 
     def create_msa_data_frame(self):
         """
