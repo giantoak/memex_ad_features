@@ -1,6 +1,6 @@
 from distutils.command.config import config
 
-import datetime
+from datetime import datetime
 import pandas as pd
 import ujson as json
 import gzip
