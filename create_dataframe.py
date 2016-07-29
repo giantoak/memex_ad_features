@@ -70,21 +70,20 @@ class CreateDataFrame:
         return self.df.loc[:, ['rate',
                                'age',
                                'location_city_name',
-                               'location_state_name']]
+                               'location_state_name']].drop_duplicates()
 
     def create_ad_dataframe(self):
         return self.df.loc[:, ['rate',
                                '_id',
                                'location_city_name',
-                               'location_state_name']]
+                               'location_state_name']].drop_duplicates()
 
     def create_entity_dataframe(self, entity):
         return self.df.loc[:, ['rate',
                                '_id',
                                'location_city_name',
                                'location_state_name',
-                               entity]]
-
+                               entity]].drop_duplicates()
 
 # df = CreateDataFrame(config).create_data_frame()
 # msa_features = MakeMSA(df).get_msa_features()
