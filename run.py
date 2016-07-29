@@ -2,8 +2,10 @@ from create_dataframe import CreateDataFrame
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
+import pandas as pd
 
-#config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
+#  config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
+
 config = {'filenames': ['subset.json.gz']}
 
 class Run:
@@ -26,9 +28,10 @@ class Run:
         :return:
         """
         dataframe = self.create_dataframe.create_ad_dataframe()
+
         # Get the city and state features
-        city_features = self.create_dataframe.get_data_frame_from_csv('data/location_characteristics_city.csv', seperator='\t')
-        state_features = self.create_dataframe.get_data_frame_from_csv('data/location_characteristics_state.csv', seperator='\t')
+        city_features = pd.read_table('data/location_characteristics_city.csv')
+        state_features = pd.read_table('data/location_characteristics_state.csv')
 
         make_ad = MakeAd(city_features, state_features, dataframe)
         ad_features = make_ad.get_ad_features()
