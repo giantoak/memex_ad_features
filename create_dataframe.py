@@ -37,176 +37,218 @@ class CreateDataFrame:
         Will merge all the data by ad_id
         :return: Dataframe with all data merged
         """
-        # Reset the dataframes we use for apending in case this class has already been used
+        # Reset the dataframes we use for appending
+        # in case this class has already been used
         self.reset_append_dataframes()
+        df = self.df.loc[:, ['rate',
+                             'age',
+                             'location_city_name',
+                             'location_state_name']]
 
-        dataframe = pd.DataFrame()
-        dataframe['rate'] = self.dataframe['rate']
-        dataframe['age'] = self.dataframe['age']
-        dataframe['city'] = self.dataframe['location_city_name']
-        dataframe['state'] = self.dataframe['location_state_name']
-
-        # Since the dataframe contains some values with lists, we have to break those out. To do this, we will take all lists with length of 1 and return the only member of the list
-        # For lists with length > 1 we will append their value to self.city_append and then append self.city_append to self.msa_rate
-        dataframe['city'] = dataframe.apply(lambda x: self.convert_from_list_city_rate(x['city'], x['state'], x['rate'], x['age']), axis=1)
-        dataframe = dataframe.append(self.city_append, ignore_index=True)
+        # Since the dataframe contains some values with lists,
+        # we have to break those out.
+        # To do this, we will take all lists with length of 1
+        # and return the only member of the list
+        # For lists with length > 1
+        # we will append their value to self.city_append
+        # and then append self.city_append to self.msa_rate
+        df['city'] = df.apply(lambda x:
+                              self.convert_from_list_city_rate(x['city'],
+                                                               x['state'],
+                                                               x['rate'],
+                                                               x['age']),
+                              axis=1)
+        df = df.append(self.city_append, ignore_index=True)
 
         # Do the same for the states
-        dataframe['state'] = dataframe.apply(lambda x: self.convert_from_list_state_rate(x['city'], x['state'], x['rate'], x['age']), axis=1)
-        dataframe = dataframe.append(self.state_append, ignore_index=True)
+        df['state'] = df.apply(lambda x:
+                               self.convert_from_list_state_rate(x['city'],
+                                                                 x['state'],
+                                                                 x['rate'],
+                                                                 x['age']),
+                               axis=1)
+        df = df.append(self.state_append, ignore_index=True)
 
         # Do the same with ages
-        dataframe['age'] = dataframe.apply(lambda x: self.convert_from_list_age(x['age'], x['rate'], x['city'], x['state']), axis=1)
-        dataframe = dataframe.append(self.age_append, ignore_index=True)
+        df['age'] = df.apply(lambda x: self.convert_from_list_age(x['age'], x['rate'], x['city'], x['state']), axis=1)
+        df = df.append(self.age_append, ignore_index=True)
 
-        return dataframe
+        return df
 
     def create_ad_dataframe(self):
-        # Reset the dataframes we use for apending in case this class has already been used
+        # Reset the dataframes we use for appending
+        # in case this class has already been used
         self.reset_append_dataframes()
+        df = self.df.loc[:, ['rate',
+                             '_id',
+                             'location_city_name',
+                             'location_state_name']]
 
-        dataframe = pd.DataFrame()
-        dataframe['rate'] = self.dataframe['rate']
-        dataframe['cdr_id'] = self.dataframe['_id']
-        dataframe['city'] = self.dataframe['location_city_name']
-        dataframe['state'] = self.dataframe['location_state_name']
-
-        # Since the dataframe contains some values with lists, we have to break those out. To do this, we will take all lists with length of 1 and return the only member of the list
-        # For lists with length > 1 we will append their value to self.city_append and then append self.city_append to self.msa_rate
-        dataframe['city'] = dataframe.apply(lambda x: self.convert_from_list_city_ad(x['city'], x['state'], x['rate'], x['cdr_id']), axis=1)
-        dataframe = dataframe.append(self.city_append, ignore_index=True)
+        # Since the dataframe contains some values with lists,
+        # we have to break those out.
+        # To do this, we will take all lists with length of 1
+        # and return the only member of the list
+        # For lists with length > 1
+        # we will append their value to self.city_append
+        # and then append self.city_append to self.msa_rate
+        df['city'] = df.apply(lambda x:
+                              self.convert_from_list_city_ad(x['city'],
+                                                             x['state'],
+                                                             x['rate'],
+                                                             x['cdr_id']),
+                              axis=1)
+        df = df.append(self.city_append, ignore_index=True)
 
         # Do the same for the states
-        dataframe['state'] = dataframe.apply(lambda x: self.convert_from_list_state_ad(x['city'], x['state'], x['rate'], x['cdr_id']), axis=1)
-        dataframe = dataframe.append(self.state_append, ignore_index=True)
+        df['state'] = df.apply(lambda x: self.convert_from_list_state_ad(x['city'], x['state'], x['rate'], x['cdr_id']),
+                               axis=1)
+        df = df.append(self.state_append, ignore_index=True)
 
-        return dataframe
+        return df
 
     def create_entity_dataframe(self, entity):
-        # Reset the dataframes we use for apending in case this class has already been used
+        # Reset the dataframes we use for appending
+        # in case this class has already been used
         self.reset_append_dataframes()
+        df = self.df.loc[:, ['rate',
+                             '_id',
+                             'location_city_name',
+                             'location_state_name',
+                             entity]]
 
-        dataframe = pd.DataFrame()
-        dataframe['rate'] = self.dataframe['rate']
-        dataframe['cdr_id'] = self.dataframe['_id']
-        dataframe['city'] = self.dataframe['location_city_name']
-        dataframe['state'] = self.dataframe['location_state_name']
-        dataframe[entity] = self.dataframe[entity]
+        # Since the dataframe contains some values with lists,
+        # we have to break those out.
+        # To do this, we will take all lists with length of 1
+        # and return the only member of the list
+        # For lists with length > 1
+        # we will append their value to self.city_append
+        # and then append self.city_append to self.msa_rate
+        for col, other_df in [('city', self.city_append),
+                              ('state', self.state_append),
+                              (entity, self.entity_append)]:
+            df[col] = df.apply(lambda x: self.convert_from_list_city_entity(x['city'],
+                                                                            x['state'],
+                                                                            x['rate'],
+                                                                            x['cdr_id'],
+                                                                            x[entity],
+                                                                            entity),
+                               axis=1)
+            df = df.append(other_df, ignore_index=True)
 
-        # Since the dataframe contains some values with lists, we have to break those out. To do this, we will take all lists with length of 1 and return the only member of the list
-        # For lists with length > 1 we will append their value to self.city_append and then append self.city_append to self.msa_rate
-        dataframe['city'] = dataframe.apply(lambda x: self.convert_from_list_city_entity(x['city'], x['state'], x['rate'], x['cdr_id'], x[entity], entity), axis=1)
-        dataframe = dataframe.append(self.city_append, ignore_index=True)
+        return df
 
-        # Do the same for the states
-        dataframe['state'] = dataframe.apply(lambda x: self.convert_from_list_state_entity(x['city'], x['state'], x['rate'], x['cdr_id'], x[entity], entity), axis=1)
-        dataframe = dataframe.append(self.state_append, ignore_index=True)
-
-        dataframe[entity] = dataframe.apply(lambda x: self.convert_from_list_entity(x['city'], x['state'], x['rate'], x['cdr_id'], x[entity], entity), axis=1)
-        dataframe = dataframe.append(self.entity_append, ignore_index=True)
-
-
-        return dataframe
-
-    def get_data_frame_from_csv(self, filename, seperator='\t', columns=None):
-        """
-        Will a dataframe from a csv and set columns headers
-        :param filename: Location of file
-        :param seperator: Separator value
-        :param columns: Column headers
-        :return: Dataframe from csv
-        """
-        dataframe = pd.read_csv(filename, sep=seperator)
-
-        if columns:
-            dataframe.columns = columns
-
-        return dataframe
-
-    def convert_from_list_city_rate(self, city, state, rate, age):
-        if type(city) is list:
+    def convert_from_list_city_rate(self,
+                                    city, state, rate, age):
+        if isinstance(city, list):
             if len(city) == 1:
                 return city[0]
             else:
                 for i in xrange(1, len(city), 1):
-                    self.city_append = self.city_append.append(pd.DataFrame([[city[i], state, rate, age]], columns=['city', 'state', 'rate', 'age']), ignore_index=True)
+                    self.city_append = self.city_append.append(
+                        pd.DataFrame([[city[i], state, rate, age]],
+                                     columns=['city', 'state', 'rate', 'age']),
+                        ignore_index=True)
                 return city[0]
         else:
             return city
 
-    def convert_from_list_state_rate(self, city, state, rate, age):
-        if type(state) is list:
+    def convert_from_list_state_rate(self,
+                                     city, state, rate, age):
+        if isinstance(state, list):
             if len(state) == 1:
                 return state[0]
             else:
                 for i in xrange(1, len(state), 1):
-                    self.state_append = self.state_append.append(pd.DataFrame([[city, state[i], rate, age]], columns=['city', 'state', 'rate', 'age']), ignore_index=True)
+                    self.state_append = self.state_append.append(
+                        pd.DataFrame([[city, state[i], rate, age]],
+                                     columns=['city', 'state', 'rate', 'age']),
+                        ignore_index=True)
                 return state[0]
         else:
             return state
 
-    def convert_from_list_age(self, age, rate, city, state):
-        if type(age) is list:
+    def convert_from_list_age(self,
+                              age, rate, city, state):
+        if isinstance(age, list):
             if len(age) == 1:
                 return float(age[0])
             else:
                 for i in xrange(1, len(age), 1):
-                    self.age_append = self.age_append.append(pd.DataFrame([[float(age[i]), rate, city, state]], columns=['age', 'rate', 'city', 'state']), ignore_index=True)
+                    self.age_append = self.age_append.append(
+                        pd.DataFrame([[float(age[i]), rate, city, state]],
+                                     columns=['age', 'rate', 'city', 'state']),
+                        ignore_index=True)
         else:
             return age
 
-
-    def convert_from_list_city_ad(self, city, state, rate, cdr_id):
-        if type(city) is list:
+    def convert_from_list_city_ad(self,
+                                  city, state, rate, cdr_id):
+        if isinstance(city, list):
             if len(city) == 1:
                 return city[0]
             else:
                 for i in xrange(1, len(city), 1):
-                    self.city_append = self.city_append.append(pd.DataFrame([[city[i], state, rate, cdr_id]], columns=['city', 'state', 'rate', 'cdr_id']), ignore_index=True)
+                    self.city_append = self.city_append.append(
+                        pd.DataFrame([[city[i], state, rate, cdr_id]],
+                                     columns=['city', 'state', 'rate', 'cdr_id']),
+                        ignore_index=True)
                 return city[0]
         else:
             return city
 
-    def convert_from_list_state_ad(self, city, state, rate, cdr_id):
-        if type(state) is list:
+    def convert_from_list_state_ad(self,
+                                   city, state, rate, cdr_id):
+        if isinstance(state, list):
             if len(state) == 1:
                 return state[0]
             else:
                 for i in xrange(1, len(state), 1):
-                    self.state_append = self.state_append.append(pd.DataFrame([[city, state[i], rate, cdr_id]], columns=['city', 'state', 'rate', 'cdr_id']), ignore_index=True)
+                    self.state_append = self.state_append.append(
+                        pd.DataFrame([[city, state[i], rate, cdr_id]],
+                                     columns=['city', 'state', 'rate', 'cdr_id']),
+                        ignore_index=True)
                 return state[0]
         else:
             return state
 
-    def convert_from_list_city_entity(self, city, state, rate, cdr_id, entity_value, entity_name):
-        if type(city) is list:
+    def convert_from_list_city_entity(self,
+                                      city, state, rate, cdr_id, entity_value, entity_name):
+        if isinstance(city, list):
             if len(city) == 1:
                 return city[0]
             else:
                 for i in xrange(1, len(city), 1):
-                    self.city_append = self.city_append.append(pd.DataFrame([[city[i], state, rate, cdr_id, entity_value]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                    self.city_append = self.city_append.append(
+                        pd.DataFrame([[city[i], state, rate, cdr_id, entity_value]],
+                                     columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
                 return city[0]
         else:
             return city
 
-    def convert_from_list_state_entity(self, city, state, rate, cdr_id, entity_value, entity_name):
-        if type(state) is list:
+    def convert_from_list_state_entity(self,
+                                       city, state, rate, cdr_id, entity_value, entity_name):
+        if isinstance(state, list):
             if len(state) == 1:
                 return state[0]
             else:
                 for i in xrange(1, len(state), 1):
-                    self.state_append = self.state_append.append(pd.DataFrame([[city, state[i], rate, cdr_id, entity_value]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                    self.state_append = self.state_append.append(
+                        pd.DataFrame([[city, state[i], rate, cdr_id, entity_value]],
+                                     columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
                 return state[0]
         else:
             return state
 
-    def convert_from_list_entity(self, city, state, rate, cdr_id, entity_value, entity_name):
-        if type(entity_value) is list:
+    def convert_from_list_entity(self,
+                                 city, state, rate, cdr_id, entity_value, entity_name):
+        if isinstance(entity_value, list):
             if len(entity_value) == 1:
                 return entity_value[0]
             else:
                 for i in xrange(1, len(entity_value), 1):
-                    self.entity_append = self.entity_append.append(pd.DataFrame([[city, state, rate, cdr_id, entity_value[i]]], columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                    self.entity_append = self.entity_append.append(
+                        pd.DataFrame([[city, state, rate, cdr_id, entity_value[i]]],
+                                     columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
                 return entity_value[0]
         else:
             return entity_value
@@ -242,6 +284,5 @@ class CreateDataFrame:
             w.writerows(return_data)
             f.close()"""
 
-
-#dataframe = CreateDataFrame(config).create_data_frame()
-#msa_features = MakeMSA(dataframe).get_msa_features()
+# df = CreateDataFrame(config).create_data_frame()
+# msa_features = MakeMSA(df).get_msa_features()
