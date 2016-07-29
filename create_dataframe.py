@@ -1,6 +1,3 @@
-from distutils.command.config import config
-
-from datetime import datetime
 import pandas as pd
 import ujson as json
 import gzip
@@ -52,26 +49,16 @@ class CreateDataFrame:
         # For lists with length > 1
         # we will append their value to self.city_append
         # and then append self.city_append to self.msa_rate
-        df['city'] = df.apply(lambda x:
-                              self.convert_from_list_city_rate(x['city'],
-                                                               x['state'],
-                                                               x['rate'],
-                                                               x['age']),
-                              axis=1)
-        df = df.append(self.city_append, ignore_index=True)
+        for col, other_df in [('city', self.city_append),
+                              ('state', self.state_append),
+                              ('age', self.age_append)]:
 
-        # Do the same for the states
-        df['state'] = df.apply(lambda x:
-                               self.convert_from_list_state_rate(x['city'],
-                                                                 x['state'],
-                                                                 x['rate'],
-                                                                 x['age']),
+            df[col] = df.apply(lambda x: self.convert_from_list_city_rate(x['city'],
+                                                                          x['state'],
+                                                                          x['rate'],
+                                                                          x['age']),
                                axis=1)
-        df = df.append(self.state_append, ignore_index=True)
-
-        # Do the same with ages
-        df['age'] = df.apply(lambda x: self.convert_from_list_age(x['age'], x['rate'], x['city'], x['state']), axis=1)
-        df = df.append(self.age_append, ignore_index=True)
+            df = df.append(other_df, ignore_index=True)
 
         return df
 
@@ -91,18 +78,16 @@ class CreateDataFrame:
         # For lists with length > 1
         # we will append their value to self.city_append
         # and then append self.city_append to self.msa_rate
-        df['city'] = df.apply(lambda x:
-                              self.convert_from_list_city_ad(x['city'],
-                                                             x['state'],
-                                                             x['rate'],
-                                                             x['cdr_id']),
-                              axis=1)
-        df = df.append(self.city_append, ignore_index=True)
+        for col, other_df in [('city', self.city_append),
+                              ('state', self.state_append)]:
 
-        # Do the same for the states
-        df['state'] = df.apply(lambda x: self.convert_from_list_state_ad(x['city'], x['state'], x['rate'], x['cdr_id']),
-                               axis=1)
-        df = df.append(self.state_append, ignore_index=True)
+            df[col] = df.apply(lambda x:
+                                       self.convert_from_list_city_ad(x['city'],
+                                                                      x['state'],
+                                                                      x['rate'],
+                                                                      x['cdr_id']),
+                                  axis=1)
+            df = df.append(other_df, ignore_index=True)
 
         return df
 
@@ -190,7 +175,10 @@ class CreateDataFrame:
                 for i in xrange(1, len(city), 1):
                     self.city_append = self.city_append.append(
                         pd.DataFrame([[city[i], state, rate, cdr_id]],
-                                     columns=['city', 'state', 'rate', 'cdr_id']),
+                                     columns=['city',
+                                              'state',
+                                              'rate',
+                                              'cdr_id']),
                         ignore_index=True)
                 return city[0]
         else:
@@ -205,7 +193,10 @@ class CreateDataFrame:
                 for i in xrange(1, len(state), 1):
                     self.state_append = self.state_append.append(
                         pd.DataFrame([[city, state[i], rate, cdr_id]],
-                                     columns=['city', 'state', 'rate', 'cdr_id']),
+                                     columns=['city',
+                                              'state',
+                                              'rate',
+                                              'cdr_id']),
                         ignore_index=True)
                 return state[0]
         else:
@@ -220,7 +211,12 @@ class CreateDataFrame:
                 for i in xrange(1, len(city), 1):
                     self.city_append = self.city_append.append(
                         pd.DataFrame([[city[i], state, rate, cdr_id, entity_value]],
-                                     columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                                     columns=['city',
+                                              'state',
+                                              'rate',
+                                              'cdr_id',
+                                              entity_name]),
+                        ignore_index=True)
                 return city[0]
         else:
             return city
@@ -234,7 +230,12 @@ class CreateDataFrame:
                 for i in xrange(1, len(state), 1):
                     self.state_append = self.state_append.append(
                         pd.DataFrame([[city, state[i], rate, cdr_id, entity_value]],
-                                     columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                                     columns=['city',
+                                              'state',
+                                              'rate',
+                                              'cdr_id',
+                                              entity_name]),
+                        ignore_index=True)
                 return state[0]
         else:
             return state
@@ -248,7 +249,12 @@ class CreateDataFrame:
                 for i in xrange(1, len(entity_value), 1):
                     self.entity_append = self.entity_append.append(
                         pd.DataFrame([[city, state, rate, cdr_id, entity_value[i]]],
-                                     columns=['city', 'state', 'rate', 'cdr_id', entity_name]), ignore_index=True)
+                                     columns=['city',
+                                              'state',
+                                              'rate',
+                                              'cdr_id',
+                                              entity_name]),
+                        ignore_index=True)
                 return entity_value[0]
         else:
             return entity_value
