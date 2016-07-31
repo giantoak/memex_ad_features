@@ -20,8 +20,12 @@ class Run:
         """
         df = self.create_dataframe.create_msa_data_frame()
         make_msa = MakeMSA(df).get_msa_features()
-        make_msa['city_stats'].to_csv('data/location_characteristics_city.csv', sep='\t', encoding='utf8')
-        make_msa['state_stats'].to_csv('data/location_characteristics_state.csv', sep='\t', encoding='utf8')
+        make_msa['city_stats'].to_csv('data/location_characteristics_city.csv',
+                                      sep='\t',
+                                      encoding='utf8')
+        make_msa['state_stats'].to_csv('data/location_characteristics_state.csv',
+                                       sep='\t',
+                                       encoding='utf8')
 
     def run_ad_features(self):
         """
@@ -36,7 +40,8 @@ class Run:
 
         make_ad = MakeAd(city_features, state_features, df)
         ad_features = make_ad.get_ad_features()
-        ad_features.to_csv('data/ad_characteristics.csv', sep='\t')
+        ad_features.to_csv('data/ad_characteristics.csv',
+                           sep='\t')
 
     def run_entity_features(self, entity):
         """
@@ -46,7 +51,8 @@ class Run:
         """
         df = self.create_dataframe.create_entity_dataframe(entity)
         make_entity = MakeEntity(df, entity).get_entity_features()
-        make_entity.to_csv('data/phone_characteristics.csv', sep='\t')
+        make_entity.to_csv('data/phone_characteristics.csv',
+                           sep='\t')
 
     def run(self):
         """
@@ -60,5 +66,11 @@ class Run:
         self.run_entity_features('phone')
         print('Saved entity features')
 
-Run().run()
+
+def main():
+    Run().run()
+
+
+if __name__ == "__main__":
+    main()
 
