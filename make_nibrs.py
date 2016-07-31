@@ -1,5 +1,4 @@
 import numpy as np
-# import ipdb
 import pandas as pd
 locations = (
     (0,  2),

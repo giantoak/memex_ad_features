@@ -1,7 +1,5 @@
 import pandas as pd
 import datetime
-# import ipdb
-# import ujson as json
 import numpy as np
 
 data = pd.read_csv('ad_price_ad_level.csv')
@@ -14,12 +12,13 @@ data['month'] = data['date'].apply(lambda x: int(x.strftime('%m')))
 data['year'] = data['date'].apply(lambda x: int(x.strftime('%Y')))
 data = data[data['year'] > 2010]
 
-##### Begin working on cluster-msa generation
+# Begin working on cluster-msa generation
 MIN_CLUSTER_SIZE = 5
 MAX_CLUSTER_SIZE = 200
 
 data.reset_index(inplace=True)
-clusters = data.groupby('cluster_id').filter(lambda x: MIN_CLUSTER_SIZE < len(x) < MAX_CLUSTER_SIZE)
+clusters = data.groupby('cluster_id').filter(
+    lambda x: MIN_CLUSTER_SIZE < len(x) < MAX_CLUSTER_SIZE)
 
 
 # Define a function which decides what MSA a provider was in at a month
@@ -34,7 +33,8 @@ def unique_msa_if_exists(x):
 # prices
 
 # Assign providers to MSA at the monthly level
-f = clusters.groupby(['cluster_id', 'year', 'month'])['census_msa_code'].apply(unique_msa_if_exists)  # Grab unique MSA, if there is one
+f = clusters.groupby(['cluster_id', 'year', 'month'])['census_msa_code'].apply(
+    unique_msa_if_exists)  # Grab unique MSA, if there is one
 f = pd.DataFrame(f[~f.isnull()], columns=['census_msa_code'])
 g = pd.DataFrame(clusters.groupby(['cluster_id)', 'year)', 'month'])['price_per_hour'].size(),
                  columns=['num_ads_in_cluster_month_with_price'])
