@@ -22,16 +22,19 @@ def parse_location_contexts(jsn):
                 continue
 
             for key in ['name', 'wikidata_id']:
-                flat_context['location_{}_{}'.format(c_type, key)] = context_dict['context'][c_type][key]
+                flat_context['location_{}_{}'.format(c_type, key)] = \
+                    context_dict['context'][c_type][key]
 
-            flat_context['location_{}_lat_lon'.format(c_type)] = (context_data[c_type]['centroid_lat'],
-                                                              context_data[c_type]['centroid_lon'])
+            flat_context['location_{}_lat_lon'.format(c_type)] = \
+                (context_data[c_type]['centroid_lat'],
+                 context_data[c_type]['centroid_lon'])
 
         flat_contexts.append(flat_context)
 
     return flat_contexts
 
-def parse_lattice_json_line(line):
+
+def parse_lattice_jsonline(line):
     """
     Parse a line of lattice JSON, trimming out non-lattice fields and flattening nested fields.
     Location contexs are flattened in bulk, preserving pairings.
@@ -81,10 +84,29 @@ def parse_lattice_json_line(line):
     return jsn_dict_list
 
 
-def stream_lattice_json_gzip_file_to_file(gzip_fpath):
+def convert_file_to_gzip(in_fpath, remove_old=True):
+    import gzip
+    import shutil
+    out_fpath = '{}.json.gz'.format(in_fpath)
+    with open(in_fpath, 'rb') as infile:
+        with gzip.open(out_fpath, 'wb') as outfile:
+            shutil.copyfileobj(infile, outfile)
+
+    if remove_old:
+        from os import remove
+        remove(in_fpath)
+
+    return out_fpath
+
+
+def stream_lattice_jsonline_gzip_file_to_file(gzip_fpath,
+                                              gzip_output=True,
+                                              remove_unzipped=True):
     """
     Read through a gzip of lattice JSON, parsing it to a tempfile;
     :param str gzip_fpath: Path to gzip file
+    :param bool gzip_output:
+    :param bool remove_unzipped:
     :returns: `str` -- Path to tempfile of shrunk json
     """
 
@@ -95,10 +117,13 @@ def stream_lattice_json_gzip_file_to_file(gzip_fpath):
     outfile = NamedTemporaryFile(mode='w', delete=False)
     with gzip.open(gzip_fpath) as infile:
         for line in infile:
-            jsn_list = parse_lattice_json_line(line)
+            jsn_list = parse_lattice_jsonline(line)
             for jsn in jsn_list:
-                outfile.write(json.dumps(jsn) + '\n')
+                outfile.write('{}\n'.format(json.dumps(jsn)))
     outfile.close()
+
+    if gzip_output is True:
+        return convert_file_to_gzip(outfile.name, remove_unzipped)
 
     return outfile.name
 
@@ -112,4 +137,4 @@ def validate_hdfs_copy_and_parse(copy_file_dict):
     if copy_file_dict['result'] is False:
         return None
 
-    return stream_lattice_json_gzip_file_to_file(copy_file_dict['path'])
+    return stream_lattice_jsonline_gzip_file_to_file(copy_file_dict['path'])
