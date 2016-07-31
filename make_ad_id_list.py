@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-#prices =pd.read_csv('ad_price_ad_level.csv')
-prices = pd.read_csv('data/escort_cdr_2/rates-text.tsv', sep='\t', names=['ad_id', 'price'])
+
+prices = pd.read_table('data/escort_cdr_2/rates-text.tsv',
+                       names=['ad_id', 'price'])
 ad_ids = set(prices['ad_id'])
 all_ads = set(pd.read_csv('ad_id_list.csv', names=['ad_id'])['ad_id'])
 out_with_price = []

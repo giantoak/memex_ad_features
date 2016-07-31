@@ -6,9 +6,7 @@ Use 'method 2', or cross section, in order to make CPI estimates
 JAB
 """
 import pandas as pd
-import datetime
-# import ipdb
-# import ujson as json
+from datetime import datetime
 import numpy as np
 
 data = pd.read_csv('ad_price_ad_level.csv')
@@ -22,7 +20,7 @@ place_market_segments = place + market_segments
 # Create month/year values
 data = data[~data['date_str'].isnull()]
 data = data[~data['census_msa_code'].isnull()]
-data['date'] = data['date_str'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S'))
+data['date'] = data['date_str'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S'))
 data.index = pd.DatetimeIndex(data['date'])
 data = data.reindex(inplace=True)
 data['month'] = data['date'].apply(lambda x: int(x.strftime('%m')))
@@ -36,7 +34,7 @@ msa_ratios = pd.DataFrame(data.groupby(place).size()/data.shape[0], columns=['ms
 msa_ratios.reset_index(inplace=True)
 
 # Create empty price index frame to account for missing data:
-t = pd.DatetimeIndex(start=datetime.datetime(year=2010, month=1, day=1), freq='M', periods=60)
+t = pd.DatetimeIndex(start=datetime(year=2010, month=1, day=1), freq='M', periods=60)
 t = pd.DataFrame(t, index=range(len(t)), columns=['date'])
 t['1'] = 1
 msa = data['census_msa_code'].unique().tolist()

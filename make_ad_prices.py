@@ -8,20 +8,25 @@ It then creates a data set of only ads with two prices "doubles" with
 the implied fixed cost 
 """
 import pandas as pd
-import ipdb
 import numpy as np
+
 nrows = None
 
 if False:
-    data = pd.read_csv('data/forGiantOak3/rates.tsv.gz', sep='\t', compression='gzip', header=None, nrows=nrows)
+    data = pd.read_table('data/forGiantOak3/rates.tsv.gz',
+                         compression='gzip',
+                         header=None,
+                         nrows=nrows)
 else:
-    data = pd.read_csv('data/forGiantOak3/rates2.tsv', sep='\t', header=None, nrows=nrows)
+    data = pd.read_table('data/forGiantOak3/rates2.tsv',
+                         header=None,
+                         nrows=nrows)
 
 
 def all_call_merge(df, merge_dir):
     """
     Merge in incall, outcall, incalloutcall
-    :param df: Dataframe that needs calls merged in
+    :param pandas.DataFrame df: Dataframe that needs calls merged in
     :param str merge_dir: 'right' or 'left'
     :return: DataFrame with merged calls
     """
@@ -30,7 +35,10 @@ def all_call_merge(df, merge_dir):
         call_input = '{}_input'.format(call_type)
         no_call_type = 'no_{}'.format(call_type)
 
-        df = df.merge(pd.read_csv(fpath, sep='\t', header=None, names=['ad_id', call_input], nrows=nrows),
+        df = df.merge(pd.read_table(fpath,
+                                    header=None,
+                                    names=['ad_id', call_input],
+                                    nrows=nrows),
                       how=merge_dir)
         df[call_type] = df[call_input] == 1
         df[no_call_type] = df[call_input] == -1
@@ -52,27 +60,41 @@ data['minutes'] = np.nan
 data.minutes.loc[data['unit'] == 'MINS'] = data.timeValue.loc[data['unit'] == 'MINS'].astype(np.int64)
 data.minutes.loc[data['unit'] == 'HOUR'] = 60*data.timeValue.loc[data['unit'] == 'HOUR'].astype(np.int64)
 
-dollar_synonyms = ['$', 'roses', 'rose', 'bucks', 'kisses', 'kiss', 'dollars', 'dollar', 'dlr']
+dollar_synonyms = ['$',
+                   'roses',
+                   'rose',
+                   'bucks',
+                   'kisses',
+                   'kiss',
+                   'dollars',
+                   'dollar',
+                   'dlr']
 for d_s in dollar_synonyms:
     data.ix[:, 'price'] = data['price'].apply(lambda x: x.replace(d_s, ''))
 
-other_currencies = ['euro', 'eur', 'eu', 's', '¥', '\xef\xbc\x90', 'aud']
+other_currencies = ['euro',
+                    'eur',
+                    'eu',
+                    's',
+                    '¥',
+                    '\xef\xbc\x90',
+                    'aud']
 for o_c in other_currencies:
     data = data.ix[data['price'].apply(lambda x: o_c not in x)]
 
 print('There are %s prices after dropping foreign prices' % data.shape[0])
 data.ix[:, 'price'] = data['price'].astype('int')
 # This code is useful for dealing with the 'price' string problem in
-# sam's rates_locs file from 12/29
+# Sam's rates_locs file from 12/29
 
 # Begin merging information from census
 if False:
-    sexad = pd.read_csv('data/forGiantOak3/isssexad.tsv.gz',
-                        sep='\t', header=None, compression='gzip', nrows=nrows)
+    sexad = pd.read_table('data/forGiantOak3/isssexad.tsv.gz',
+                          header=None, compression='gzip', nrows=nrows)
     sexad.rename(columns={0: 'ad_id', 1: 'sex_ad'}, inplace=True)
 else:
-    sexad = pd.read_csv('data/forGiantOak3/isssexad.tsv',
-                        sep='\t', header=None, nrows=nrows)
+    sexad = pd.read_table('data/forGiantOak3/isssexad.tsv',
+                          header=None, nrows=nrows)
     sexad.rename(columns={0: 'ad_id', 1: 'sex_ad'}, inplace=True)
 data = pd.merge(data, sexad, on='ad_id', how='left')
 del sexad
@@ -81,7 +103,8 @@ del sexad
 
 
 # Merge in massage parlor information
-massage = pd.read_csv('data/forGiantOak3/ismassageparlorad.tsv', sep='\t', header=None, nrows=nrows)
+massage = pd.read_table('data/forGiantOak3/ismassageparlorad.tsv',
+                        header=None, nrows=nrows)
 massage.rename(columns={0: 'ad_id', 1: 'massage_ad'}, inplace=True)
 data = pd.merge(data, massage, on='ad_id', how='left')
 del massage
@@ -94,28 +117,39 @@ del counts
 
 # Begin using MSA data
 if False:
-    msa = pd.read_csv('data/forGiantOak3/msa_locations.tsv.gz',
-                      sep='\t', header=None, compression='gzip', names=['ad_id' 'census_msa_code'], nrows=nrows)
+    msa = pd.read_table('data/forGiantOak3/msa_locations.tsv.gz',
+                        header=None, compression='gzip',
+                        names=['ad_id' 'census_msa_code'],
+                        nrows=nrows)
 else:
-    msa = pd.read_csv('data/forGiantOak3/msa_locations.tsv',
-                      sep='\t', header=None, names=['ad_id', 'census_msa_code'], nrows=nrows)
+    msa = pd.read_table('data/forGiantOak3/msa_locations.tsv',
+                        header=None, names=['ad_id', 'census_msa_code'], nrows=nrows)
+
 if False:
-    cluster = pd.read_csv('data/forGiantOak3/msa_locations.tsv.gz',
-                          sep='\t', header=None, compression='gzip', names=['ad_id', 'census_msa_code'],
-                          nrows=nrows)
+    cluster = pd.read_table('data/forGiantOak3/msa_locations.tsv.gz',
+                            header=None, compression='gzip',
+                            names=['ad_id', 'census_msa_code'],
+                            nrows=nrows)
 else:
-    msa = pd.read_csv('data/forGiantOak3/msa_locations.tsv',
-                      sep='\t', header=None, names=['ad_id', 'census_msa_code'], nrows=nrows)
+    msa = pd.read_table('data/forGiantOak3/msa_locations.tsv',
+                        header=None,
+                        names=['ad_id', 'census_msa_code'],
+                        nrows=nrows)
+
 out = pd.merge(out, msa, how='left')  # Add census MSA code to the fixed price info
 # del msa
 
 # Merge in cluster ID
 if False:
-    ts = pd.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv.gz',
-                     sep='\t', header=None, compression='gzip', names=['ad_id', 'cluster', 'date_str'], nrows=nrows)
+    ts = pd.read_table('data/forGiantOak3/doc-provider-timestamp.tsv.gz',
+                       header=None, compression='gzip',
+                       names=['ad_id', 'cluster', 'date_str'],
+                       nrows=nrows)
 else:
-    ts = pd.read_csv('data/forGiantOak3/doc-provider-timestamp.tsv',
-                     sep='\t', header=None, names=['ad_id', 'cluster_id', 'date_str'], nrows=nrows)
+    ts = pd.read_table('data/forGiantOak3/doc-provider-timestamp.tsv',
+                       header=None, names=['ad_id', 'cluster_id', 'date_str'],
+                       nrows=nrows)
+
 out = out.merge(ts, how='left')
 # del ts
 out[out['cluster_id'] == '\N'] = np.nan
@@ -123,8 +157,9 @@ out[out['date_str'] == '\N'] = np.nan
 
 
 # Merge in massage parlor flag
-massage = pd.read_csv('data/forGiantOak3/ismassageparlorad.tsv',
-                      sep='\t', header=None, names=['ad_id', 'is_massage_parlor_ad'], nrows=nrows)
+massage = pd.read_table('data/forGiantOak3/ismassageparlorad.tsv',
+                        header=None, names=['ad_id', 'is_massage_parlor_ad'],
+                        nrows=nrows)
 out = out.merge(massage, how='left')
 del massage
 
@@ -286,7 +321,6 @@ del massage
 del out['incall']
 del out['outcall']
 del out['incalloutcall']
-ipdb.set_trace()
 out = all_call_merge(out, 'right')
 
 out.to_csv('ad_price_ad_level_all.csv', index=False)
