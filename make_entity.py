@@ -1,47 +1,51 @@
 import pandas as pd
 import numpy as np
 
+
 class MakeEntity:
-    def __init__(self, dataframe, entity):
-        self.dataframe = dataframe
+    def __init__(self, df, entity):
+        self.df = df
         self.entity = entity
 
     def get_entity_features(self):
         # First we will calculate the rates, so lets drop all the NaN
-        rate_dataframe = self.dataframe.dropna(subset=['rate'])
+        rate_df = self.df.dropna(subset=['rate'])
 
-        # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
-        rate_dataframe['rate_per_hour'] = rate_dataframe['rate'].apply(lambda x: self.calculate_rate(x))
-        rate_dataframe = rate_dataframe.drop('rate', 1)
-        rate_dataframe = rate_dataframe.dropna(subset=['rate_per_hour'])
+        # Calculate the rates by hour and delete the old rate column.
+        # Then drop any remaining NaN
+
+        rate_df['rate_per_hour'] = rate_df['rate'].apply(lambda x:
+                                                         self.calculate_rate(x))
+        rate_df = rate_df.drop('rate', 1)
+        rate_df = rate_df.dropna(subset=['rate_per_hour'])
 
         # Now get the stats we want for rate
-        rate_dataframe = self.calculate_entity_rate_features(rate_dataframe)
+        rate_df = self.calculate_entity_rate_features(rate_df)
 
         # Get a count of the ads
-        dataframe = pd.value_counts(self.dataframe[self.entity]).to_frame()
+        df = pd.value_counts(self.df[self.entity]).to_frame()
         # Reset the index so we can use the entity column
-        dataframe.reset_index(level=0, inplace=True)
+        df.reset_index(level=0, inplace=True)
 
         # Get the unique locations
-        dataframe['unique_cities'] = dataframe['index'].apply(lambda x: self.get_unique_cities(x))
-        dataframe['unique_states'] = dataframe['index'].apply(lambda x: self.get_unique_states(x))
+        df['unique_cities'] = df['index'].apply(lambda x: self.get_unique_cities(x))
+        df['unique_states'] = df['index'].apply(lambda x: self.get_unique_states(x))
 
         # Now give the columns the proper names as they have changed
-        dataframe.columns = ['phone', 'phone_count', 'unique_cities', 'unique_states']
+        df.columns = ['phone', 'phone_count', 'unique_cities', 'unique_states']
 
         # Reset the index on our rate dataframe and rename the columns
-        rate_dataframe.reset_index(level=0, inplace=True)
-        rate_dataframe.columns = ['phone', 'rate_count', 'rate_mean', 'rate_std', 'rate_median']
+        rate_df.reset_index(level=0, inplace=True)
+        rate_df.columns = ['phone', 'rate_count', 'rate_mean', 'rate_std', 'rate_median']
 
         # Lastly merge the two dataframes
-        dataframe = dataframe.merge(rate_dataframe, how='outer')
+        df = df.merge(rate_df, how='outer')
 
         # Save this code as we may use it later
-        """dataframe['incall_count'] = dataframe['index'].apply(lambda x: self.get_incall_count(x))
-        dataframe['outcall_count'] = dataframe['index'].apply(lambda x: self.get_outcall_count(x))"""
+        """df['incall_count'] = df['index'].apply(lambda x: self.get_incall_count(x))
+        df['outcall_count'] = df['index'].apply(lambda x: self.get_outcall_count(x))"""
 
-        return dataframe
+        return df
 
     def calculate_entity_rate_features(self, df_entity_rates):
         """
@@ -50,23 +54,24 @@ class MakeEntity:
         :return: MSA rate features
         """
         return df_entity_rates.groupby(self.entity)['rate_per_hour'].aggregate({'rate_count': len,
-                                                                            'rate_mean': np.mean,
-                                                                            'rate_std': np.std,
-                                                                            'rate_median': lambda x: np.percentile(x, q=50)})
+                                                                                'rate_mean': np.mean,
+                                                                                'rate_std': np.std,
+                                                                                'rate_median': lambda x: np.percentile(
+                                                                                    x, q=50)})
 
     def get_unique_cities(self, value):
-        return len(pd.value_counts(self.dataframe.loc[self.dataframe[self.entity]==value]['city']))
+        return len(pd.value_counts(self.df.loc[self.df[self.entity] == value]['city']))
 
     def get_unique_states(self, value):
-        return len(pd.value_counts(self.dataframe.loc[self.dataframe[self.entity]==value]['state']))
+        return len(pd.value_counts(self.df.loc[self.df[self.entity] == value]['state']))
 
     # Save this code as we may use it later
     """def get_incall_count(self, phone):
-        return pd.value_counts(self.dataframe.loc[self.dataframe['phone']==phone]['service'].str.contains('incall')).sum()
+        return pd.value_counts(self.df.loc[self.df['phone']==phone]['service'].str.contains('incall')).sum()
         #TODO only evaluate true
 
     def get_outcall_count(self, phone):
-        return pd.value_counts(self.dataframe.loc[self.dataframe['phone']==phone]['service'].str.contains('outcall')).sum()"""
+        return pd.value_counts(self.df.loc[self.df['phone']==phone]['service'].str.contains('outcall')).sum()"""
 
     def calculate_rate(self, rate):
         """
@@ -105,7 +110,6 @@ class MakeEntity:
                 return None
         else:
             return None
-
 
     def strip_characters(self, value):
         """
