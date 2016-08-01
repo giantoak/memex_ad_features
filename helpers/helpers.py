@@ -40,7 +40,7 @@ def mean_hourly_rate(rate):
     """
     import numpy as np
 
-    if not isinstance(rate, list):
+    if not isinstance(rate, list) or len(rate) == 0:
         return None
 
     calculated_rates = []

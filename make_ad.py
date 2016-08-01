@@ -22,9 +22,12 @@ class MakeAd:
 
         # Calculate the rate per hour
         # then drop the old rate column and get rid of NaN values
-        df['rate_per_hour'] = df['rate'].apply(mean_hourly_rate)
-        df = df.dropna(subset=['rate_per_hour'])
-        df = df.drop('rate', 1)
+        id_groups = df.groupby('_id')
+        per_hour_df = id_groups['rate'].apply(
+            lambda x: mean_hourly_rate(list(x))).dropna().reset_index()
+        per_hour_df.columns = ['_id', 'rate_per_hour']
+        df = df.merge(per_hour_df, how='inner')
+        del per_hour_df
 
         # Now get relative price
         df['relative_price_to_city'] = df.apply(
