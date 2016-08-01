@@ -88,7 +88,7 @@ class MakeMSA:
         age_df = self.df.dropna(subset=['age'])
 
         # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
-        rate_df['rate_per_hour'] = rate_df['rate'].apply(lambda x: self.calculate_rate(x))
+        rate_df['rate_per_hour'] = rate_df['rate'].apply(mean_hourly_rate)
         rate_df = rate_df.drop('rate', 1)
         rate_df = rate_df.dropna(subset=['rate_per_hour'])
 
@@ -106,7 +106,8 @@ class MakeMSA:
 
     def get_rates(self):
         """
-        Creates a dataframe with a new rates column from the rates column with comma delimted fields
+        Creates a dataframe with a new rates column from the rates column
+        with comma delimited fields
         :return:
         """
         # Get only rates and msa
