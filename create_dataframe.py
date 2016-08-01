@@ -10,6 +10,10 @@ class DFManager:
         """
         self.config = config
         self.dfs = bulk_gzipped_jsonline_files_to_dfs(config['filenames'])
+        self._map_hdfs_names_to_old_names()
+
+    def _map_hdfs_names_to_old_names(self):
+        # code here that renames columns to old names.
 
     def _merged_unique_df_from_dfs(self, cols_to_use):
         """
