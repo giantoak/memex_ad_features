@@ -24,9 +24,10 @@ class MakeAd:
         # then drop the old rate column and get rid of NaN values
         id_groups = df.groupby('_id')
         per_hour_df = id_groups['rate'].apply(
-            lambda x: mean_hourly_rate(list(x))).dropna().reset_index()
+            lambda x: mean_hourly_rate(list(x))
+        ).dropna().reset_index()
         per_hour_df.columns = ['_id', 'rate_per_hour']
-        df = df.merge(per_hour_df, how='inner')
+        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id']).shape
         del per_hour_df
 
         # Now get relative price
