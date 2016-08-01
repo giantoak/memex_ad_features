@@ -1,74 +1,82 @@
-from create_dataframe import CreateDataFrame
+from create_dataframe import DFManager
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
 import pandas as pd
+import logging
 
 #  config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
 
 config = {'filenames': ['subset.json.gz']}
 
 
-class Run:
-    def __init__(self):
-        self.create_dataframe = CreateDataFrame(config)
+def run_location_features(dfm):
+    """
+    Will get features by city and state
+    :return:
+    """
+    df = dfm.create_msa_data_frame()
+    make_msa = MakeMSA(df).get_msa_features()
+    for loc_type in ['city', 'state']:
+        make_msa['{}_stats'.format(loc_type)].to_csv(
+            'data/location_characteristics_{}.csv'.format(loc_type),
+            sep='\t',
+            encoding='utf8')
 
-    def run_location_features(self):
-        """
-        Will get features by city and state
-        :return:
-        """
-        df = self.create_dataframe.create_msa_data_frame()
-        make_msa = MakeMSA(df).get_msa_features()
-        make_msa['city_stats'].to_csv('data/location_characteristics_city.csv',
-                                      sep='\t',
-                                      encoding='utf8')
-        make_msa['state_stats'].to_csv('data/location_characteristics_state.csv',
-                                       sep='\t',
-                                       encoding='utf8')
 
-    def run_ad_features(self):
-        """
-        Will run the ad features
-        :return:
-        """
-        df = self.create_dataframe.create_ad_dataframe()
+def run_ad_features(dfm):
+    """
+    Will run the ad features
+    :param create_dataframe.DFManager dfm:
+    :return:
+    """
+    df = dfm.create_ad_dataframe()
 
-        # Get the city and state features
-        city_features = pd.read_table('data/location_characteristics_city.csv')
-        state_features = pd.read_table('data/location_characteristics_state.csv')
+    # Get the city and state features
+    city_features = pd.read_table('data/location_characteristics_city.csv')
+    state_features = pd.read_table('data/location_characteristics_state.csv')
 
-        make_ad = MakeAd(city_features, state_features, df)
-        ad_features = make_ad.get_ad_features()
-        ad_features.to_csv('data/ad_characteristics.csv',
-                           sep='\t')
+    make_ad = MakeAd(city_features, state_features, df)
+    ad_features = make_ad.get_ad_features()
+    ad_features.to_csv('data/ad_characteristics.csv',
+                       sep='\t',
+                       encoding='utf8')
 
-    def run_entity_features(self, entity):
-        """
 
-        :param entity: The entity you'd like to do stats on
-        :return:
-        """
-        df = self.create_dataframe.create_entity_dataframe(entity)
-        make_entity = MakeEntity(df, entity).get_entity_features()
-        make_entity.to_csv('data/phone_characteristics.csv',
-                           sep='\t')
+def run_entity_features(dfm, entity):
+    """
 
-    def run(self):
-        """
-        Will run all features
-        :return:
-        """
-        self.run_location_features()
-        print('Saved location features')
-        self.run_ad_features()
-        print('Saved ad features')
-        self.run_entity_features('phone')
-        print('Saved entity features')
+    :param create_dataframe.DFManager dfm:
+    :param entity: The entity you'd like to do stats on
+    :return:
+    """
+    df = dfm.create_entity_dataframe(entity)
+    make_entity = MakeEntity(df, entity).get_entity_features()
+    make_entity.to_csv('data/{}_characteristics.csv'.format(entity),
+                       sep='\t',
+                       encoding='utf8')
 
 
 def main():
-    Run().run()
+
+    logger = logging.getLogger('main')
+    logger.setLevel(logging.INFO)
+
+    logger.info('Initializing DF Manager...')
+    dfm = DFManager(config)
+    logger.info('Done!')
+
+    logger.info('Getting location features...')
+    run_location_features(dfm)
+    logger.info('Done!')
+
+    logger.info('Getting ad features...')
+    run_ad_features(dfm)
+    logger.info('Done!')
+
+    logger.info('Getting (phone) entity features...')
+    run_entity_features(dfm, 'phone')
+    logger.info('Done!')
 
 
 if __name__ == "__main__":
