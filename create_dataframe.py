@@ -14,6 +14,7 @@ class DFManager:
 
     def _map_hdfs_names_to_old_names(self):
         # code here that renames columns to old names.
+        pass
 
     def _merged_unique_df_from_dfs(self, cols_to_use):
         """
