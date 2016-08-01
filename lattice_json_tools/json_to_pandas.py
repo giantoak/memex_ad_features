@@ -35,7 +35,6 @@ def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=20):
     """
     import multiprocessing as mp
     from tqdm import tqdm
-    import pandas as pd
 
     if isinstance(glob_or_list, str):
         from glob import glob
