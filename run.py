@@ -3,11 +3,11 @@ from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
 import pandas as pd
-import logging
+from glob import glob
 
 #  config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
 
-config = {'filenames': ['subset.json.gz']}
+config = {'filenames': glob('lattice_data/flattened/flattened_before_201605/*.json.gz')[:2]}
 
 
 def run_location_features(dfm):
@@ -59,24 +59,21 @@ def run_entity_features(dfm, entity):
 
 def main():
 
-    logger = logging.getLogger('main')
-    logger.setLevel(logging.INFO)
-
-    logger.info('Initializing DF Manager...')
+    print('Initializing DF Manager...')
     dfm = DFManager(config)
-    logger.info('Done!')
+    print('Done!')
 
-    logger.info('Getting location features...')
+    print('Getting location features...')
     run_location_features(dfm)
-    logger.info('Done!')
+    print('Done!')
 
-    logger.info('Getting ad features...')
+    print('Getting ad features...')
     run_ad_features(dfm)
-    logger.info('Done!')
+    print('Done!')
 
-    logger.info('Getting (phone) entity features...')
+    print('Getting (phone) entity features...')
     run_entity_features(dfm, 'phone')
-    logger.info('Done!')
+    print('Done!')
 
 
 if __name__ == "__main__":
