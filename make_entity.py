@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from helpers import mean_hourly_rate
+from helpers import mean_hourly_rate_df
 
 
 class MakeEntity:
@@ -14,15 +14,14 @@ class MakeEntity:
         self.entity = entity
 
     def get_entity_features(self):
-        # First we will calculate the rates, so lets drop all the NaN
+        # First we will calculate the rates, so let's drop all the NaN
         rate_df = self.df.dropna(subset=['rate'])
 
         # Calculate the rates by hour and delete the old rate column.
         # Then drop any remaining NaN
-
-        rate_df['rate_per_hour'] = rate_df['rate'].apply(mean_hourly_rate)
-        rate_df = rate_df.drop('rate', 1)
-        rate_df = rate_df.dropna(subset=['rate_per_hour'])
+        per_hour_df = mean_hourly_rate_df(rate_df)
+        rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
+        del per_hour_df
 
         # Now get the stats we want for rate
         rate_df = self.calculate_entity_rate_features(rate_df)
