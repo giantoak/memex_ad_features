@@ -126,7 +126,9 @@ class MakeMSA:
         df = self.df[['rate', 'city', 'state']].dropna(0)
 
         # Calculate the rate per hour
-        df['rate_per_hour'] = df['rate'].apply(mean_hourly_rate)
+        per_hour_df = mean_hourly_rate_df(df)
+        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
+        del per_hour_df
 
         # We don't need the original rate column anymore
         df = df.drop('rate', 1)
@@ -147,7 +149,9 @@ class MakeMSA:
         df = self.df[['rate', 'post_date', 'msa_name']].dropna(0)
 
         # Calculate the rate per hour
-        df['rate_per_hour'] = df['rate'].apply(mean_hourly_rate)
+        per_hour_df = mean_hourly_rate_df(df)
+        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
+        del per_hour_df
 
         # Drop nan once more to get rid of prices we couldn't calculate
         df = df.dropna(0)
