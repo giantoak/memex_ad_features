@@ -4,47 +4,39 @@ import datetime
 from helpers import mean_hourly_rate_df
 
 
-def _stat_feature_dict(prefix=''):
-    """
-    Get dictionary of stat features for use in aggregations
-    :param str prefix:
-    :returns: `dict` --
-    """
-    return {prefix+'_count': len,
-            prefix+'_mean': np.mean,
-            prefix+'_std': np.std,
-            prefix+'_ad_p05_msa': lambda x: np.percentile(x, q=5),
-            prefix+'_ad_p10_msa': lambda x: np.percentile(x, q=10),
-            prefix+'_ad_p15_msa': lambda x: np.percentile(x, q=15),
-            prefix+'_ad_p20_msa': lambda x: np.percentile(x, q=20),
-            prefix+'_ad_p25_msa': lambda x: np.percentile(x, q=25),
-            prefix+'_ad_p30_msa': lambda x: np.percentile(x, q=30),
-            prefix+'_ad_p35_msa': lambda x: np.percentile(x, q=35),
-            prefix+'_ad_p40_msa': lambda x: np.percentile(x, q=40),
-            prefix+'_ad_p45_msa': lambda x: np.percentile(x, q=45),
-            prefix+'_ad_p50_msa': lambda x: np.percentile(x, q=50),
-            prefix+'_ad_p55_msa': lambda x: np.percentile(x, q=55),
-            prefix+'_ad_p60_msa': lambda x: np.percentile(x, q=60),
-            prefix+'_ad_p65_msa': lambda x: np.percentile(x, q=65),
-            prefix+'_ad_p70_msa': lambda x: np.percentile(x, q=70),
-            prefix+'_ad_p75_msa': lambda x: np.percentile(x, q=75),
-            prefix+'_ad_p80_msa': lambda x: np.percentile(x, q=80),
-            prefix+'_ad_p85_msa': lambda x: np.percentile(x, q=85),
-            prefix+'_ad_p90_msa': lambda x: np.percentile(x, q=90),
-            prefix+'_ad_p95_msa': lambda x: np.percentile(x, q=95)}
-
-
-def _calculate_grouped_col_stats(df, grouping_col, stat_col, stat_prefix):
+def _calculate_grouped_col_stats(df, grouping_col, stat_col, prefix):
     """
 
     :param pandas.DataFrame df: Dataframe to analyze
     :param str grouping_col: Column to aggregate
-    :param str stat_col: Column on which to calculate stats
-    :param str stat_prefix: Prefix to ad to the stat column
+    :param str stat_col: Column on which to calculate stats for grouping
+    :param str prefix: Prefix to ad to the stat column
     :return:
     """
     grps = df.groupby(grouping_col)
-    return grps[stat_col].agg(_stat_feature_dict(stat_prefix))
+    return grps[stat_col].agg(
+        {prefix + '_count': len,
+         prefix + '_mean': np.mean,
+         prefix + '_std': np.std,
+         prefix + '_ad_p05_msa': lambda x: np.percentile(x, q=5),
+         prefix + '_ad_p10_msa': lambda x: np.percentile(x, q=10),
+         prefix + '_ad_p15_msa': lambda x: np.percentile(x, q=15),
+         prefix + '_ad_p20_msa': lambda x: np.percentile(x, q=20),
+         prefix + '_ad_p25_msa': lambda x: np.percentile(x, q=25),
+         prefix + '_ad_p30_msa': lambda x: np.percentile(x, q=30),
+         prefix + '_ad_p35_msa': lambda x: np.percentile(x, q=35),
+         prefix + '_ad_p40_msa': lambda x: np.percentile(x, q=40),
+         prefix + '_ad_p45_msa': lambda x: np.percentile(x, q=45),
+         prefix + '_ad_p50_msa': lambda x: np.percentile(x, q=50),
+         prefix + '_ad_p55_msa': lambda x: np.percentile(x, q=55),
+         prefix + '_ad_p60_msa': lambda x: np.percentile(x, q=60),
+         prefix + '_ad_p65_msa': lambda x: np.percentile(x, q=65),
+         prefix + '_ad_p70_msa': lambda x: np.percentile(x, q=70),
+         prefix + '_ad_p75_msa': lambda x: np.percentile(x, q=75),
+         prefix + '_ad_p80_msa': lambda x: np.percentile(x, q=80),
+         prefix + '_ad_p85_msa': lambda x: np.percentile(x, q=85),
+         prefix + '_ad_p90_msa': lambda x: np.percentile(x, q=90),
+         prefix + '_ad_p95_msa': lambda x: np.percentile(x, q=95)})
 
 
 def _get_quarter(value):
