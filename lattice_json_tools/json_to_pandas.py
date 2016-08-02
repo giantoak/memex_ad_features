@@ -56,6 +56,9 @@ def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=20):
         from glob import glob
         glob_or_list = glob(glob_or_list)
 
+    if len(glob_or_list) == 0:
+        return []
+
     pool = mp.Pool(min(nproc, len(glob_or_list)))
     dfs = []
     for df in tqdm(pool.imap_unordered(gzipped_jsonline_file_to_df, glob_or_list),
