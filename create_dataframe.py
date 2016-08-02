@@ -35,20 +35,21 @@ class DFManager:
         """
         return self._merged_unique_df_from_dfs(['rate',
                                                 'age',
-                                                'location_city_name',
-                                                'location_state_name'])
+                                                'city',
+                                                'state',
+                                                '_id'])
 
     def create_ad_dataframe(self):
         return self._merged_unique_df_from_dfs(['rate',
                                                 '_id',
-                                                'location_city_name',
-                                                'location_state_name'])
+                                                'city',
+                                                'state'])
 
     def create_entity_dataframe(self, entity):
         return self._merged_unique_df_from_dfs(['rate',
                                                 '_id',
-                                                'location_city_name',
-                                                'location_state_name',
+                                                'city',
+                                                'state',
                                                 entity])
 
 # df = CreateDataFrame(config).create_data_frame()
