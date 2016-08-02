@@ -29,7 +29,9 @@ class DFManager:
         :return: Dataframe with all data merged
         """
         cols_to_use = ['rate', '_id', 'city', 'state', 'age']
-        return self.df.loc[:, cols_to_use].drop_duplicates()
+        return self.df.loc[:, cols_to_use].\
+            dropna(how='all', subset=['city', 'state']).\
+            drop_duplicates()
 
     def create_ad_dataframe(self):
         cols_to_use = ['rate', '_id', 'city', 'state']
