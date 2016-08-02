@@ -40,11 +40,14 @@ class MakeEntity:
         df['unique_states'] = df['index'].progress_apply(lambda x: self.get_unique_states(x))
 
         # Now give the columns the proper names as they have changed
-        df.columns = ['phone', 'phone_count', 'unique_cities', 'unique_states']
+        df.columns = [self.entity,
+                      self.entity+'_count',
+                      'unique_cities',
+                      'unique_states']
 
         # Reset the index on our rate dataframe and rename the columns
         rate_df.reset_index(level=0, inplace=True)
-        rate_df.columns = ['phone', 'rate_count', 'rate_mean', 'rate_std', 'rate_median']
+        rate_df.columns = [self.entity, 'rate_count', 'rate_mean', 'rate_std', 'rate_median']
 
         # Lastly merge the two dataframes
         return df.merge(rate_df, how='outer')
