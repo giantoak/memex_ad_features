@@ -21,7 +21,8 @@ class DFManager:
         :param list cols_to_use:
         :returns: `pandas.DataFrame` --
         """
-        return self.df.loc[:, cols_to_use].drop_duplicates()
+        return self.df.loc[:, cols_to_use]\
+            .drop_duplicates()
 
     def create_msa_data_frame(self):
         """
@@ -35,11 +36,13 @@ class DFManager:
 
     def create_ad_dataframe(self):
         cols_to_use = ['rate', '_id', 'city', 'state']
-        return self.df.loc[:, cols_to_use].drop_duplicates()
+        return self.df.loc[:, cols_to_use].\
+            drop_duplicates()
 
     def create_entity_dataframe(self, entity):
         cols_to_use = ['rate', '_id', 'city', 'state', entity]
-        return self.df.loc[:, cols_to_use].drop_duplicates()
+        return self.df.loc[:, cols_to_use].\
+            drop_duplicates()
 
 # df = CreateDataFrame(config).create_data_frame()
 # msa_features = MakeMSA(df).get_msa_features()
