@@ -33,10 +33,10 @@ class MakeEntity:
         df.reset_index(level=0, inplace=True)
 
         # Get the unique locations
-        tqdm.pandas(desc='unique_cities', total=df.shape[0])
+        tqdm.pandas(desc='unique_cities')
         df['unique_cities'] = df['index'].progress_apply(lambda x: self.get_unique_cities(x))
 
-        tqdm.pandas(desc='unique_states', total=df.shape[0])
+        tqdm.pandas(desc='unique_states')
         df['unique_states'] = df['index'].progress_apply(lambda x: self.get_unique_states(x))
 
         # Now give the columns the proper names as they have changed
