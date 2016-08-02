@@ -1,9 +1,24 @@
+import numpy as np
 import pandas as pd
 from helpers import mean_hourly_rate_df
 from tqdm import tqdm
 
 quantiles = ['rate_ad_p{}_msa'.format(str(i).zfill(2))
              for i in range(5, 96, 5)]
+
+
+def _calculate_quantile_relative_loc(x):
+    """
+    Gets the quantile the rate is in
+    :param float rate: Rate of the ad
+    :param str loc_col: Location column to use
+    :param str loc_name: name of the location for the specified rate
+    :returns: `int` -- Quantile of rate
+    """
+    try:
+        return np.searchsorted(x[quantiles], x['rate_per_hour'])[0]
+    except (IndexError, ValueError):
+        return np.nan
 
 
 class MakeAd:
@@ -23,43 +38,50 @@ class MakeAd:
 
         # Calculate the rate per hour
         # then drop the old rate column and get rid of NaN values
-        per_hour_df = mean_hourly_rate_df(df)
-        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
+        df = df.merge(mean_hourly_rate_df(df),
+                      left_on=['_id'], right_on=['_id'])
 
+        # TODO: convert to for loop
 
+        # city calcs
+        city_df = df.dropna(subset=['city']).\
+            merge(self.city_features.loc[:, ['city', 'rate_ad_mean_msa', 'rate_std']
+                  + quantiles],
+                  left_on=['city'], right_on=['city'])
 
-        # Now get relative price
-        tqdm.pandas(desc='relative_price_to_city')
-        df['relative_price_to_city'] = df.progress_apply(
-            lambda x: self.calculate_price_relative_loc(x['rate_per_hour'],
-                                                        'city',
-                                                        x['city']),
-            axis=1)
+        city_df['relative_price_to_city'] = \
+            (city_df.rate_per_hour - city_df.rate_ad_mean_msa) / city_df.rate_std
 
-        tqdm.pandas(desc='relative_price_to_state')
-        df['relative_price_to_state'] = df.progress_apply(
-            lambda x: self.calculate_price_relative_loc(x['rate_per_hour'],
-                                                        'state',
-                                                        x['state']),
-            axis=1)
-
-        # Now get relative quantile
         tqdm.pandas(desc='relative_quantile_to_city')
-        df['relative_quantile_to_city'] = df.progress_apply(
-            lambda x: self.calculate_quantile_relative_loc(x['rate_per_hour'],
-                                                           'city',
-                                                           x['city']),
-            axis=1)
+        city_df['relative_quantile_to_city'] = \
+            city_df.loc[:, ['rate_per_hour'] + quantiles].progress_apply(
+                _calculate_quantile_relative_loc, axis=1)
+
+        city_df = city_df.loc[:, ['city',
+                                  'relative_price_to_city',
+                                  'relative_quantile_to_city']]
+
+        # state calcs
+        state_df = df.dropna(subset=['state']). \
+            merge(self.state_features.loc[:, ['state', 'rate_ad_mean_msa', 'rate_std']],
+                  left_on=['state'], right_on=['state'])
+
+        state_df['relative_price_to_state'] = \
+            (state_df.rate_per_hour - state_df.rate_ad_mean_msa) / state_df.rate_std
 
         tqdm.pandas(desc='relative_quantile_to_state')
-        df['relative_quantile_to_state'] = df.progress_apply(
-            lambda x: self.calculate_quantile_relative_loc(x['rate_per_hour'],
-                                                           'state',
-                                                           x['state']),
-            axis=1)
+        state_df['relative_quantile_to_state'] = \
+            state_df.loc[:, ['rate_per_hour'] + quantiles].progress_apply(
+                _calculate_quantile_relative_loc, axis=1)
 
-        return df
+        state_df = state_df.loc[:, ['state',
+                                    'relative_price_to_state',
+                                    'relative_quantile_to_state']]
+
+        # Merge city and state calcs and return
+        return df.\
+            merge(city_df, left_on=['city'], right_on=['city'], how='left').\
+            merge(state_df, left_on=['state'], right_on=['state'], how='left')
 
     def calculate_price_relative_loc(self, rate, loc_type, loc_name):
         """
@@ -82,23 +104,3 @@ class MakeAd:
         # (Price - mean) / standard deviation
         relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
         return relative_price
-
-    def calculate_quantile_relative_loc(self, rate, loc_col, loc_name):
-        """
-        Gets the quantile the rate is in
-        :param float rate: Rate of the ad
-        :param str loc_col: Location column to use
-        :param str loc_name: name of the location for the specified rate
-        :returns: `int` -- Quantile of rate
-        """
-        if pd.isnull(loc_name):
-            return None
-
-        if loc_col == 'city':
-            df = self.city_features.loc[self.city_features.city == loc_name]
-        elif loc_col == 'state':
-            df = self.state_features.loc[self.state_features.state == loc_name]
-        else:
-            return None
-
-        return (df.iloc[0][quantiles].searchsorted(rate)[0] + 1) * 5
