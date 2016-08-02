@@ -6,8 +6,8 @@ import pandas as pd
 from glob import glob
 
 #  config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
-
-config = {'filenames': glob('lattice_data/flattened/flattened_before_201605/*.json.gz')[:2]}
+# config = {'filenames': glob('lattice_data/flattened/flattened_before_201605/*.json.gz')[:2]}
+config = {'filenames': glob('/home/ubuntu/flat_data/flattened*2016*/*.json.gz')}
 
 
 def run_location_features(dfm):
