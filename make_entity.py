@@ -27,23 +27,37 @@ class MakeEntity:
         # Now get the stats we want for rate
         rate_df = self.calculate_entity_rate_features(rate_df)
 
-        # Get a count of the ads
-        df = pd.value_counts(self.df[self.entity]).to_frame()
-        # Reset the index so we can use the entity column
-        df.reset_index(level=0, inplace=True)
+        # Get a count of the entities
+        df = pd.value_counts(self.df[self.entity]).\
+            reset_index().\
+            rename(columns={'index': self.entity,
+                            self.entity: self.entity+'_count'})
 
-        # Get the unique locations
-        tqdm.pandas(desc='unique_cities')
-        df['unique_cities'] = df['index'].progress_apply(lambda x: self.get_unique_cities(x))
+        # Get the unique cities
+        # tqdm.pandas(desc='unique_cities')
+        # df['unique_cities'] = df['index'].progress_apply(lambda x: self.get_unique_cities(x))
+        unique_city_df = self.df.loc[:, [self.entity, 'city']].\
+            dropna().\
+            drop_duplicates().\
+            groupby(self.entity).\
+            count().\
+            reset_index().\
+            rename(columns={'city': 'unique_cities'})
+        df = df.merge(unique_city_df, left_on=self.entity, righ_on=self.entity)
+        del unique_city_df
 
-        tqdm.pandas(desc='unique_states')
-        df['unique_states'] = df['index'].progress_apply(lambda x: self.get_unique_states(x))
-
-        # Now give the columns the proper names as they have changed
-        df.columns = [self.entity,
-                      self.entity+'_count',
-                      'unique_cities',
-                      'unique_states']
+        # Get the unique states
+        # tqdm.pandas(desc='unique_states')
+        # df['unique_states'] = df['index'].progress_apply(lambda x: self.get_unique_states(x))
+        unique_state_df = self.df.loc[:, [self.entity, 'state']].\
+            dropna().\
+            drop_duplicates().\
+            groupby(self.entity).\
+            count().\
+            reset_index().\
+            rename(columns={'state': 'unique_states'})
+        df = df.merge(unique_state_df, left_on=self.entity, right_on=self.entity)
+        del unique_state_df
 
         # Reset the index on our rate dataframe and rename the columns
         rate_df.reset_index(level=0, inplace=True)
