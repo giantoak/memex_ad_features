@@ -20,9 +20,9 @@ class MakeEntity:
 
         # Calculate the rates by hour and delete the old rate column.
         # Then drop any remaining NaN
-        per_hour_df = mean_hourly_rate_df(rate_df)
-        rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
+        rate_df = rate_df.\
+            merge(mean_hourly_rate_df(rate_df),
+                  left_on=['_id'], right_on=['_id'])
 
         # Now get the stats we want for rate
         rate_df = self.calculate_entity_rate_features(rate_df)
