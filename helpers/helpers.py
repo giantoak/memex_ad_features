@@ -32,19 +32,19 @@ def _strip_currency_chars(x):
     return x.strip()
 
 
-def mean_hourly_rate(rate):
+def mean_hourly_rate(rates):
     """
     Takes a list of comma-delimited rate strings and calculates the mean hourly rate
-    :param str rate: Comma delimited rate from rate file
+    :param list rates: Comma delimited rate from rate file
     :returns: `np.float` -- Hourly rate
     """
     import numpy as np
 
-    if not isinstance(rate, list) or len(rate) == 0:
+    if not isinstance(rates, list) or len(rates) == 0:
         return None
 
     calculated_rates = []
-    for r in rate:
+    for r in rates:
         # Split the rate by comma leaving the price and the unit.
         rate_info = r.split(',')
         price = rate_info[0]
