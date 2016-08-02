@@ -93,13 +93,25 @@ class MakeMSA:
         del per_hour_df
 
         # Now do rates and age for city
-        city_stats_rate = _calculate_grouped_col_stats(rate_df, 'city', 'rate_per_hour', 'rate')
-        city_stats_age = _calculate_grouped_col_stats(age_df, 'city', 'age', 'age')
+        city_stats_rate = _calculate_grouped_col_stats(rate_df,
+                                                       'city',
+                                                       'rate_per_hour',
+                                                       'rate')
+        city_stats_age = _calculate_grouped_col_stats(age_df,
+                                                      'city',
+                                                      'age',
+                                                      'age')
         city_stats = city_stats_rate.join(city_stats_age, how='outer')
 
         # Now do rates and age for state
-        state_stats_rate = _calculate_grouped_col_stats(rate_df, 'state', 'rate_per_hour', 'rate')
-        state_stats_age = _calculate_grouped_col_stats(age_df, 'state', 'age', 'age')
+        state_stats_rate = _calculate_grouped_col_stats(rate_df,
+                                                        'state',
+                                                        'rate_per_hour',
+                                                        'rate')
+        state_stats_age = _calculate_grouped_col_stats(age_df,
+                                                       'state',
+                                                       'age',
+                                                       'age')
         state_stats = state_stats_rate.join(state_stats_age, how='outer')
 
         return {'state_stats': state_stats, 'city_stats': city_stats}
