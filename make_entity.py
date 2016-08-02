@@ -43,7 +43,7 @@ class MakeEntity:
             count().\
             reset_index().\
             rename(columns={'city': 'unique_cities'})
-        df = df.merge(unique_city_df, left_on=self.entity, righ_on=self.entity)
+        df = df.merge(unique_city_df, left_on=self.entity, right_on=self.entity)
         del unique_city_df
 
         # Get the unique states
