@@ -55,10 +55,10 @@ def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=10, merge_threshold=(
                    total=len(glob_or_list)):
         dfs.append(df)
         if len(dfs) >= merge_threshold[0]:
-            master_dfs.append(pd.concat(dfs))
+            master_dfs.append(pd.concat(dfs).drop_duplicates())
             dfs = []
             if len(master_dfs) >= merge_threshold[1]:
-                master_dfs = [pd.concat(master_dfs)]
+                master_dfs = [pd.concat(master_dfs).drop_duplicates()]
 
     pool.close()
     pool.join()
@@ -66,4 +66,7 @@ def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=10, merge_threshold=(
     if len(dfs) > 0:
         master_dfs += dfs
 
-    return pd.concat(master_dfs)
+    if len(master_dfs) > 1:
+        return pd.concat(master_dfs).drop_duplicates()
+
+    return master_dfs[0]
