@@ -63,4 +63,7 @@ def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=10, merge_threshold=(
     pool.close()
     pool.join()
 
-    return dfs
+    if len(dfs) > 0:
+        master_dfs += dfs
+
+    return pd.concat(master_dfs)
