@@ -1,4 +1,5 @@
 from lattice_json_tools import bulk_gzipped_jsonline_files_to_dfs
+import pandas as pd
 
 
 class DFManager:
@@ -9,7 +10,10 @@ class DFManager:
         :return:
         """
         self.config = config
-        self.df = bulk_gzipped_jsonline_files_to_dfs(config['filenames'])
+        self.df = pd.concat(
+            bulk_gzipped_jsonline_files_to_dfs(config['filenames'])
+        )
+        self.df = self.df.drop_duplicates()
 
     def _merged_unique_df_from_dfs(self, cols_to_use):
         """
