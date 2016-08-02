@@ -51,31 +51,18 @@ def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=20):
     """
     import multiprocessing as mp
     from tqdm import tqdm
-    import pandas as pd
 
     if isinstance(glob_or_list, str):
         from glob import glob
         glob_or_list = glob(glob_or_list)
 
     pool = mp.Pool(min(nproc, len(glob_or_list)))
-    master_dfs = []
     dfs = []
     for df in tqdm(pool.imap_unordered(gzipped_jsonline_file_to_df, glob_or_list),
                    total=len(glob_or_list)):
         dfs.append(df)
-        if len(dfs) >= merge_threshold[0]:
-            master_dfs.append(pd.concat(dfs).drop_duplicates())
-            dfs = []
-            if len(master_dfs) >= merge_threshold[1]:
-                master_dfs = [pd.concat(master_dfs).drop_duplicates()]
 
     pool.close()
     pool.join()
 
-    if len(dfs) > 0:
-        master_dfs += dfs
-
-    if len(master_dfs) > 1:
-        return pd.concat(master_dfs).drop_duplicates()
-
-    return master_dfs[0]
+    return dfs
