@@ -32,25 +32,33 @@ def gzipped_jsonline_file_to_df(fpath):
                      ).drop_duplicates()
 
 
-def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=10):
+def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=10, merge_threshold=(5, 10)):
     """
     This returns a DataFrame of the content of glob_or_list. IT MAY CONTAIN DUPLICATES
     :param str glob_or_list:
     :param int nproc:
+    :param int_merge_threshold
     :returns: `pandas.DataFrame` --
     """
     import multiprocessing as mp
     from tqdm import tqdm
+    import pandas as pd
 
     if isinstance(glob_or_list, str):
         from glob import glob
         glob_or_list = glob(glob_or_list)
 
     pool = mp.Pool(min(nproc, len(glob_or_list)))
+    master_dfs = []
     dfs = []
     for df in tqdm(pool.imap_unordered(gzipped_jsonline_file_to_df, glob_or_list),
                    total=len(glob_or_list)):
         dfs.append(df)
+        if len(dfs) >= merge_threshold[0]:
+            master_dfs.append(pd.concat(dfs))
+            dfs = []
+            if len(master_dfs) >= merge_threshold[1]:
+                master_dfs = [pd.concat(master_dfs)]
 
     pool.close()
     pool.join()
