@@ -80,7 +80,7 @@ class MakeAd:
             return None
 
         # (Price - mean) / standard deviation
-        relative_price = (rate - df.loc[0, 'rate_ad_p50_msa']) / df.loc[0, 'rate_std']
+        relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
         return relative_price
 
     def calculate_quantile_relative_loc(self, rate, loc_col, loc_name):
@@ -97,8 +97,8 @@ class MakeAd:
         if loc_col == 'city':
             df = self.city_features.loc[self.city_features.city == loc_name]
         elif loc_col == 'state':
-            df = self.state_features.loc[self.state_features.sate == loc_name]
+            df = self.state_features.loc[self.state_features.state == loc_name]
         else:
             return None
 
-        return (df.loc[0, quantiles].searchsorted(rate)[0] + 1) * 5
+        return (df.iloc[0][quantiles].searchsorted(rate)[0] + 1) * 5
