@@ -10,11 +10,13 @@ class DFManager:
         """
         self.config = config
         self.dfs = bulk_gzipped_jsonline_files_to_dfs(config['filenames'])
-        self._map_hdfs_names_to_old_names()
-
-    def _map_hdfs_names_to_old_names(self):
-        # code here that renames columns to old names.
-        pass
+        for df in self.dfs:
+            df.rename(columns={'location_city_name': 'city',
+                               'location_city_lat_lon': 'city_lat_lon',
+                               'location_state_name': 'state',
+                               'location_state_lat_lon': 'state_lat_lon'},
+                      inplace=True)
+            df.age = df.age.astype(float)  # Cover NaNs with float; wasteful
 
     def _merged_unique_df_from_dfs(self, cols_to_use):
         """
