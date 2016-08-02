@@ -13,7 +13,7 @@ config = {'filenames': glob('lattice_data/flattened/flattened_before_201605/*.js
 def run_location_features(dfm):
     """
     Will get features by city and state
-    :return:
+    :param create_dataframe.DFManager dfm:
     """
     df = dfm.create_msa_data_frame()
     make_msa = MakeMSA(df).get_msa_features()
@@ -28,7 +28,6 @@ def run_ad_features(dfm):
     """
     Will run the ad features
     :param create_dataframe.DFManager dfm:
-    :return:
     """
     df = dfm.create_ad_dataframe()
 
@@ -48,7 +47,6 @@ def run_entity_features(dfm, entity):
 
     :param create_dataframe.DFManager dfm:
     :param entity: The entity you'd like to do stats on
-    :return:
     """
     df = dfm.create_entity_dataframe(entity)
     make_entity = MakeEntity(df, entity).get_entity_features()
