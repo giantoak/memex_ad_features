@@ -1,5 +1,6 @@
 import pandas as pd
-from helpers import mean_hourly_rate
+from helpers import mean_hourly_rate_df
+from tqdm import tqdm
 
 quantiles = ['rate_ad_p{}_msa'.format(str(i).zfill(2))
              for i in range(5, 96, 5)]
@@ -22,34 +23,37 @@ class MakeAd:
 
         # Calculate the rate per hour
         # then drop the old rate column and get rid of NaN values
-        id_groups = df.groupby('_id')
-        per_hour_df = id_groups['rate'].apply(
-            lambda x: mean_hourly_rate(list(x))
-        ).dropna().reset_index()
-        per_hour_df.columns = ['_id', 'rate_per_hour']
-        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id']).shape
+        per_hour_df = mean_hourly_rate_df(df)
+        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
         del per_hour_df
 
+
+
         # Now get relative price
-        df['relative_price_to_city'] = df.apply(
+        tqdm.pandas(desc='relative_price_to_city', total=df.shape[0])
+        df['relative_price_to_city'] = df.progress_apply(
             lambda x: self.calculate_price_relative_loc(x['rate_per_hour'],
                                                         'city',
                                                         x['city']),
             axis=1)
 
-        df['relative_price_to_state'] = df.apply(
+        tqdm.pandas(desc='relative_price_to_state', total=df.shape[0])
+        df['relative_price_to_state'] = df.progress_apply(
             lambda x: self.calculate_price_relative_loc(x['rate_per_hour'],
                                                         'state',
                                                         x['state']),
             axis=1)
 
         # Now get relative quantile
-        df['relative_quantile_to_city'] = df.apply(
+        tqdm.pandas(desc='relative_quantile_to_city', total=df.shape[0])
+        df['relative_quantile_to_city'] = df.progress_apply(
             lambda x: self.calculate_quantile_relative_loc(x['rate_per_hour'],
                                                            'city',
                                                            x['city']),
             axis=1)
-        df['relative_quantile_to_state'] = df.apply(
+
+        tqdm.pandas(desc='relative_quantile_to_state', total=df.shape[0])
+        df['relative_quantile_to_state'] = df.progress_apply(
             lambda x: self.calculate_quantile_relative_loc(x['rate_per_hour'],
                                                            'state',
                                                            x['state']),
