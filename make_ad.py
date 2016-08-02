@@ -57,7 +57,7 @@ class MakeAd:
             city_df.loc[:, ['rate_per_hour'] + quantiles].progress_apply(
                 _calculate_quantile_relative_loc, axis=1)
 
-        city_df = city_df.loc[:, ['city',
+        city_df = city_df.loc[:, ['_id',
                                   'relative_price_to_city',
                                   'relative_quantile_to_city']]
 
@@ -74,14 +74,14 @@ class MakeAd:
             state_df.loc[:, ['rate_per_hour'] + quantiles].progress_apply(
                 _calculate_quantile_relative_loc, axis=1)
 
-        state_df = state_df.loc[:, ['state',
+        state_df = state_df.loc[:, ['_id',
                                     'relative_price_to_state',
                                     'relative_quantile_to_state']]
 
         # Merge city and state calcs and return
         return df.\
-            merge(city_df, left_on=['city'], right_on=['city'], how='left').\
-            merge(state_df, left_on=['state'], right_on=['state'], how='left')
+            merge(city_df, left_on=['_id'], right_on=['_id'], how='left').\
+            merge(state_df, left_on=['_id'], right_on=['_id'], how='left')
 
     def calculate_price_relative_loc(self, rate, loc_type, loc_name):
         """
