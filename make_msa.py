@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import datetime
-from helpers import mean_hourly_rate
+from helpers import mean_hourly_rate_df
 
 
 def _stat_feature_dict(prefix=''):
@@ -88,9 +88,9 @@ class MakeMSA:
         age_df = self.df.dropna(subset=['age'])
 
         # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
-        rate_df['rate_per_hour'] = rate_df['rate'].apply(mean_hourly_rate)
-        rate_df = rate_df.drop('rate', 1)
-        rate_df = rate_df.dropna(subset=['rate_per_hour'])
+        per_hour_df = mean_hourly_rate_df(rate_df)
+        rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
+        del per_hour_df
 
         # Now do rates and age for city
         city_stats_rate = _calculate_grouped_col_stats(rate_df, 'city', 'rate_per_hour', 'rate')
