@@ -12,6 +12,7 @@ def gzipped_jsonline_file_to_df(fpath):
                    'email', 'flag',
                    # 'location_city_lat_lon', 'location_state_lat_lon',
                    'location_city_name', 'location_state_name',
+                   'location_city_wikidata_id', 'location_state_wikidata_id',
                    'phone', 'postdatetime',
                    'rate']
 
@@ -20,7 +21,9 @@ def gzipped_jsonline_file_to_df(fpath):
 
     # For the moment, we're skipping ingesting lat_lons to save memory
     df = df.rename(columns={'location_city_name': 'city',
-                            'location_state_name': 'state'})
+                            'location_state_name': 'state',
+                            'location_city_wikidata_id': 'city_wikidata_id',
+                            'location_state_wikidata_id': 'state_wikidata_id'})
                               # 'location_city_lat_lon': 'city_lat_lon',
                               # 'location_state_lat_lon': 'state_lat_lon'})
 
