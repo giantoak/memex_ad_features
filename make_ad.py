@@ -26,6 +26,10 @@ class MakeAd:
         per_hour_df = mean_hourly_rate_df(df)
         df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
         del per_hour_df
+        df.drop('rate', axis=1, inplace=True)
+
+        # Since we just got rid of the rate column, let's drop the duplicates
+        df.drop_duplicates(inplace=True)
 
 
 
@@ -80,8 +84,11 @@ class MakeAd:
             return None
 
         # (Price - mean) / standard deviation
-        relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
-        return relative_price
+        if df.empty:
+            return None
+        else:
+            relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
+            return relative_price
 
     def calculate_quantile_relative_loc(self, rate, loc_col, loc_name):
         """
@@ -101,4 +108,7 @@ class MakeAd:
         else:
             return None
 
-        return (df.iloc[0][quantiles].searchsorted(rate)[0] + 1) * 5
+        if df.empty:
+            return None
+        else:
+            return (df.iloc[0][quantiles].searchsorted(rate)[0] + 1) * 5

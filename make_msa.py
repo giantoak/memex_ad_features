@@ -83,6 +83,7 @@ class MakeMSA:
         per_hour_df = mean_hourly_rate_df(rate_df)
         rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
         del per_hour_df
+        rate_df.drop('rate', axis=1, inplace=True)
 
         # Now do rates and age for city
         city_stats_rate = _calculate_grouped_col_stats(rate_df,
