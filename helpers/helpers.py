@@ -75,8 +75,9 @@ def mean_hourly_rate_df(df, grouping_col='_id'):
     :param str grouping_col:
     :return: `pandas.DataFrame` --
     """
-    id_groups = df.groupby(grouping_col)
-    per_hour_df = id_groups['rate'].apply(
-        lambda x: mean_hourly_rate(list(x))).dropna().reset_index()
+    per_hour_df = df.groupby(grouping_col)['rate'].\
+        apply(lambda x: mean_hourly_rate(list(x))).\
+        dropna().\
+        reset_index()
     per_hour_df.columns = [grouping_col, 'rate_per_hour']
-    return per_hour_df
+    return per_hour_df.dropna()
