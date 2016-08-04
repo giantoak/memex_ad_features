@@ -22,7 +22,9 @@ class MakeEntity:
         # Then drop any remaining NaN
         rate_df = rate_df.\
             merge(mean_hourly_rate_df(rate_df),
-                  left_on=['_id'], right_on=['_id'])
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Now get the stats we want for rate
         rate_df = self.calculate_entity_rate_features(rate_df)
