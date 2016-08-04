@@ -82,11 +82,11 @@ class MakeEntity:
              'rate_std': np.std,
              'rate_median': lambda x: np.percentile(x, q=50)})
 
-    def get_unique_cities(self, value):
-        return self.df.loc[(self.df[self.entity] == value), 'city'].nunique()
+    # def get_unique_cities(self, value):
+    #     return self.df.loc[(self.df[self.entity] == value), 'city'].nunique()
 
-    def get_unique_states(self, value):
-        return self.df.loc[(self.df[self.entity] == value), 'state'].nunique()
+    # def get_unique_states(self, value):
+    #     return self.df.loc[(self.df[self.entity] == value), 'state'].nunique()
 
     # Save this code as we may use it later
     """def get_incall_count(self, phone):
