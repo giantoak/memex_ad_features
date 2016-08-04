@@ -120,12 +120,11 @@ class MakeMSA:
                          'state', 'state_wikidata_id']].dropna(0)
 
         # Calculate the rate per hour
-        per_hour_df = mean_hourly_rate_df(df)
-        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
-
-        # We don't need the original rate column anymore
-        df = df.drop('rate', 1)
+        df = df.\
+            merge(mean_hourly_rate_df(df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Drop the nan values and return
         return df.dropna(0)
@@ -143,15 +142,14 @@ class MakeMSA:
         df = self.df[['rate', 'post_date', 'msa_name']].dropna(0)
 
         # Calculate the rate per hour
-        per_hour_df = mean_hourly_rate_df(df)
-        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
+        df = df.\
+            merge(mean_hourly_rate_df(df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Drop nan once more to get rid of prices we couldn't calculate
         df = df.dropna(0)
-
-        # We don't need the original rate column anymore
-        df = df.drop('rate', 1)
 
         # Convert post date column to datetime
         df['post_date'] = pd.to_datetime(df['post_date'], format='%Y-%m-%d')
