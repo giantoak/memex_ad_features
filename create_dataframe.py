@@ -29,19 +29,27 @@ class DFManager:
         Will merge all the data by ad_id
         :return: Dataframe with all data merged
         """
-        cols_to_use = ['rate', '_id', 'city', 'state', 'age']
+        cols_to_use = ['rate', '_id',
+                       'city', 'city_wikidata_id',
+                       'state', 'state_wikidata_id', 'age']
         return self.df.loc[:, cols_to_use].\
             dropna(how='all', subset=['city', 'state']).\
             drop_duplicates()
 
     def create_ad_dataframe(self):
-        cols_to_use = ['rate', '_id', 'city', 'state']
+        cols_to_use = ['rate', '_id',
+                       'city', 'city_wikidata_id',
+                       'state', 'state_wikidata_id']
         return self.df.loc[:, cols_to_use].\
             drop_duplicates()
 
     def create_entity_dataframe(self, entity):
-        cols_to_use = ['rate', '_id', 'city', 'state', entity]
+        cols_to_use = ['rate', '_id',
+                       'city', 'city_wikidata_id',
+                       'state', 'state_wikidata_id',
+                       entity]
         return self.df.loc[:, cols_to_use].\
+            dropna(subset=[entity]).\
             drop_duplicates()
 
 # df = CreateDataFrame(config).create_data_frame()

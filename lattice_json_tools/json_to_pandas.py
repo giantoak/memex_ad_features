@@ -35,6 +35,8 @@ def gzipped_jsonline_file_to_df(fpath):
     #                                           else (nan, nan))
 
     df.age = df.age.astype(float)
+    df.city_wikidata_id = df.city_wikidata_id.fillna(-1).astype(int)
+    df.state_wikidata_id = df.state_wikidata_id.fillna(-1).astype(int)
 
     # For the moment, we are dropping all entities with no age or rate
     # to save memory
