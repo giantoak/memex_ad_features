@@ -44,6 +44,7 @@ def mean_hourly_rate(rates):
         return None
 
     calculated_rates = []
+    hour_rates = []
     for r in rates:
         # Split the rate by comma leaving the price and the unit.
         rate_info = r.split(',')
@@ -57,13 +58,16 @@ def mean_hourly_rate(rates):
             unit = unit_info[0]
             duration = unit_info[1]
 
-            if duration == 'MINS':
-                calculated_rates.append((60 / float(unit)) * float(price))
-            elif duration == 'HOUR':
-                # If it's an hour stop calculating and return it
-                return float(price)
-            elif duration == 'HOURS':
-                calculated_rates.append(float(price) / float(unit))
+            if duration == 'HOUR':
+                hour_rates.append(float(price))
+            elif len(hour_rates) < 1:
+                if duration == 'MINS':
+                    calculated_rates.append((60 / float(unit)) * float(price))
+                elif duration == 'HOURS':
+                    calculated_rates.append(float(price) / float(unit))
+
+    if len(hour_rates) > 0:
+        return np.mean(hour_rates)
 
     return np.mean(calculated_rates)
 
