@@ -86,22 +86,22 @@ class MakeMSA:
 
         # Now do rates and age for city
         city_stats_rate = _calculate_grouped_col_stats(rate_df,
-                                                       'city',
+                                                       'city_wikidata_id',
                                                        'rate_per_hour',
                                                        'rate')
         city_stats_age = _calculate_grouped_col_stats(age_df,
-                                                      'city',
+                                                      'city_wikidata_id',
                                                       'age',
                                                       'age')
         city_stats = city_stats_rate.join(city_stats_age, how='outer')
 
         # Now do rates and age for state
         state_stats_rate = _calculate_grouped_col_stats(rate_df,
-                                                        'state',
+                                                        'state_wikidata_id',
                                                         'rate_per_hour',
                                                         'rate')
         state_stats_age = _calculate_grouped_col_stats(age_df,
-                                                       'state',
+                                                       'state_wikidata_id',
                                                        'age',
                                                        'age')
         state_stats = state_stats_rate.join(state_stats_age, how='outer')
@@ -115,7 +115,9 @@ class MakeMSA:
         :return:
         """
         # Get only rates and msa
-        df = self.df[['rate', 'city', 'state']].dropna(0)
+        df = self.df[:, ['rate',
+                         'city', 'city_wikidata_id',
+                         'state', 'state_wikidata_id']].dropna(0)
 
         # Calculate the rate per hour
         per_hour_df = mean_hourly_rate_df(df)
@@ -134,7 +136,7 @@ class MakeMSA:
         :return: Data frame with MSA and Age
         """
         # Get only ages and msa
-        return self.df[['age', 'city']].dropna(0)
+        return self.df[:, ['age', 'city', 'city_wikidata_id']].dropna(0)
 
     def plot_prices(self):
         # First get rates, post date and msa
