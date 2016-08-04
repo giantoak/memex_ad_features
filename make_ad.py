@@ -36,8 +36,11 @@ class MakeAd:
 
         # Calculate the rate per hour
         # then drop the old rate column and get rid of NaN values
-        df = df.merge(mean_hourly_rate_df(df),
-                      left_on=['_id'], right_on=['_id'])
+        df = df.\
+            merge(mean_hourly_rate_df(df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # TODO: convert to for loop
 
