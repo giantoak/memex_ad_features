@@ -49,6 +49,7 @@ class DFManager:
                        'state', 'state_wikidata_id',
                        entity]
         return self.df.loc[:, cols_to_use].\
+            dropna(subset=[entity]).\
             drop_duplicates()
 
 # df = CreateDataFrame(config).create_data_frame()
