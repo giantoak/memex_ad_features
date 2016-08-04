@@ -80,9 +80,11 @@ class MakeMSA:
         age_df = self.df.dropna(subset=['age'])
 
         # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
-        per_hour_df = mean_hourly_rate_df(rate_df)
-        rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
+        rate_df = rate_df.\
+            merge(mean_hourly_rate_df(rate_df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Now do rates and age for city
         city_stats_rate = _calculate_grouped_col_stats(rate_df,
