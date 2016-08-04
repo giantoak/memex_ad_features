@@ -10,9 +10,7 @@ quantiles = ['rate_ad_p{}_msa'.format(str(i).zfill(2))
 def _calculate_quantile_relative_loc(x):
     """
     Gets the quantile the rate is in
-    :param float rate: Rate of the ad
-    :param str loc_col: Location column to use
-    :param str loc_name: name of the location for the specified rate
+    :param x: slice from pandas.DataFrame
     :returns: `int` -- Quantile of rate
     """
     try:
