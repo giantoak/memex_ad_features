@@ -108,5 +108,5 @@ class MakeAd:
             return None
 
         # (Price - mean) / standard deviation
-        relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
+        relative_price = (rate - df.iloc[0]['rate_mean']) / df.iloc[0]['rate_std']
         return relative_price
