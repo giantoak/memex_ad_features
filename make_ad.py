@@ -46,12 +46,14 @@ class MakeAd:
 
         # city calcs
         city_df = df.dropna(subset=['city']).\
-            merge(self.city_features.loc[:, ['city', 'rate_ad_mean_msa', 'rate_std']
-                  + quantiles],
-                  left_on=['city'], right_on=['city'])
+            loc[:, ['_id', 'rate_per_hour', 'city_wikidata_id']].\
+            merge(self.city_features.loc[:, ['city_wikidata_id'] +
+                                            ['rate_mean', 'rate_std'] +
+                                            quantiles],
+                  left_on=['city_wikidata_id'], right_on=['city_wikidata_id'])
 
         city_df['relative_price_to_city'] = \
-            (city_df.rate_per_hour - city_df.rate_ad_mean_msa) / city_df.rate_std
+            (city_df.rate_per_hour - city_df.rate_mean) / city_df.rate_std
 
         tqdm.pandas(desc='relative_quantile_to_city')
         city_df['relative_quantile_to_city'] = \
@@ -64,11 +66,14 @@ class MakeAd:
 
         # state calcs
         state_df = df.dropna(subset=['state']). \
-            merge(self.state_features.loc[:, ['state', 'rate_ad_mean_msa', 'rate_std']],
-                  left_on=['state'], right_on=['state'])
+            loc[:, ['_id', 'rate_per_hour', 'state_wikidata_id']]. \
+            merge(self.state_features.loc[:, ['state_wikidata_id'] +
+                                             ['rate_mean', 'rate_std'] +
+                                             quantiles],
+                  left_on=['state_wikidata_id'], right_on=['state_wikidata_id'])
 
         state_df['relative_price_to_state'] = \
-            (state_df.rate_per_hour - state_df.rate_ad_mean_msa) / state_df.rate_std
+            (state_df.rate_per_hour - state_df.rate_mean) / state_df.rate_std
 
         tqdm.pandas(desc='relative_quantile_to_state')
         state_df['relative_quantile_to_state'] = \
