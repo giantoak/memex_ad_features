@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from helpers import mean_hourly_rate_df
-from tqdm import tqdm
 
 
 class MakeEntity:
@@ -19,7 +18,6 @@ class MakeEntity:
         rate_df = self.df.dropna(subset=['rate'])
 
         # Calculate the rates by hour and delete the old rate column.
-        # Then drop any remaining NaN
         rate_df = rate_df.\
             merge(mean_hourly_rate_df(rate_df),
                   left_on=['_id'], right_on=['_id']).\
@@ -35,31 +33,28 @@ class MakeEntity:
             rename(columns={'index': self.entity,
                             self.entity: self.entity+'_count'})
 
-        # Get the unique cities
-        # tqdm.pandas(desc='unique_cities')
-        # df['unique_cities'] = df['index'].progress_apply(lambda x: self.get_unique_cities(x))
-        unique_city_df = self.df.loc[:, [self.entity, 'city']].\
-            dropna().\
-            drop_duplicates().\
-            groupby(self.entity).\
-            count().\
-            reset_index().\
-            rename(columns={'city': 'unique_cities'})
-        df = df.merge(unique_city_df, left_on=self.entity, right_on=self.entity)
-        del unique_city_df
+        # Get counts of unique locations
+        for loc_col, unique_loc_col in [('city_wikidata_id',
+                                         'unique_cities'),
+                                        ('state_wikidata_id',
+                                         'unique_states')]:
+            unique_loc_df = self.df.loc[:, [self.entity, loc_col]].\
+                dropna().\
+                drop_duplicates().\
+                groupby(self.entity).\
+                count().\
+                reset_index().\
+                rename(columns={loc_col: unique_loc_col})
 
-        # Get the unique states
-        # tqdm.pandas(desc='unique_states')
-        # df['unique_states'] = df['index'].progress_apply(lambda x: self.get_unique_states(x))
-        unique_state_df = self.df.loc[:, [self.entity, 'state']].\
-            dropna().\
-            drop_duplicates().\
-            groupby(self.entity).\
-            count().\
-            reset_index().\
-            rename(columns={'state': 'unique_states'})
-        df = df.merge(unique_state_df, left_on=self.entity, right_on=self.entity)
-        del unique_state_df
+            df = df.merge(unique_loc_df,
+                          how='left',
+                          left_on=self.entity,
+                          right_on=self.entity)
+
+            df.loc[:, unique_loc_col] = \
+                df.loc[:, unique_loc_col].fillna(0).astype(int)
+
+            del unique_loc_df
 
         # Reset the index on our rate dataframe and rename the columns
         rate_df.reset_index(level=0, inplace=True)
