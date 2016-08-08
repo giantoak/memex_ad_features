@@ -3,15 +3,15 @@ import pandas as pd
 
 
 class DFManager:
-    def __init__(self, config):
+    def __init__(self, fpaths):
         """
 
-        :param config: A dictionary that contains the location of each file
+        :param list : A list of file paths
         :return:
         """
-        self.config = config
+        self.fpaths = fpaths
         self.df = pd.concat(
-            bulk_gzipped_jsonline_files_to_dfs(config['filenames'])
+            bulk_gzipped_jsonline_files_to_dfs(fpaths)
         )
         self.df = self.df.drop_duplicates()
 
