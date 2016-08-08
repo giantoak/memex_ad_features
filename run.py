@@ -4,15 +4,12 @@ from make_ad import MakeAd
 from make_entity import MakeEntity
 import pandas as pd
 from glob import glob
-
-#  config = {'filenames': glob.glob('/home/ubuntu/2016_summer_camp/classifier/data/initial/lattice/*gz')}
-# config = {'filenames': glob('lattice_data/flattened/flattened_before_201605/*.json.gz')[:2]}
-config = {'filenames': glob('/home/ubuntu/flat_data/flattened*2016*/*.json.gz')}
+from sys import argv
 
 
 def run_location_features(dfm):
     """
-    Will get features by city and state
+    Gets features by city and state
     :param create_dataframe.DFManager dfm:
     """
     df = dfm.create_msa_data_frame()
@@ -26,7 +23,7 @@ def run_location_features(dfm):
 
 def run_ad_features(dfm):
     """
-    Will run the ad features
+    Runs the ad features
     :param create_dataframe.DFManager dfm:
     """
     df = dfm.create_ad_dataframe()
@@ -57,10 +54,14 @@ def run_entity_features(dfm, entity):
                        index=False)
 
 
-def main():
+def main(fpaths):
+    """
+
+    :param list fpaths: List of paths to gzipped jsons.
+    """
 
     print('Initializing DF Manager...')
-    dfm = DFManager(config)
+    dfm = DFManager(fpaths)
     print('Done!')
 
     print('Getting location features...')
@@ -77,5 +78,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(argv) == 1:
+        print('Usage: python run.py <path regex> [<path regex 2> ...]')
+    else:
+        fpaths = []
+        for arg in argv[1:]:
+            fpaths += glob(arg)
+        main(fpaths)
 
