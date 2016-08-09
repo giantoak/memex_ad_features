@@ -1,3 +1,7 @@
+## Force shell to be bash
+SHELL := /bin/bash
+
+
 ## System Variables
 GO_LATTICE_S3_MIRROR = s3://giantoak.memex/lattice_data_store/flat
 GO_RESULTS_S3 = s3://giantoak.memex/giantoak_econ_results
