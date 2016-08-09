@@ -48,7 +48,8 @@ def gzipped_jsonline_file_to_df(fpath):
 
 def bulk_gzipped_jsonline_files_to_dfs(glob_or_list, nproc=20):
     """
-    This returns a DataFrame of the content of glob_or_list. IT MAY CONTAIN DUPLICATES
+    This returns a DataFrame of the content of glob_or_list.
+    IT MAY CONTAIN DUPLICATES
     :param str glob_or_list:
     :param int nproc:
     :param int_merge_threshold
