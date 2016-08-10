@@ -1,10 +1,12 @@
-from create_dataframe import DFManager
-from make_msa import MakeMSA
-from make_ad import MakeAd
-from make_entity import MakeEntity
-import pandas as pd
 from glob import glob
 from sys import argv
+
+import pandas as pd
+
+from old.create_dataframe import DFManager
+from old.make_ad import MakeAd
+from old.make_entity import MakeEntity
+from old.make_msa import MakeMSA
 
 
 def run_location_features(dfm):
