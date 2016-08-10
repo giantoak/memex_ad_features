@@ -80,29 +80,30 @@ class MakeMSA:
         age_df = self.df.dropna(subset=['age'])
 
         # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
-        per_hour_df = mean_hourly_rate_df(rate_df)
-        rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
-        rate_df.drop('rate', axis=1, inplace=True)
+        rate_df = rate_df.\
+            merge(mean_hourly_rate_df(rate_df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Now do rates and age for city
         city_stats_rate = _calculate_grouped_col_stats(rate_df,
-                                                       'city',
+                                                       'city_wikidata_id',
                                                        'rate_per_hour',
                                                        'rate')
         city_stats_age = _calculate_grouped_col_stats(age_df,
-                                                      'city',
+                                                      'city_wikidata_id',
                                                       'age',
                                                       'age')
         city_stats = city_stats_rate.join(city_stats_age, how='outer')
 
         # Now do rates and age for state
         state_stats_rate = _calculate_grouped_col_stats(rate_df,
-                                                        'state',
+                                                        'state_wikidata_id',
                                                         'rate_per_hour',
                                                         'rate')
         state_stats_age = _calculate_grouped_col_stats(age_df,
-                                                       'state',
+                                                       'state_wikidata_id',
                                                        'age',
                                                        'age')
         state_stats = state_stats_rate.join(state_stats_age, how='outer')
@@ -116,15 +117,16 @@ class MakeMSA:
         :return:
         """
         # Get only rates and msa
-        df = self.df[['rate', 'city', 'state']].dropna(0)
+        df = self.df[:, ['rate',
+                         'city', 'city_wikidata_id',
+                         'state', 'state_wikidata_id']].dropna(0)
 
         # Calculate the rate per hour
-        per_hour_df = mean_hourly_rate_df(df)
-        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
-
-        # We don't need the original rate column anymore
-        df = df.drop('rate', 1)
+        df = df.\
+            merge(mean_hourly_rate_df(df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Drop the nan values and return
         return df.dropna(0)
@@ -135,22 +137,21 @@ class MakeMSA:
         :return: Data frame with MSA and Age
         """
         # Get only ages and msa
-        return self.df[['age', 'city']].dropna(0)
+        return self.df[:, ['age', 'city', 'city_wikidata_id']].dropna(0)
 
     def plot_prices(self):
         # First get rates, post date and msa
         df = self.df[['rate', 'post_date', 'msa_name']].dropna(0)
 
         # Calculate the rate per hour
-        per_hour_df = mean_hourly_rate_df(df)
-        df = df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
+        df = df.\
+            merge(mean_hourly_rate_df(df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Drop nan once more to get rid of prices we couldn't calculate
         df = df.dropna(0)
-
-        # We don't need the original rate column anymore
-        df = df.drop('rate', 1)
 
         # Convert post date column to datetime
         df['post_date'] = pd.to_datetime(df['post_date'], format='%Y-%m-%d')

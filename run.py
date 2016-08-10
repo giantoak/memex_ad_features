@@ -39,7 +39,8 @@ def run_ad_features(dfm):
     ad_features = make_ad.get_ad_features()
     ad_features.to_csv('data/ad_characteristics.csv',
                        sep='\t',
-                       encoding='utf8')
+                       encoding='utf8',
+                       index=False)
 
 
 def run_entity_features(dfm, entity):
@@ -52,7 +53,8 @@ def run_entity_features(dfm, entity):
     make_entity = MakeEntity(df, entity).get_entity_features()
     make_entity.to_csv('data/{}_characteristics.csv'.format(entity),
                        sep='\t',
-                       encoding='utf8')
+                       encoding='utf8',
+                       index=False)
 
 
 def main():

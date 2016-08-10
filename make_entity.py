@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from helpers import mean_hourly_rate_df
-from tqdm import tqdm
 
 
 class MakeEntity:
@@ -19,32 +18,43 @@ class MakeEntity:
         rate_df = self.df.dropna(subset=['rate'])
 
         # Calculate the rates by hour and delete the old rate column.
-        # Then drop any remaining NaN
-        per_hour_df = mean_hourly_rate_df(rate_df)
-        rate_df = rate_df.merge(per_hour_df, left_on=['_id'], right_on=['_id'])
-        del per_hour_df
-        rate_df.drop('rate', axis=1, inplace=True)
+        rate_df = rate_df.\
+            merge(mean_hourly_rate_df(rate_df),
+                  left_on=['_id'], right_on=['_id']).\
+            drop('rate', axis=1).\
+            drop_duplicates()
 
         # Now get the stats we want for rate
         rate_df = self.calculate_entity_rate_features(rate_df)
 
-        # Get a count of the ads
-        df = pd.value_counts(self.df[self.entity]).to_frame()
-        # Reset the index so we can use the entity column
-        df.reset_index(level=0, inplace=True)
+        # Get a count of the entities
+        df = pd.value_counts(self.df[self.entity]).\
+            reset_index().\
+            rename(columns={'index': self.entity,
+                            self.entity: self.entity+'_count'})
 
-        # Get the unique locations
-        tqdm.pandas(desc='unique_cities')
-        df['unique_cities'] = df['index'].progress_apply(lambda x: self.get_unique_cities(x))
+        # Get counts of unique locations
+        for loc_col, unique_loc_col in [('city_wikidata_id',
+                                         'unique_cities'),
+                                        ('state_wikidata_id',
+                                         'unique_states')]:
+            unique_loc_df = self.df.loc[:, [self.entity, loc_col]].\
+                dropna().\
+                drop_duplicates().\
+                groupby(self.entity).\
+                count().\
+                reset_index().\
+                rename(columns={loc_col: unique_loc_col})
 
-        tqdm.pandas(desc='unique_states')
-        df['unique_states'] = df['index'].progress_apply(lambda x: self.get_unique_states(x))
+            df = df.merge(unique_loc_df,
+                          how='left',
+                          left_on=self.entity,
+                          right_on=self.entity)
 
-        # Now give the columns the proper names as they have changed
-        df.columns = [self.entity,
-                      self.entity+'_count',
-                      'unique_cities',
-                      'unique_states']
+            df.loc[:, unique_loc_col] = \
+                df.loc[:, unique_loc_col].fillna(0).astype(int)
+
+            del unique_loc_df
 
         # Reset the index on our rate dataframe and rename the columns
         rate_df.reset_index(level=0, inplace=True)
@@ -69,11 +79,11 @@ class MakeEntity:
              'rate_std': np.std,
              'rate_median': lambda x: np.percentile(x, q=50)})
 
-    def get_unique_cities(self, value):
-        return self.df.loc[(self.df[self.entity] == value), 'city'].nunique()
+    # def get_unique_cities(self, value):
+    #     return self.df.loc[(self.df[self.entity] == value), 'city'].nunique()
 
-    def get_unique_states(self, value):
-        return self.df.loc[(self.df[self.entity] == value), 'state'].nunique()
+    # def get_unique_states(self, value):
+    #     return self.df.loc[(self.df[self.entity] == value), 'state'].nunique()
 
     # Save this code as we may use it later
     """def get_incall_count(self, phone):
