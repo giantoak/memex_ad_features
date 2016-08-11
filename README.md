@@ -14,3 +14,18 @@ Once you get used to the boilerplate changes in `luigi`, it seems pretty darn gr
 The argument against using `luigi` is that it introduces some boilerplate into the code, and some overhead, especially since we aren't keeping a server running continuously - we'd be better off leveraging a SQL database to decrease memory requirements at present than saving a bit of build time.
 
 `luigi` will be necessary as soon as it becomes apparent that not running our builds in parallel is forcing us to run instances for significantly longer than expected. Right now, producing four output files keeps that from being too critical. As the number of metrics increases, it will become more important. The cutoff for when "important" becomes "mandatory" is, of course, quite subjective, but I think we'll have to be closer to hitting the limits of indexed relational databases first.
+
+
+## To run
+
+The below is untested, but approximates my process...
+
+```bash
+cd path-to-memex_ad_features
+mkdir data; mkdir data/input; mkdir data/input/lattice
+aws s3 cp --recursive s3://giantoak.memex/lattice_data_store/flat data/input/lattice # this could be handled within luigi but we don't
+export PYTHONPATH=path-to-memex_ad_features:$PYTHONPATH
+luigid & # start the server in the background - should be able to check progress at http://localhost:8082
+luigi --module memex_ad_features AdFeaturesMerged --workers 2 &
+luigi --module memex_ad_features EntityFeaturesMerged --workers 2 &
+```
