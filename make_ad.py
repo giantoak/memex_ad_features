@@ -102,9 +102,9 @@ class MakeAd:
             return None
 
         if loc_col == 'city':
-            df = self.city_features.loc[self.city_features.city == loc_name]
+            df = self.city_features.loc[self.city_features.city_wikidata_id == loc_name]
         elif loc_col == 'state':
-            df = self.state_features.loc[self.state_features.state == loc_name]
+            df = self.state_features.loc[self.state_features.state_wikidata_id == loc_name]
         else:
             return None
 
