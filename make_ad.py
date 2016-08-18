@@ -77,9 +77,9 @@ class MakeAd:
             return None
 
         if loc_type == 'city':
-            df = self.city_features.loc[self.city_features.city == loc_name]
+            df = self.city_features.loc[self.city_features.city_wikidata_id == loc_name]
         elif loc_type == 'state':
-            df = self.state_features.loc[self.state_features.state == loc_name]
+            df = self.state_features.loc[self.state_features.state_wikidata_id == loc_name]
         else:
             return None
 
@@ -111,4 +111,5 @@ class MakeAd:
         if df.empty:
             return None
         else:
-            return (df.iloc[0][quantiles].searchsorted(rate)[0] + 1) * 5
+            relative_price = (rate - df.iloc[0]['rate_mean']) / df.iloc[0]['rate_std']
+            return relative_price
