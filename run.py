@@ -21,7 +21,7 @@ def run_location_features(dfm, directory):
     make_msa = MakeMSA(df).get_msa_features()
     for loc_type in ['city', 'state']:
         make_msa['{}_stats'.format(loc_type)].to_csv(
-            '/home/ubuntu/memex_ad_features/data/{0}/location_characteristics_{1}.csv'.format(directory, loc_type),
+            '{0}/location_characteristics_{1}.csv'.format(directory, loc_type),
             sep='\t',
             encoding='utf8')
 
@@ -34,12 +34,12 @@ def run_ad_features(dfm, directory):
     df = dfm.create_ad_dataframe()
 
     # Get the city and state features
-    city_features = pd.read_table('/home/ubuntu/memex_ad_features/data/{0}/location_characteristics_city.csv'.format(directory))
-    state_features = pd.read_table('/home/ubuntu/memex_ad_features/data/{0}/location_characteristics_state.csv'.format(directory))
+    city_features = pd.read_table('{0}/location_characteristics_city.csv'.format(directory))
+    state_features = pd.read_table('{0}/location_characteristics_state.csv'.format(directory))
 
     make_ad = MakeAd(city_features, state_features, df)
     ad_features = make_ad.get_ad_features()
-    ad_features.to_csv('/home/ubuntu/memex_ad_features/data/{0}/ad_characteristics.csv'.format(directory),
+    ad_features.to_csv('{0}/ad_characteristics.csv'.format(directory),
                        sep='\t',
                        encoding='utf8',
                        index=False)
@@ -53,7 +53,7 @@ def run_entity_features(dfm, entity, directory):
     """
     df = dfm.create_entity_dataframe(entity)
     make_entity = MakeEntity(df, entity).get_entity_features()
-    make_entity.to_csv('/home/ubuntu/memex_ad_features/data/{0}/{1}_characteristics.csv'.format(directory, entity),
+    make_entity.to_csv('{0}/{1}_characteristics.csv'.format(directory, entity),
                        sep='\t',
                        encoding='utf8',
                        index=False)
@@ -62,7 +62,7 @@ def run_entity_features(dfm, entity, directory):
 def main():
 
     # First create the directory that we will save everything to
-    mydir = os.path.join('home/ubuntu/memex_ad_features/data/', datetime.datetime.now().strftime('%Y%m%d'))
+    mydir = os.path.join('/home/ubuntu/memex_ad_features/data/', datetime.datetime.now().strftime('%Y%m%d'))
     os.makedirs(mydir)
 
     print('Initializing DF Manager...')
@@ -70,15 +70,15 @@ def main():
     print('Done!')
 
     print('Getting location features...')
-    run_location_features(dfm)
+    run_location_features(dfm, mydir)
     print('Done!')
 
     print('Getting ad features...')
-    run_ad_features(dfm)
+    run_ad_features(dfm, mydir)
     print('Done!')
 
     print('Getting (phone) entity features...')
-    run_entity_features(dfm, 'phone')
+    run_entity_features(dfm, 'phone', mydir)
     print('Done!')
 
 
