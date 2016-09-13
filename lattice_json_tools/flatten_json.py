@@ -54,9 +54,18 @@ def parse_lattice_jsonline(line):
             # We solve this key below.
             continue
 
-        value_list = [x['value'] for x in jsn['extractions'][key]['results']
+        if isinstance(jsn['extractions'][key]['results'], list):
+            values = [x['value'] for x in jsn['extractions'][key]['results']
                       if 'value' in x]
-        new_jsn_dict[key[8:]] = value_list
+            if len(values) == 1:
+                values = values[0]
+        elif isinstance(jsn['extractions'][key]['results'], dict):
+            values = jsn['extractions'][key]['results']['value']
+        else:
+            # we ignore all items without an explicit 'value' key
+            pass
+
+        new_jsn_dict[key[8:]] = values
 
     # Create a JSON for each location context
     if 'lattice-location' in l_keys:
