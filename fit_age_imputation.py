@@ -22,6 +22,7 @@ np.random.seed(4)
 #data3 = data.loc[np.random.choice(data.index, count)]
 data3=data.copy()
 data3.loc[data3['content'].isnull(),'content']=''
+data3['content'] = data3['content'].apply(lambda x: re.sub(r'(\b)[\d]{1,2}(\b)',r'\1\2', x))
 
 
 rf=RandomForestRegressor(n_jobs=-1)

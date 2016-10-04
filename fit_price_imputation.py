@@ -22,6 +22,7 @@ count = 1000000
 np.random.seed(4)
 data3 = data.loc[np.random.choice(data.index, count)]
 data3 = data3.merge(prices[['ad_id','price_per_hour']])
+data3['content'] = data3['content'].apply(lambda x: re.sub(r'(\b)[\d]{1,5}[hr]{0,3}(\b)',r'\1\2', x))
 
 
 rf=RandomForestRegressor(n_jobs=-1)
