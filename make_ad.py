@@ -41,6 +41,8 @@ class MakeAd:
             return None
         else:
             df = self.city_features.loc[self.city_features['city'] == city_name]
+            if len(df) == 0:
+                return None
             # (Price - mean) / standard deviation
             relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
             return relative_price
@@ -56,6 +58,8 @@ class MakeAd:
             return None
         else:
             df = self.state_features.loc[self.state_features['state'] == state_name]
+            if len(df) == 0:
+                return None
             # (Price - mean) / standard deviation
             relative_price = (rate - df.iloc[0]['rate_ad_p50_msa']) / df.iloc[0]['rate_std']
             return relative_price
@@ -91,6 +95,8 @@ class MakeAd:
             return None
         else:
             dataframe = self.city_features.loc[self.city_features['city'] == city_name]
+            if len(dataframe) == 0:
+                return None
 
             # If the rate is less than or equal to the lowest quantile
             if rate <= dataframe.iloc[0]['rate_ad_p05_msa']:
@@ -136,6 +142,8 @@ class MakeAd:
             return None
         else:
             dataframe = self.state_features.loc[self.state_features['state'] == state_name]
+            if len(dataframe) == 0:
+                return None
 
             # If the rate is less than or equal to the lowest quantile
             if rate <= dataframe.iloc[0]['rate_ad_p05_msa']:

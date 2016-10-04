@@ -151,18 +151,26 @@ CP1_train_ads.json:
 	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_train_ads.json
 
 
-true_negatives_text.json:
-	$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_negatives_KH_unofficial-4.zip .
-	unzip -F CP1_negatives_KH_unofficial-4.zip
-	rm CP1_negatives_KH_unofficial-4.zip
-	mv  CP1_negatives_KH_unofficial-4 true_negatives_text.json
+#true_negatives_text.json:
+	#$(GET_FROM_GIANTOAK_S3) s3://$(EXPORT_BUCKET)/CP1_negatives_KH_unofficial-4.zip .
+	#unzip -F CP1_negatives_KH_unofficial-4.zip
+	#rm CP1_negatives_KH_unofficial-4.zip
+	#mv  CP1_negatives_KH_unofficial-4 true_negatives_text.json
 
+data/temp/ad_ids_with_age.csv: make_ad_ids_with_age.py data/escort_cdr_2/age-combined.tsv data/escort_cdr_2/content.tsv
+	python make_ad_ids_with_age.py
+age_imputation_model.pkl: fit_age_imputation.py data/temp/ad_ids_with_age.csv
+	python fit_age_imputation.py
 true_negatives_price.csv: true_negatives_text impute_true_negatives.py
 	python impute_true_negatives.py
 true_positives_text.json: parse_cp.py CP1_train_ads.json
 	python parse_cp.py
 true_positives_price.csv: true_positives_text.json impute_true_positives.py
 	python impute_true_positives.py
+price_city_imputation_export.csv: data/temp/ad_ids_with_price.csv data/temp/ad_ids_no_price.csv make_price_imputation_export.py price_imputation_model.pkl
+	python make_price_imputation_export.py
+age_city_imputation_export.csv: data/temp/ad_ids_with_age.csv data/temp/ad_ids_no_age.csv make_age_imputation_export.py age_imputation_model.pkl
+	python make_age_imputation_export.py
 msa_characteristics.csv: make_msa_characteristics.py ad_price_ad_level.csv
 	python make_msa_characteristics.py
 
@@ -174,6 +182,9 @@ phone_characteristics.csv: make_phone_characteristics.py data/bach/phones.csv
 ############ End intermediate data targets
 
 ############ Begin final targets
+export_imputations: price_city_imputation_export.csv age_city_imputation_export.csv age_city_imputation_export_imputation_only.csv price_city_imputation_export_imputation_only.csv
+	zip imputation_export.zip price_city_imputation_export.csv age_city_imputation_export.csv age_city_imputation_export_imputation_only.csv price_city_imputation_export_imputation_only.csv
+	$(PUT_TO_GIANTOAK_S3) imputation_export.zip s3://$(EXPORT_BUCKET)/pipeline/output/ --acl public-read
 
 local: ad_prices_price_level.csv ad_zero_prices.csv   ad_zero_prices.csv msa_characteristics.csv ad_price_ad_level_all.csv
 
