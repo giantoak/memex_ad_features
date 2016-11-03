@@ -14,7 +14,8 @@ def gzipped_jsonline_file_to_df(fpath):
                    'location_city_name', 'location_state_name',
                    'location_city_wikidata_id', 'location_state_wikidata_id',
                    'phone', 'postdatetime',
-                   'rate']
+                   'rate',
+                   'content']
 
     df = DataFrame.from_records((json.loads(line) for line in gzip.open(fpath)),
                                 columns=cols_to_use)
