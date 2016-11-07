@@ -13,7 +13,7 @@ def gzipped_jsonline_file_to_df(fpath):
                    # 'location_city_lat_lon', 'location_state_lat_lon',
                    'location_city_name', 'location_state_name',
                    'location_city_wikidata_id', 'location_state_wikidata_id',
-                   'phone', 'postdatetime',
+                   'phone', 'postdatetime', 'content',
                    'rate']
 
     df = DataFrame.from_records((json.loads(line) for line in gzip.open(fpath)),
@@ -37,11 +37,12 @@ def gzipped_jsonline_file_to_df(fpath):
     df.age = df.age.astype(float)
     df.city_wikidata_id = df.city_wikidata_id.fillna(-1).astype(int)
     df.state_wikidata_id = df.state_wikidata_id.fillna(-1).astype(int)
+    df.content.fillna('',inplace=True)
 
     # For the moment, we are dropping all entities with no age or rate
     # to save memory
-    df = df.dropna(how='all',
-                   subset=['age', 'rate'])
+    """df = df.dropna(how='all',
+                   subset=['age', 'rate'])"""
 
     return df.drop_duplicates()
 

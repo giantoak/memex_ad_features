@@ -20,6 +20,7 @@ class MakeAd:
         # Since we need the rate to do any calculations
         # drop all values from the ad that do not have a rate
         df = self.ad_df.dropna(subset=['rate'])
+        imputed_rate_df = self.ad_df.dropna(subset=['imputed_rate'])
 
         # Calculate the rate per hour
         # then drop the old rate column and get rid of NaN values
@@ -30,7 +31,6 @@ class MakeAd:
 
         # Since we just got rid of the rate column, let's drop the duplicates
         df.drop_duplicates(inplace=True)
-
 
 
         # Now get relative price
@@ -63,7 +63,38 @@ class MakeAd:
                                                            x['state_wikidata_id']),
             axis=1)
 
-        return df
+        # Now get the imputed relative price
+        tqdm.pandas(desc='relative_imputed_price_to_city')
+        imputed_rate_df['relative_imputed_price_to_city'] = imputed_rate_df.progress_apply(
+            lambda x: self.calculate_price_relative_loc(x['imputed_rate'],
+                                                        'city',
+                                                        x['city_wikidata_id']),
+            axis=1)
+
+        tqdm.pandas(desc='relative_imputed_price_to_state')
+        imputed_rate_df['relative_imputed_price_to_state'] = imputed_rate_df.progress_apply(
+            lambda x: self.calculate_price_relative_loc(x['imputed_rate'],
+                                                        'state',
+                                                        x['state_wikidata_id']),
+            axis=1)
+
+        # Now get imputed relative quantile
+        tqdm.pandas(desc='relative_imputed_quantile_to_city')
+        imputed_rate_df['relative_imputed_quantile_to_city'] = imputed_rate_df.progress_apply(
+            lambda x: self.calculate_quantile_relative_loc(x['imputed_rate'],
+                                                           'city',
+                                                           x['city_wikidata_id']),
+            axis=1)
+
+        tqdm.pandas(desc='relative_imputed_quantile_to_state')
+        imputed_rate_df['relative_imputed_quantile_to_state'] = imputed_rate_df.progress_apply(
+            lambda x: self.calculate_quantile_relative_loc(x['imputed_rate'],
+                                                           'state',
+                                                           x['state_wikidata_id']),
+            axis=1)
+
+        total_df = imputed_rate_df.merge(df, how='outer')
+        return total_df
 
     def calculate_price_relative_loc(self, rate, loc_type, loc_name):
         """

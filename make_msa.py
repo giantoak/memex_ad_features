@@ -78,6 +78,8 @@ class MakeMSA:
         # One for rates without NaN and one for ages without NaN
         rate_df = self.df.dropna(subset=['rate'])
         age_df = self.df.dropna(subset=['age'])
+        imputed_rate_df = self.df.dropna(subset=['imputed_rate'])
+        imputed_age_df = self.df.dropna(subset=['imputed_age'])
 
         # Calculate the rates by hour and delete the old rate column. Then drop any remaining NaN
         rate_df = rate_df.\
@@ -95,7 +97,15 @@ class MakeMSA:
                                                       'city_wikidata_id',
                                                       'age',
                                                       'age')
-        city_stats = city_stats_rate.join(city_stats_age, how='outer')
+        city_stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
+                                                       'city_wikidata_id',
+                                                       'imputed_rate',
+                                                       'imputed_rate')
+        city_stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
+                                                      'city_wikidata_id',
+                                                      'imputed_age',
+                                                      'imputed_age')
+        city_stats = city_stats_rate.join(city_stats_age, how='outer').join(city_stats_imputed_rate, how='outer').join(city_stats_imputed_age, how='outer')
 
         # Now do rates and age for state
         state_stats_rate = _calculate_grouped_col_stats(rate_df,
@@ -106,7 +116,15 @@ class MakeMSA:
                                                        'state_wikidata_id',
                                                        'age',
                                                        'age')
-        state_stats = state_stats_rate.join(state_stats_age, how='outer')
+        state_stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
+                                                        'state_wikidata_id',
+                                                        'imputed_rate',
+                                                        'imputed_rate')
+        state_stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
+                                                       'state_wikidata_id',
+                                                       'imputed_age',
+                                                       'imputed_age')
+        state_stats = state_stats_rate.join(state_stats_age, how='outer').join(state_stats_imputed_rate, how='outer').join(state_stats_imputed_age, how='outer')
 
         return {'state_stats': state_stats, 'city_stats': city_stats}
 
