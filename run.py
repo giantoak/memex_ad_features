@@ -88,6 +88,6 @@ class Run:
 
 
 if __name__ == "__main__":
-    config = Parser().parse_config('config/config.conf')
+    config = Parser().parse_config('config/config.conf', 'AWS')
     Run(config).main()
 
