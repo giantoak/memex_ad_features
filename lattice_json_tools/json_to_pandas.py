@@ -8,12 +8,22 @@ def gzipped_jsonline_file_to_df(fpath):
     import gzip
     from numpy import nan
 
-    cols_to_use = ['_id', 'age',
+    """cols_to_use = ['_id', 'age',
                    'email', 'flag',
                    # 'location_city_lat_lon', 'location_state_lat_lon',
                    'location_city_name', 'location_state_name',
                    'location_city_wikidata_id', 'location_state_wikidata_id',
                    'phone', 'postdatetime', 'content',
+                   'rate']"""
+
+    cols_to_use = ['_id',
+                   'age',
+                   'location_city_name',
+                   'location_state_name',
+                   'location_city_wikidata_id',
+                   'location_state_wikidata_id',
+                   'phone',
+                   'content',
                    'rate']
 
     df = DataFrame.from_records((json.loads(line) for line in gzip.open(fpath)),
