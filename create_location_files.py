@@ -72,9 +72,21 @@ class CreateLocationFiles:
             dataframe['imputed_age'] = imputed_age
 
             print 'Imputations done'
-            # Now go through and ad to dictionary by wiki id
 
-            print 'Splitting file {0} with {1} rows by city and state wiki ids'.format(file, str(len(dataframe)))
+            city_ids = dataframe.city_wikidata_id.unique()
+            city_dataframe = {city_id : pandas.DataFrame() for city_id in city_ids}
+
+            for key in city_dataframe.keys():
+                city_dataframe[key] = dataframe[:][dataframe.city_wikidata_id == key]
+
+            state_ids = dataframe.state_wikidata_id.unique()
+            state_dataframe = {state_id: pandas.DataFrame() for state_id in state_ids}
+
+            for key in state_dataframe.keys():
+                state_dataframe[key] = dataframe[:][dataframe.state_wikidata_id == key]
+
+            # Now go through and ad to dictionary by wiki id
+            """print 'Splitting file {0} with {1} rows by city and state wiki ids'.format(file, str(len(dataframe)))
             for index, row in dataframe.iterrows():
                 city_id = row['city_wikidata_id']
                 state_id = row['state_wikidata_id']
@@ -97,7 +109,7 @@ class CreateLocationFiles:
                     temp_dataframe = pandas.DataFrame(columns=cols_to_use)
                     temp_dataframe.loc[index_state_add] = row
                     state_dataframe[state_id] = temp_dataframe
-                    state_contents[state_id] = True
+                    state_contents[state_id] = True"""
 
             # Check if file already exists for each location, if so then append, if not then create a new file
             print 'Appending location data to existing files'
