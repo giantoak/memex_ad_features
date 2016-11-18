@@ -81,7 +81,7 @@ def initializeLock(l):
     lock = l
 
 if __name__ == '__main__':
-    config = Parser().parse_config('config/config.conf', 'Test')
+    config = Parser().parse_config('config/config.conf', 'AWS')
     # Load the imputation models
     print 'Loading rate imputation models'
     cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
     rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
 
-    directory = '/home/gabriel/Documents/Memex/ad_features/ad_data/*.gz'
+    directory = '/home/ubuntu/flat_data/data*.gz'
     file_names = glob.glob(directory)
 
     lock = Lock()
