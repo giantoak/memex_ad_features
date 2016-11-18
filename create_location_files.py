@@ -14,7 +14,6 @@ def create_location_files(file):
     :return:
     """
 
-    lock.acquire()
     print 'Starting analyis for {0}'.format(file)
 
     # Get the dataframe from the provided file
@@ -52,6 +51,7 @@ def create_location_files(file):
     print 'Appending location data to existing files'
 
     # Lock all processes while work is being done to save files
+    lock.acquire
     print 'lock has been set for file {0}'.format(file)
     for key, value in city_dataframe.iteritems():
         if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
