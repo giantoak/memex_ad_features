@@ -34,6 +34,7 @@ def create_location_files(file):
     imputed_age = rf_age.predict(X)
     dataframe['imputed_age'] = imputed_age
 
+
     print 'Imputations done'
 
     # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
