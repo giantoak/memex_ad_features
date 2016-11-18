@@ -94,7 +94,7 @@ if __name__ == '__main__':
     file_names = glob.glob(directory)
 
     lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool = Pool(processes=1, initializer=initializeLock, initargs=(lock,))
     pool.map(create_location_files, file_names)
     pool.close()
     pool.join()
