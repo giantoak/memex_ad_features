@@ -14,6 +14,7 @@ def split_file(filename):
             outfile.close()
             outfile = gzip.open('{0}{1}_{2}'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
         outfile.write(line)
+        count += 1
 
     outfile.close()
 
