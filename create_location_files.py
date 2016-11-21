@@ -30,14 +30,6 @@ def create_location_files(file):
         # Drop duplicates
         dataframe.drop_duplicates()
 
-        # Load the imputation models
-        print 'Loading rate imputation models'
-        cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-        rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-        print 'Loading age imputation modelsous'
-        cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-        rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-
         # Impute age and rate
         #print 'Starting rate imputations for {0}'.format(file)
         X = cv_rate.transform(dataframe['content'])
@@ -164,12 +156,19 @@ def split_array(data, size=100):
 
 if __name__ == '__main__':
     config = Parser().parse_config('config/config.conf', 'AWS')
+    # Load the imputation models
+    print 'Loading rate imputation models'
+    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    print 'Loading age imputation modelsous'
+    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
 
     directory = '/home/ubuntu/split_files/*.gz'
     file_names = glob.glob(directory)
 
     lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=25)
     pool.imap_unordered(create_location_files, file_names, 1)
     pool.close()
     pool.join()
