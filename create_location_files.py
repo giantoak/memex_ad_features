@@ -26,6 +26,26 @@ def create_location_files(file):
 
         # Get the dataframe from the provided file
         dataframe = gzipped_jsonline_file_to_df(file)
+        lock.acquire()
+        results = {'file': file,
+                   'start_time': start_time,
+                   'end_time': None,
+                   'total_time': None}
+
+        if os.path.isfile('/home/ubuntu/log.csv'):
+            with open('/home/ubuntu/log.csv', 'a') as csv_file:
+                field_names = ['file', 'start_time', 'end_time', 'total_time']
+                writer = csv.DictWriter(csv_file, fieldnames=field_names)
+                writer.writerow(results)
+                csv_file.close()
+        else:
+            with open('/home/ubuntu/log.csv', 'wb') as csv_file:
+                field_names = ['file', 'start_time', 'end_time', 'total_time']
+                writer = csv.DictWriter(csv_file, fieldnames=field_names)
+                writer.writeheader()
+                writer.writerow(results)
+                csv_file.close()
+        lock.release()
 
         # Drop duplicates
         dataframe.drop_duplicates()
@@ -168,7 +188,7 @@ if __name__ == '__main__':
     file_names = glob.glob(directory)
 
     lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=25)
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
     pool.imap_unordered(create_location_files, file_names, 1)
     pool.close()
     pool.join()
