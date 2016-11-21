@@ -23,10 +23,7 @@ def create_location_files(file):
     try:
         print 'Starting analyis for {0}'.format(file)
         start_time = datetime.datetime.now()
-
-        # Get the dataframe from the provided file
-        dataframe = gzipped_jsonline_file_to_df(file)
-        #lock.acquire()
+        lock.acquire()
         results = {'file': file,
                    'start_time': start_time,
                    'end_time': None,
@@ -45,7 +42,10 @@ def create_location_files(file):
                 writer.writeheader()
                 writer.writerow(results)
                 csv_file.close()
-        #lock.release()
+        lock.release()
+
+        # Get the dataframe from the provided file
+        dataframe = gzipped_jsonline_file_to_df(file)
 
         # Drop duplicates
         dataframe.drop_duplicates()
@@ -79,7 +79,7 @@ def create_location_files(file):
         #print 'Appending location data to existing files'
 
         # Lock all processes while work is being done to save files
-        #lock.acquire()
+        lock.acquire()
         #print 'lock has been set for file {0}'.format(file)
         for key, value in city_dataframe.iteritems():
             if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
@@ -115,7 +115,7 @@ def create_location_files(file):
                 csv_file.close()
 
         print 'lock released for file {0}'.format(file)
-        #lock.release()
+        lock.release()
     except Exception as e:
         print e
 
@@ -184,16 +184,14 @@ if __name__ == '__main__':
     cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
     rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
 
-    directory = '/home/ubuntu/split_files/data_20160604-0000_1440_2016-07-20.json.gz_500000.gz'
-    #file_names = glob.glob(directory)
+    directory = '/home/ubuntu/split_files/*.gz'
+    file_names = glob.glob(directory)
 
-    create_location_files(directory)
-
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # pool.imap_unordered(create_location_files, file_names, 1)
-    # pool.close()
-    # pool.join()
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(create_location_files, file_names, 1)
+    pool.close()
+    pool.join()
 
     # Calculate stats for each location
     # directory = '/home/gabriel/Documents/Memex/ad_features/location_data/*'
