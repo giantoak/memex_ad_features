@@ -12,7 +12,7 @@ def split_file(filename):
             print '{0} lines read from {1}'.format(count, filename)
         if count % 500000 == 0:
             outfile.close()
-            outfile = gzip.open('{0}{1}_{2}'.format(config['split_file_directory'], filename, count), 'wb')
+            outfile = gzip.open('{0}{1}_{2}'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
         outfile.write(line)
 
     outfile.close()
