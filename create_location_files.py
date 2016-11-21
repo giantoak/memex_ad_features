@@ -3,7 +3,7 @@ import glob
 import cPickle
 import os.path
 import csv
-import time
+import datetime
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from lattice_json_tools import gzipped_jsonline_file_to_df
@@ -21,6 +21,7 @@ def create_location_files(file):
     #time.sleep(randint(0,10))
 
     print 'Starting analyis for {0}'.format(file)
+    start_time = datetime.datetime.now()
 
     # Get the dataframe from the provided file
     dataframe = gzipped_jsonline_file_to_df(file)
@@ -70,6 +71,26 @@ def create_location_files(file):
             value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
         else:
             value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
+
+    end_time = datetime.datetime.now()
+    total_time = end_time - start_time
+    results = {'file': file,
+               'start_time': start_time,
+               'end_time': end_time,
+               'total_time': total_time}
+    if os.path.isfile('/home/ubuntu/log.csv'):
+        with open('/home/ubuntu/log.csv', 'a') as csv_file:
+            field_names = ['file', 'start_time', 'end_time', 'total_time']
+            writer = csv.DictWriter(csv_file, fieldnames=field_names)
+            writer.writerow(results)
+            csv_file.close()
+    else:
+        with open('/home/ubuntu/log.csv', 'wb') as csv_file:
+            field_names = ['file', 'start_time', 'end_time', 'total_time']
+            writer = csv.DictWriter(csv_file, fieldnames=field_names)
+            writer.writeheader()
+            writer.writerow(results)
+            csv_file.close()
 
     print 'lock released for file {0}'.format(file)
     lock.release()
@@ -144,7 +165,7 @@ if __name__ == '__main__':
 
     lock = Lock()
     pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.map(create_location_files, file_names)
+    pool.imap_unordered(create_location_files, file_names, 1)
     pool.close()
     pool.join()
 
