@@ -20,81 +20,84 @@ def create_location_files(file):
 
     #time.sleep(randint(0,10))
 
-    print 'Starting analyis for {0}'.format(file)
-    start_time = datetime.datetime.now()
+    try:
+        print 'Starting analyis for {0}'.format(file)
+        start_time = datetime.datetime.now()
 
-    # Get the dataframe from the provided file
-    dataframe = gzipped_jsonline_file_to_df(file)
+        # Get the dataframe from the provided file
+        dataframe = gzipped_jsonline_file_to_df(file)
 
-    # Drop duplicates
-    dataframe.drop_duplicates()
+        # Drop duplicates
+        dataframe.drop_duplicates()
 
-    # Impute age and rate
-    #print 'Starting rate imputations for {0}'.format(file)
-    X = cv_rate.transform(dataframe['content'])
-    imputed_rate = rf_rate.predict(X)
-    dataframe['imputed_rate'] = imputed_rate
+        # Impute age and rate
+        #print 'Starting rate imputations for {0}'.format(file)
+        X = cv_rate.transform(dataframe['content'])
+        imputed_rate = rf_rate.predict(X)
+        dataframe['imputed_rate'] = imputed_rate
 
-    #print 'Starting age imputations for {0}'.format(file)
-    X = cv_age.transform(dataframe['content'])
-    imputed_age = rf_age.predict(X)
-    dataframe['imputed_age'] = imputed_age
+        #print 'Starting age imputations for {0}'.format(file)
+        X = cv_age.transform(dataframe['content'])
+        imputed_age = rf_age.predict(X)
+        dataframe['imputed_age'] = imputed_age
 
 
-    #print 'Imputations done'
+        #print 'Imputations done'
 
-    # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
-    city_ids = dataframe.city_wikidata_id.unique()
-    city_dataframe = {city_id : pandas.DataFrame() for city_id in city_ids}
-    for key in city_dataframe.keys():
-        city_dataframe[key] = dataframe[:][dataframe.city_wikidata_id == key]
+        # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
+        city_ids = dataframe.city_wikidata_id.unique()
+        city_dataframe = {city_id : pandas.DataFrame() for city_id in city_ids}
+        for key in city_dataframe.keys():
+            city_dataframe[key] = dataframe[:][dataframe.city_wikidata_id == key]
 
-    state_ids = dataframe.state_wikidata_id.unique()
-    state_dataframe = {state_id: pandas.DataFrame() for state_id in state_ids}
-    for key in state_dataframe.keys():
-        state_dataframe[key] = dataframe[:][dataframe.state_wikidata_id == key]
+        state_ids = dataframe.state_wikidata_id.unique()
+        state_dataframe = {state_id: pandas.DataFrame() for state_id in state_ids}
+        for key in state_dataframe.keys():
+            state_dataframe[key] = dataframe[:][dataframe.state_wikidata_id == key]
 
-    # Check if file already exists for each location, if so then append, if not then create a new file
-    #print 'Appending location data to existing files'
+        # Check if file already exists for each location, if so then append, if not then create a new file
+        #print 'Appending location data to existing files'
 
-    # Lock all processes while work is being done to save files
-    lock.acquire()
-    #print 'lock has been set for file {0}'.format(file)
-    for key, value in city_dataframe.iteritems():
-        if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
-            value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+        # Lock all processes while work is being done to save files
+        lock.acquire()
+        #print 'lock has been set for file {0}'.format(file)
+        for key, value in city_dataframe.iteritems():
+            if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
+                value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            else:
+                value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
+
+        for key, value in state_dataframe.iteritems():
+            if os.path.isfile('{0}state_id_{1}.csv'.format(config['location_data'], str(key))):
+                value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            else:
+                value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
+
+        end_time = datetime.datetime.now()
+        total_time = end_time - start_time
+        results = {'file': file,
+                   'start_time': start_time,
+                   'end_time': end_time,
+                   'total_time': total_time}
+
+        if os.path.isfile('/home/ubuntu/log.csv'):
+            with open('/home/ubuntu/log.csv', 'a') as csv_file:
+                field_names = ['file', 'start_time', 'end_time', 'total_time']
+                writer = csv.DictWriter(csv_file, fieldnames=field_names)
+                writer.writerow(results)
+                csv_file.close()
         else:
-            value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
+            with open('/home/ubuntu/log.csv', 'wb') as csv_file:
+                field_names = ['file', 'start_time', 'end_time', 'total_time']
+                writer = csv.DictWriter(csv_file, fieldnames=field_names)
+                writer.writeheader()
+                writer.writerow(results)
+                csv_file.close()
 
-    for key, value in state_dataframe.iteritems():
-        if os.path.isfile('{0}state_id_{1}.csv'.format(config['location_data'], str(key))):
-            value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
-        else:
-            value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
-
-    end_time = datetime.datetime.now()
-    total_time = end_time - start_time
-    results = {'file': file,
-               'start_time': start_time,
-               'end_time': end_time,
-               'total_time': total_time}
-
-    if os.path.isfile('/home/ubuntu/log.csv'):
-        with open('/home/ubuntu/log.csv', 'a') as csv_file:
-            field_names = ['file', 'start_time', 'end_time', 'total_time']
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writerow(results)
-            csv_file.close()
-    else:
-        with open('/home/ubuntu/log.csv', 'wb') as csv_file:
-            field_names = ['file', 'start_time', 'end_time', 'total_time']
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writeheader()
-            writer.writerow(results)
-            csv_file.close()
-
-    print 'lock released for file {0}'.format(file)
-    lock.release()
+        print 'lock released for file {0}'.format(file)
+        lock.release()
+    except Exception as e:
+        print e
 
 def initializeLock(l):
     """
