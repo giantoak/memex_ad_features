@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import datetime
 from helpers import mean_hourly_rate_df
+import pandas
+import os
+from make_ad import MakeAd
 
 
 def _calculate_grouped_col_stats(df, grouping_col, stat_col, prefix):
@@ -67,7 +70,7 @@ class MakeMSA:
     def __init__(self, df):
         self.df = df
 
-    def get_msa_features(self):
+    def get_msa_features(self, file_type):
         """
         Will get all features related to the msa
         :return: All msa features
@@ -88,45 +91,65 @@ class MakeMSA:
             drop('rate', axis=1).\
             drop_duplicates()
 
-        # Now do rates and age for city
-        city_stats_rate = _calculate_grouped_col_stats(rate_df,
-                                                       'city_wikidata_id',
+        stats_rate = _calculate_grouped_col_stats(rate_df,
+                                                       '{0}_wikidata_id'.format(file_type),
                                                        'rate_per_hour',
                                                        'rate')
-        city_stats_age = _calculate_grouped_col_stats(age_df,
-                                                      'city_wikidata_id',
+        stats_age = _calculate_grouped_col_stats(age_df,
+                                                      '{0}_wikidata_id'.format(file_type),
                                                       'age',
                                                       'age')
-        city_stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
-                                                       'city_wikidata_id',
-                                                       'imputed_rate',
-                                                       'imputed_rate')
-        city_stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
-                                                      'city_wikidata_id',
-                                                      'imputed_age',
-                                                      'imputed_age')
-        city_stats = city_stats_rate.join(city_stats_age, how='outer').join(city_stats_imputed_rate, how='outer').join(city_stats_imputed_age, how='outer')
+        stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
+                                                               '{0}_wikidata_id'.format(file_type),
+                                                               'imputed_rate',
+                                                               'imputed_rate')
+        stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
+                                                              '{0}_wikidata_id'.format(file_type),
+                                                              'imputed_age',
+                                                              'imputed_age')
+        stats = stats_rate.join(stats_age, how='outer').join(stats_imputed_rate, how='outer').join(stats_imputed_age, how='outer')
 
-        # Now do rates and age for state
-        state_stats_rate = _calculate_grouped_col_stats(rate_df,
-                                                        'state_wikidata_id',
-                                                        'rate_per_hour',
-                                                        'rate')
-        state_stats_age = _calculate_grouped_col_stats(age_df,
-                                                       'state_wikidata_id',
-                                                       'age',
-                                                       'age')
-        state_stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
-                                                        'state_wikidata_id',
-                                                        'imputed_rate',
-                                                        'imputed_rate')
-        state_stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
-                                                       'state_wikidata_id',
-                                                       'imputed_age',
-                                                       'imputed_age')
-        state_stats = state_stats_rate.join(state_stats_age, how='outer').join(state_stats_imputed_rate, how='outer').join(state_stats_imputed_age, how='outer')
+        return stats
 
-        return {'state_stats': state_stats, 'city_stats': city_stats}
+        # Now do rates and age for city
+        # city_stats_rate = _calculate_grouped_col_stats(rate_df,
+        #                                                'city_wikidata_id',
+        #                                                'rate_per_hour',
+        #                                                'rate')
+        # city_stats_age = _calculate_grouped_col_stats(age_df,
+        #                                               'city_wikidata_id',
+        #                                               'age',
+        #                                               'age')
+        # city_stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
+        #                                                'city_wikidata_id',
+        #                                                'imputed_rate',
+        #                                                'imputed_rate')
+        # city_stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
+        #                                               'city_wikidata_id',
+        #                                               'imputed_age',
+        #                                               'imputed_age')
+        # city_stats = city_stats_rate.join(city_stats_age, how='outer').join(city_stats_imputed_rate, how='outer').join(city_stats_imputed_age, how='outer')
+        #
+        # # Now do rates and age for state
+        # state_stats_rate = _calculate_grouped_col_stats(rate_df,
+        #                                                 'state_wikidata_id',
+        #                                                 'rate_per_hour',
+        #                                                 'rate')
+        # state_stats_age = _calculate_grouped_col_stats(age_df,
+        #                                                'state_wikidata_id',
+        #                                                'age',
+        #                                                'age')
+        # state_stats_imputed_rate = _calculate_grouped_col_stats(imputed_rate_df,
+        #                                                 'state_wikidata_id',
+        #                                                 'imputed_rate',
+        #                                                 'imputed_rate')
+        # state_stats_imputed_age = _calculate_grouped_col_stats(imputed_age_df,
+        #                                                'state_wikidata_id',
+        #                                                'imputed_age',
+        #                                                'imputed_age')
+        # state_stats = state_stats_rate.join(state_stats_age, how='outer').join(state_stats_imputed_rate, how='outer').join(state_stats_imputed_age, how='outer')
+        #
+        # return {'state_stats': state_stats, 'city_stats': city_stats}
 
     def get_rates(self):
         """
