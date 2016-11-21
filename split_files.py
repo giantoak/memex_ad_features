@@ -1,11 +1,12 @@
 import gzip
 import glob
+import os
 from config_parser import Parser
 from multiprocessing import Lock, Pool
 
 def split_file(filename):
     count = 0
-    outfile = gzip.open('{0}{1}_{2}'.format(config['split_file_directory'], filename, count), 'wb')
+    outfile = gzip.open('{0}{1}_{2}'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
     for line in gzip.open(filename):
         if count % 100000 == 0:
             print '{0} lines read from {1}'.format(count, filename)
