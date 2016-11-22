@@ -139,6 +139,7 @@ def make_location_stas(file):
     print 'Starting analysis on {0}'.format(file)
     dataframe = pandas.read_csv(file)
 
+    print 'Dataframe has {0} lines'.format(len(dataframe))
     if (len(dataframe) > 100000):
         print 'Dataframe has size of {0}'.format(str(len(dataframe)))
         dataframe = dataframe.sample(n=100000)
