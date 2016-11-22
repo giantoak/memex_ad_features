@@ -136,12 +136,16 @@ def make_location_stas(file):
     else:
         file_type = 'state'
 
+    print 'Starting analysis on {0}'.format(file)
     dataframe = pandas.read_csv(file)
 
     if (len(dataframe) > 100000):
+        print 'Dataframe has size of {0}'.format(str(len(dataframe)))
         dataframe = dataframe.sample(n=100000)
+        print 'Dataframe sample taken, new size is {0}'.format(str(len(datetime)))
 
     make_msa = MakeMSA(dataframe)
+    print 'Calculating stats for file {0}'.format(file)
     results = make_msa.get_msa_features(file_type)
     print 'finished file {0}'.format(file)
     lock.acquire()
@@ -177,33 +181,33 @@ def split_array(data, size=100):
 if __name__ == '__main__':
     config = Parser().parse_config('config/config.conf', 'AWS')
     # Load the imputation models
-    print 'Loading rate imputation models'
-    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    print 'Loading age imputation modelsous'
-    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-
-    directory = '/home/ubuntu/split_files/*.gz'
-    file_names = glob.glob(directory)
-
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.imap_unordered(create_location_files, file_names, 1)
-    pool.close()
-    pool.join()
-
-    # Calculate stats for each location
-    # directory = '/home/gabriel/Documents/Memex/ad_features/location_data/*'
+    # print 'Loading rate imputation models'
+    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    # print 'Loading age imputation modelsous'
+    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+    #
+    # directory = '/home/ubuntu/split_files/*.gz'
     # file_names = glob.glob(directory)
     #
     # lock = Lock()
     # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # pool.map(make_location_stas, file_names)
+    # pool.imap_unordered(create_location_files, file_names, 1)
     # pool.close()
     # pool.join()
-    #
-    #
+
+    # Calculate stats for each location
+    directory = '/home/ubuntu/location_data/*'
+    file_names = glob.glob(directory)
+
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.map(make_location_stas, file_names)
+    pool.close()
+    pool.join()
+
+
     # directory = '/home/gabriel/Documents/Memex/ad_features/location_data/*'
     # file_names = glob.glob(directory)
     # lock = Lock()
