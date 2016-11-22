@@ -199,7 +199,7 @@ if __name__ == '__main__':
     # pool.join()
 
     # Calculate stats for each location
-    directory = '/home/ubuntu/location_data/*'
+    directory = '/home/ubuntu/location_data/state*'
     file_names = glob.glob(directory)
 
     lock = Lock()
