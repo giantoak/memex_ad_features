@@ -136,19 +136,19 @@ def make_location_stas(file):
     else:
         file_type = 'state'
 
-    print 'Starting analysis on {0}'.format(file)
+    #print 'Starting analysis on {0}'.format(file)
     dataframe = pandas.read_csv(file)
 
-    print 'Dataframe has {0} lines'.format(len(dataframe))
+    print '{0}'.format(len(dataframe))
     if (len(dataframe) > 100000):
-        print 'Dataframe has size of {0}'.format(str(len(dataframe)))
+        #print 'Dataframe has size of {0}'.format(str(len(dataframe)))
         dataframe = dataframe.sample(n=100000)
-        print 'Dataframe sample taken, new size is {0}'.format(str(len(datetime)))
+        #print 'Dataframe sample taken, new size is {0}'.format(str(len(datetime)))
 
     make_msa = MakeMSA(dataframe)
-    print 'Calculating stats for file {0}'.format(file)
+    #print 'Calculating stats for file {0}'.format(file)
     results = make_msa.get_msa_features(file_type)
-    print 'finished file {0}'.format(file)
+    #print 'finished file {0}'.format(file)
     lock.acquire()
     if os.path.isfile('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type)):
         results.to_csv('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type), header=False, mode='a', encoding='utf-8')
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     # pool.join()
 
     # Calculate stats for each location
-    directory = '/home/ubuntu/location_data/state*'
+    directory = '/home/ubuntu/location_data/*'
     file_names = glob.glob(directory)
 
     lock = Lock()
