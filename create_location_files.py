@@ -198,24 +198,24 @@ if __name__ == '__main__':
     # pool.close()
     # pool.join()
 
-    # Calculate stats for each location
-    directory = '/home/ubuntu/location_data/*'
-    file_names = glob.glob(directory)
-
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.map(make_location_stas, file_names)
-    pool.close()
-    pool.join()
-
-
-    # directory = '/home/gabriel/Documents/Memex/ad_features/location_data/*'
+    # Calculate stats for each locationcd
+    # directory = '/home/ubuntu/location_data/*'
     # file_names = glob.glob(directory)
+    #
     # lock = Lock()
     # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # pool.map(make_ad_stats, file_names)
+    # pool.map(make_location_stas, file_names)
     # pool.close()
     # pool.join()
+
+
+    directory = '/home/ubuntu/location_data/*'
+    file_names = glob.glob(directory)
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.map(make_ad_stats, file_names)
+    pool.close()
+    pool.join()
 
     # directory = '/home/ubuntu/flat_data/data*.gz'
     # file_names = glob.glob(directory)
