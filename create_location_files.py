@@ -369,8 +369,8 @@ if __name__ == '__main__':
         p.start()
         processes.append(p)
 
-    p = Process(target=monitor_processes)
-    p.start()
+    # p = Process(target=monitor_processes)
+    # p.start()
 
     while True:
         alive_processes = []
@@ -378,7 +378,8 @@ if __name__ == '__main__':
             if process.is_alive():
                 alive_processes.append(process)
 
-
+        time.wait(5)
+        print 'Currently {0} processes running'.format(str(len(alive_processes)))
 
         if len(alive_processes) < max_processes:
             for i in xrange(0, (max_processes - len(alive_processes))):
@@ -388,12 +389,13 @@ if __name__ == '__main__':
                     alive_processes.append(p)
 
         processes = alive_processes
-        if file_queue.empty():
+        if len(processes) == 0:
+            print 'All processes are done'
             break
 
-    print 'All files have been consumed by a process, waiting for process to end'
-    for process in processes:
-        process.join()
+    # print 'All files have been consumed by a process, waiting for process to end'
+    # for process in processes:
+    #     process.join()
 
     # Load the imputation models
     # print 'Loading rate imputation models'
