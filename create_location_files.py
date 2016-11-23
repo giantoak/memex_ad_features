@@ -273,6 +273,13 @@ def process_info(work_queue, end_queue):
 
     return
 
+def monitor_processes():
+
+    while True:
+        time.sleep(5)
+
+        print 'Currently {0} processes running'.format(str(len(processes)))
+
 if __name__ == '__main__':
     # values = Queue()
     # for i in xrange(0,100):
@@ -328,7 +335,7 @@ if __name__ == '__main__':
     # p.join()
 
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'AWS')
+    config = Parser().parse_config('config/config.conf', 'Test')
     lock = Lock()
 
     directory = '{0}*'.format(config['flat_data'])
@@ -353,7 +360,7 @@ if __name__ == '__main__':
     # pool.join()
 
     processes = []
-    max_processes = multiprocessing.cpu_count() - 2
+    max_processes = multiprocessing.cpu_count() - 3
     time.sleep(1)
     for i in xrange(0, max_processes):
         if file_queue.empty():
@@ -362,6 +369,9 @@ if __name__ == '__main__':
         print 'Starting new process'
         p.start()
         processes.append(p)
+
+    p = Process(target=monitor_processes)
+    p.start()
 
     while True:
         alive_processes = []
@@ -384,6 +394,7 @@ if __name__ == '__main__':
         if file_queue.empty():
             break
 
+    print 'All files have been consumed by a process, waiting for process to end'
     for process in processes:
         process.join()
 
