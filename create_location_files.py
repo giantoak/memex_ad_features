@@ -51,7 +51,7 @@ def create_location_files(file):
     dataframe.drop_duplicates()
 
     # Impute age and rate
-    print 'Starting rate imputations for {0}'.format(file)
+    #print 'Starting rate imputations for {0}'.format(file)
     X = cv_rate.transform(dataframe['content'])
     imputed_rate = rf_rate.predict(X)
     dataframe['imputed_rate'] = imputed_rate
@@ -62,7 +62,7 @@ def create_location_files(file):
     dataframe['imputed_age'] = imputed_age
 
 
-    print 'Imputations done'
+    #print 'Imputations done'
 
     # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
     city_ids = dataframe.city_wikidata_id.unique()
@@ -76,22 +76,49 @@ def create_location_files(file):
         state_dataframe[key] = dataframe[:][dataframe.state_wikidata_id == key]
 
     # Check if file already exists for each location, if so then append, if not then create a new file
-    print 'Appending location data to existing files'
+    #print 'Appending location data to existing files'
 
     # Lock all processes while work is being done to save files
-    print 'lock has been set for file {0}'.format(file)
     for key, value in city_dataframe.iteritems():
         if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
-            lock.acquire()
+            while True:
+                lock.acquire()
+                print 'lock has been set for file {0}'.format(file)
+                if files_in_use.get(key, None):
+                    lock.release()
+                    print 'file is in use, waiting...'
+                    time.sleep(1)
+                else:
+                    print 'File is not in use, placing it in dict and releasing lock'
+                    files_in_use[key] = True
+                    print 'lock has been relased and key set in dict'
+                    lock.release()
+                    break
             value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.acquire()
+            files_in_use.pop(key)
             lock.release()
         else:
             value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
 
     for key, value in state_dataframe.iteritems():
         if os.path.isfile('{0}state_id_{1}.csv'.format(config['location_data'], str(key))):
-            lock.acquire()
+            while True:
+                lock.acquire()
+                print 'lock has been set for file {0}'.format(file)
+                if files_in_use.get(key, None):
+                    lock.release()
+                    print 'file is in use, waiting...'
+                    time.sleep(1)
+                else:
+                    print 'File is not in use, placing it in dict and releasing lock'
+                    files_in_use[key] = True
+                    print 'lock has been relased and key set in dict'
+                    lock.release()
+                    break
             value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.acquire()
+            files_in_use.pop(key)
             lock.release()
         else:
             value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
@@ -119,7 +146,7 @@ def create_location_files(file):
             writer.writerow(results)
             csv_file.close()
 
-    print 'lock released for file {0}'.format(file)
+    #print 'lock released for file {0}'.format(file)
 
 def initializeLock(l):
     """
@@ -335,6 +362,7 @@ if __name__ == '__main__':
 
     # Load the configuration
     config = Parser().parse_config('config/config.conf', 'AWS')
+    files_in_use = {}
     lock = Lock()
 
     # directory = '{0}*'.format(config['flat_data'])
