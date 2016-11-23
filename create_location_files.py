@@ -369,18 +369,18 @@ if __name__ == '__main__':
             if process.is_alive():
                 alive_processes.append(process)
 
-        print 'Of {0} processes {0} are alive'.format(str(len(processes)), str(len(alive_processes)))
+
 
         if len(alive_processes) < max_processes:
             for i in xrange(0, (max_processes - len(alive_processes))):
                 if not file_queue.empty():
                     p = Process(target=split_file, args=(file_queue.get(),))
+                    print 'Of {0} processes {0} are alive'.format(str(len(processes)), str(len(alive_processes)))
                     print 'Starting new process'
                     p.start()
                     alive_processes.append(p)
 
         processes = alive_processes
-        print 'Currently {0} running processes'.format(str(len(processes)))
         if file_queue.empty():
             break
 
