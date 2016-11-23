@@ -335,7 +335,7 @@ if __name__ == '__main__':
     # p.join()
 
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'Test')
+    config = Parser().parse_config('config/config.conf', 'AWS')
     lock = Lock()
 
     directory = '{0}*'.format(config['flat_data'])
