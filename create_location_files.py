@@ -200,7 +200,6 @@ def split_file(filename):
     outfile = gzip.open('{0}{1}_{2}.gz'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
     for line in gzip.open(filename):
         if count % 500000 == 0:
-            print '{0} lines read from {1}'.format(count, filename)
             outfile.close()
             outfile = gzip.open('{0}{1}_{2}.gz'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
         outfile.write(line)
@@ -385,8 +384,6 @@ if __name__ == '__main__':
             for i in xrange(0, (max_processes - len(alive_processes))):
                 if not file_queue.empty():
                     p = Process(target=split_file, args=(file_queue.get(),))
-                    print 'Of {0} processes {0} are alive'.format(str(len(processes)), str(len(alive_processes)))
-                    print 'Starting new process'
                     p.start()
                     alive_processes.append(p)
 
