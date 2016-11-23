@@ -378,7 +378,7 @@ if __name__ == '__main__':
             if process.is_alive():
                 alive_processes.append(process)
 
-        time.wait(5)
+        time.sleep(5)
         print 'Currently {0} processes running'.format(str(len(alive_processes)))
 
         if len(alive_processes) < max_processes:
