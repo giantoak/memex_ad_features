@@ -51,15 +51,15 @@ def create_location_files(file):
     dataframe.drop_duplicates()
 
     # Impute age and rate
-    # print 'Starting rate imputations for {0}'.format(file)
-    # X = cv_rate.transform(dataframe['content'])
-    # imputed_rate = rf_rate.predict(X)
-    # dataframe['imputed_rate'] = imputed_rate
-    #
-    # #print 'Starting age imputations for {0}'.format(file)
-    # X = cv_age.transform(dataframe['content'])
-    # imputed_age = rf_age.predict(X)
-    # dataframe['imputed_age'] = imputed_age
+    print 'Starting rate imputations for {0}'.format(file)
+    X = cv_rate.transform(dataframe['content'])
+    imputed_rate = rf_rate.predict(X)
+    dataframe['imputed_rate'] = imputed_rate
+
+    #print 'Starting age imputations for {0}'.format(file)
+    X = cv_age.transform(dataframe['content'])
+    imputed_age = rf_age.predict(X)
+    dataframe['imputed_age'] = imputed_age
 
 
     print 'Imputations done'
@@ -337,40 +337,68 @@ if __name__ == '__main__':
     config = Parser().parse_config('config/config.conf', 'AWS')
     lock = Lock()
 
-    directory = '{0}*'.format(config['flat_data'])
+    # directory = '{0}*'.format(config['flat_data'])
+    # file_names = glob.glob(directory)
+    # file_queue = Queue()
+    # for file_name in file_names:
+    #     file_queue.put(file_name)
+    #
+    # processes = []
+    # max_processes = multiprocessing.cpu_count() - 3
+    # time.sleep(1)
+    # for i in xrange(0, max_processes):
+    #     if file_queue.empty():
+    #         break
+    #     p = Process(target=split_file, args=(file_queue.get(),))
+    #     print 'Starting new process'
+    #     p.start()
+    #     processes.append(p)
+    #
+    # while True:
+    #     alive_processes = []
+    #     for process in processes:
+    #         if process.is_alive():
+    #             alive_processes.append(process)
+    #
+    #     time.sleep(5)
+    #     print 'Currently {0} processes running'.format(str(len(alive_processes)))
+    #
+    #     if len(alive_processes) < max_processes:
+    #         for i in xrange(0, (max_processes - len(alive_processes))):
+    #             if not file_queue.empty():
+    #                 p = Process(target=split_file, args=(file_queue.get(),))
+    #                 p.start()
+    #                 alive_processes.append(p)
+    #
+    #     processes = alive_processes
+    #     if len(processes) == 0:
+    #         print 'All processes are done'
+    #         break
+
+    # Load the imputation models
+    print 'Loading rate imputation models'
+    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    print 'Loading age imputation modelsous'
+    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+
+    directory = '{0}*'.format(config['split_file_directory'])
     file_names = glob.glob(directory)
     file_queue = Queue()
     for file_name in file_names:
         file_queue.put(file_name)
-    #
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(create_phone_files, file_names)
-    # pool.close()
-    # pool.join()
-
-    # Before we begin processing we split the files to ensure no file has more than 500,000 lines.
-    # directory = '{0}'.format(config['flat_data'])
-    # file_names = glob.glob(directory)
-    #
-    # pool = Pool()
-    # pool.map(split_file, file_names)
-    # pool.close()
-    # pool.join()
 
     processes = []
-    max_processes = multiprocessing.cpu_count() - 3
+    max_processes = multiprocessing.cpu_count() - 1
     time.sleep(1)
     for i in xrange(0, max_processes):
         if file_queue.empty():
             break
-        p = Process(target=split_file, args=(file_queue.get(),))
+        p = Process(target=create_location_files, args=(file_queue.get(),))
         print 'Starting new process'
         p.start()
         processes.append(p)
-
-    # p = Process(target=monitor_processes)
-    # p.start()
 
     while True:
         alive_processes = []
@@ -384,7 +412,7 @@ if __name__ == '__main__':
         if len(alive_processes) < max_processes:
             for i in xrange(0, (max_processes - len(alive_processes))):
                 if not file_queue.empty():
-                    p = Process(target=split_file, args=(file_queue.get(),))
+                    p = Process(target=create_location_files, args=(file_queue.get(),))
                     p.start()
                     alive_processes.append(p)
 
@@ -393,7 +421,7 @@ if __name__ == '__main__':
             print 'All processes are done'
             break
 
-    # print 'All files have been consumed by a process, waiting for process to end'
+                    # print 'All files have been consumed by a process, waiting for process to end'
     # for process in processes:
     #     process.join()
 
