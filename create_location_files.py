@@ -5,16 +5,17 @@ import os.path
 import csv
 import datetime
 import gzip
+import multiprocessing
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
 from lattice_json_tools import gzipped_jsonline_file_to_df
 from multiprocessing import Process, Queue, Lock, Pool
 from config_parser import Parser
-from random import randint
+from random import random
 
 
-def create_location_files(file):
+def create_location_files(file, lock):
     """
 
     :return:
@@ -77,17 +78,20 @@ def create_location_files(file):
     print 'Appending location data to existing files'
 
     # Lock all processes while work is being done to save files
-    lock.acquire()
     print 'lock has been set for file {0}'.format(file)
     for key, value in city_dataframe.iteritems():
         if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
+            lock.acquire()
             value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.release()
         else:
             value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
 
     for key, value in state_dataframe.iteritems():
         if os.path.isfile('{0}state_id_{1}.csv'.format(config['location_data'], str(key))):
+            lock.acquire()
             value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.release()
         else:
             value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
 
@@ -99,11 +103,13 @@ def create_location_files(file):
                'total_time': total_time}
 
     if os.path.isfile(config['log_file']):
+        lock.acquire()
         with open(config['log_file'], 'a') as csv_file:
             field_names = ['file', 'start_time', 'end_time', 'total_time']
             writer = csv.DictWriter(csv_file, fieldnames=field_names)
             writer.writerow(results)
             csv_file.close()
+        lock.release()
     else:
         with open(config['log_file'], 'wb') as csv_file:
             field_names = ['file', 'start_time', 'end_time', 'total_time']
@@ -113,7 +119,6 @@ def create_location_files(file):
             csv_file.close()
 
     print 'lock released for file {0}'.format(file)
-    lock.release()
 
 def initializeLock(l):
     """
@@ -204,6 +209,42 @@ def split_file(filename):
     outfile.close()
     print '****** Finished {0}'.format(filename)
 
+def create_phone_files(file):
+    dataframe = pandas.read_csv(file)
+
+    # Drop all rows without a phone number
+    dataframe = dataframe.dropna(subset=['phone'])
+    dataframe.drop('content', 1, inplace=True)
+    dataframe.drop('age', 1, inplace=True)
+    dataframe.drop('city', 1, inplace=True)
+    dataframe.drop('state', 1, inplace=True)
+    dataframe.drop('city_wikidata_id', 1, inplace=True)
+    dataframe.drop('state_wikidata_id', 1, inplace=True)
+    dataframe.drop(dataframe.columns[0], 1, inplace=True)
+    dataframe.rename(columns={'imputed_rate': 'imputed_price'})
+
+    # Break file up by phone
+    phone_numbers = dataframe.phone.unique()
+    phone_dataframe = {phone_number: pandas.DataFrame() for phone_number in phone_numbers}
+    for key in phone_dataframe.keys():
+        phone_dataframe[key] = dataframe[:][dataframe.phone == key]
+
+    # Check if file already exists for each location, if so then append, if not then create a new file
+    print 'Appending location data to existing files'
+
+    # Lock all processes while work is being done to save files
+    for key, value in phone_dataframe.iteritems():
+        if os.path.isfile('{0}phone_{1}.csv'.format(config['phone_data'], str(key))):
+            lock.acquire()
+            print 'lock has been set for file {0}'.format(file)
+            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.release()
+        else:
+            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), header=True, encoding='utf-8')
+    print 'finished file {0}'.format(file)
+
+
+
 def count_line():
     count = 0
     for line in gzip.open('/home/gabriel/Documents/Memex/ad_features/flat_data/data_20160813-0000_1440_2016-07-20.json.gz'):
@@ -211,19 +252,102 @@ def count_line():
         count += 1
 
 
+def test_concurrent_filling(key, queue):
+    x = random()
+    d = {key: x}
+    queue.put(d)
+
+    print 'From tester: {0}'.format(str(x))
+
+    return
+
+def process_info(work_queue, end_queue):
+    while True:
+        if not end_queue.empty() and work_queue.empty():
+            break
+        if work_queue.empty():
+            continue
+        output = work_queue.get()
+
+        print 'From processor: {0}'.format(str(output))
+
+    return
+
 if __name__ == '__main__':
+    # values = Queue()
+    # for i in xrange(0,100):
+    #     values.put(i)
+    #
+    # processes = []
+    # worker = Queue()
+    # ender = Queue()
+    #
+    # lock = Lock()
+    # max_processes = multiprocessing.cpu_count() - 2
+    # for i in xrange(0, max_processes):
+    #     if values.empty:
+    #         break
+    #     p = Process(target=test_concurrent_filling, args=(values.get(), worker,))
+    #     p.start()
+    #     processes.append(p)
+    #
+    # processor = Process(target=process_info, args=(worker, ender,))
+    # processor.start()
+    #
+    # while True:
+    #     alive_processes = []
+    #     for process in processes:
+    #         if process.is_alive():
+    #             alive_processes.append(process)
+    #
+    #     if len(alive_processes) < max_processes:
+    #         for i in xrange(0, (max_processes - len(alive_processes))):
+    #             if not values.empty():
+    #                 p = Process(target=test_concurrent_filling, args=(values.get(), worker,))
+    #                 p.start()
+    #                 alive_processes.append(p)
+    #
+    #     processes = alive_processes
+    #     if values.empty():
+    #         break
+    #
+    # for process in processes:
+    #     process.join()
+    #
+    # ender.put(True)
+    # processor.join
+
+
+
+    # p.start()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(test_concurrent_filling, input)
+    # pool.close()
+    # pool.join()
+    # ender.put(True)
+    # p.join()
+
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'Test')
+    config = Parser().parse_config('config/config.conf', 'AWS')
+
+    # directory = '{0}*'.format(config['location_data'])
+    # file_names = glob.glob(directory)
+    #
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(create_phone_files, file_names)
+    # pool.close()
+    # pool.join()
 
     # Before we begin processing we split the files to ensure no file has more than 500,000 lines.
-    directory = '{0}'.format(config['flat_data'])
-    file_names = glob.glob(directory)
-
-    pool = Pool()
-    pool.map(split_file, file_names)
-    pool.close()
-    pool.join()
-
+    # directory = '{0}'.format(config['flat_data'])
+    # file_names = glob.glob(directory)
+    #
+    # pool = Pool()
+    # pool.map(split_file, file_names)
+    # pool.close()
+    # pool.join()
+    #
     # Load the imputation models
     print 'Loading rate imputation models'
     cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
@@ -235,39 +359,72 @@ if __name__ == '__main__':
     # Now we take all of the files that have been split and split them further by state wiki id and city wiki id
     directory = '{0}*.gz'.format(config['split_file_directory'])
     file_names = glob.glob(directory)
+    file_queue = Queue()
+    for file_name in file_names:
+        file_queue.put(file_name)
 
+    processes = []
     lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    pool.imap_unordered(create_location_files, file_names, 1)
-    pool.close()
-    pool.join()
+    max_processes = multiprocessing.cpu_count() - 2
+    for i in xrange(0, max_processes):
+        if file_queue.empty:
+            break
+        p = Process(target=create_location_files, args=(file_queue.get(), lock,))
+        p.start()
+        processes.append(p)
 
-    # Calculate stats for each location
-    directory = '{0}*.csv'.format(config['location_data'])
-    file_names = glob.glob(directory)
+    while True:
+        alive_processes = []
+        for process in processes:
+            if process.is_alive():
+                alive_processes.append(process)
 
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    pool.imap_unordered(make_location_stas, file_names)
-    pool.close()
-    pool.join()
+        if len(alive_processes) < max_processes:
+            for i in xrange(0, (max_processes - len(alive_processes))):
+                if not file_queue.empty():
+                    p = Process(target=create_location_files, args=(file_queue.get(), lock,))
+                    p.start()
+                    alive_processes.append(p)
 
-    # Now that we have the location data. Let's calculate stats for each ad.
-    # Since the same ads are in the city and state file, let's only pull from the city files
-    directory = '{0}city*.csv'.format(config['location_data'])
-    file_names = glob.glob(directory)
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    pool.imap_unordered(make_ad_stats, file_names)
-    pool.close()
-    pool.join()
+        processes = alive_processes
+        if file_queue.empty():
+            break
 
-    # Lastly, calculate phone stats
-    directory = '{0}city*.csv'.format(config['location_data'])
-    file_names = glob.glob(directory)
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    pool.imap_unordered(make_entity_stats, file_names)
-    pool.close()
-    pool.join()
+    for process in processes:
+        process.join()
+
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(create_location_files, file_names, 1)
+    # pool.close()
+    # pool.join()
+
+    # # Calculate stats for each location
+    # directory = '{0}*.csv'.format(config['location_data'])
+    # file_names = glob.glob(directory)
+    #
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(make_location_stas, file_names)
+    # pool.close()
+    # pool.join()
+    #
+    # # Now that we have the location data. Let's calculate stats for each ad.
+    # # Since the same ads are in the city and state file, let's only pull from the city files
+    # directory = '{0}city*.csv'.format(config['location_data'])
+    # file_names = glob.glob(directory)
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(make_ad_stats, file_names)
+    # pool.close()
+    # pool.join()
+    #
+    # # Lastly, calculate phone stats
+    # directory = '{0}city*.csv'.format(config['location_data'])
+    # file_names = glob.glob(directory)
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(make_entity_stats, file_names)
+    # pool.close()
+    # pool.join()
 
