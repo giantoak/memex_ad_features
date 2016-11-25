@@ -331,7 +331,7 @@ if __name__ == '__main__':
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
     print len(base_list)
     pool = Pool()
-    pool.imap_unordered(merge_files, base_list)
+    pool.imap_unordered(merge_files, base_list, 25)
     pool.close()
     pool.join()
 
