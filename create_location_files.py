@@ -128,6 +128,23 @@ def initializeLock(l):
     global lock
     lock = l
 
+def get_unique_base_file_names(directory):
+    all_files_list = glob.glob(directory)
+    all_files_dict = {}
+
+    for file in all_files_list:
+        base_file = get_base_file_name(file)
+        if all_files_dict.get(base_file, None):
+            all_files_dict[base_file] = True
+
+    for key, value in all_files_dict.iteritems():
+        print key
+
+
+def get_base_file_name(file_name):
+    index = file_name.rfind('_')
+    return file_name[:index]
+
 def make_location_stas(file):
 
     if 'city' in file:
@@ -334,6 +351,8 @@ if __name__ == '__main__':
     files_in_use = {}
     lock = Lock()
 
+    get_unique_base_file_names(config['split_file_directory'])
+
     # directory = '{0}*'.format(config['flat_data'])
     # file_names = glob.glob(directory)
     # file_queue = Queue()
@@ -467,12 +486,12 @@ if __name__ == '__main__':
     #     process.join()
 
     # lock = Lock()
-    directory = '{0}data_20160810-0000_1440*.gz'.format(config['split_file_directory'])
-    file_names = glob.glob(directory)
-    pool = Pool()
-    pool.imap_unordered(create_location_files, file_names, 1)
-    pool.close()
-    pool.join()
+    # directory = '{0}data_20160810-0000_1440*.gz'.format(config['split_file_directory'])
+    # file_names = glob.glob(directory)
+    # pool = Pool()
+    # pool.imap_unordered(create_location_files, file_names, 1)
+    # pool.close()
+    # pool.join()
 
     # # Calculate stats for each location
     # directory = '{0}*.csv'.format(config['location_data'])
