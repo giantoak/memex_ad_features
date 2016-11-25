@@ -289,10 +289,8 @@ def process_info(work_queue, end_queue):
     return
 
 def merge_files(base_file_name):
-    print 'working on {0}'.format(base_file_name)
     write_directory = config['location_data_merged']
     all_files = glob.glob('{0}*'.format(base_file_name))
-    print 'Found a total of {0} file for {1}'.format(str(len(all_files)), base_file_name)
 
     is_file_created = False
 
@@ -304,20 +302,25 @@ def merge_files(base_file_name):
             dataframe = pandas.read_csv(file)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
 
-
-# def monitor_processes():
-#
-#     while True:
-#         time.sleep(5)
-#
-#         print 'Currently {0} processes running'.format(str(len(processes)))
+    print 'Finished merging {0}'.format(base_file_name)
 
 if __name__ == '__main__':
+    # Load the configuration
     config = Parser().parse_config('config/config.conf', 'AWS')
 
+    # Split the files into smaller files, each one containing no more than 500,000 json lines
+    # directory = '{0}*.gz'.format(config['flat_data'])
+    # file_names = glob.glob(directory)
+    # pool = Pool()
+    # pool.imap_unordered(split_file, file_names, 1)
+    # pool.close()
+    # pool.join()
+    #
+    # # From the split files, create a location file for each
+    # print 'Loading rate imputations'
     # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
     # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    # print 'Loading age imputation modelsous'
+    # print 'Loading age imputations'
     # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
     # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
     #
@@ -328,6 +331,7 @@ if __name__ == '__main__':
     # pool.close()
     # pool.join()
 
+    # Merge all of the files together
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
     print len(base_list)
     pool = Pool()
