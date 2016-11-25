@@ -374,10 +374,11 @@ if __name__ == '__main__':
     lock = Lock()
 
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
-    pool = Pool()
-    pool.imap_unordered(merge_files, base_list)
-    pool.close()
-    pool.join()
+    print len(base_list)
+    # pool = Pool()
+    # pool.imap_unordered(merge_files, base_list)
+    # pool.close()
+    # pool.join()
 
 
     # directory = '{0}*'.format(config['flat_data'])
