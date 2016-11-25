@@ -131,6 +131,7 @@ def initializeLock(l):
 def get_unique_base_file_names(directory):
     all_files_list = glob.glob(directory)
     all_files_dict = {}
+    return_files = []
 
     for file in all_files_list:
         base_file = get_base_file_name(file)
@@ -140,7 +141,9 @@ def get_unique_base_file_names(directory):
             all_files_dict[base_file] = True
 
     for key, value in all_files_dict.iteritems():
-        print key
+        return_files.append(key)
+
+    return return_files
 
 
 def get_base_file_name(file_name):
@@ -287,12 +290,27 @@ def process_info(work_queue, end_queue):
 
     return
 
-def monitor_processes():
+def merge_files(base_file_name):
+    write_directory = config['location_data_merged']
+    all_files = glob.glob('{0}*'.format(base_file_name))
 
-    while True:
-        time.sleep(5)
+    is_file_created = False
 
-        print 'Currently {0} processes running'.format(str(len(processes)))
+    for file in all_files:
+        if is_file_created:
+            dataframe = pandas.read_csv(file)
+            dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), mode='a', header=False, encoding='utf-8')
+        else:
+            dataframe = pandas.read_csv(file)
+            dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
+
+
+# def monitor_processes():
+#
+#     while True:
+#         time.sleep(5)
+#
+#         print 'Currently {0} processes running'.format(str(len(processes)))
 
 if __name__ == '__main__':
     # values = Queue()
@@ -353,7 +371,12 @@ if __name__ == '__main__':
     files_in_use = {}
     lock = Lock()
 
-    get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
+    base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
+    pool = Pool()
+    pool.imap_unordered(merge_files, base_list, 1)
+    pool.close()
+    pool.join()
+
 
     # directory = '{0}*'.format(config['flat_data'])
     # file_names = glob.glob(directory)
