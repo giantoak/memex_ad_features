@@ -289,10 +289,10 @@ def process_info(work_queue, end_queue):
     return
 
 def merge_files(base_file_name):
-    #print 'working on {0}'.format(base_file_name)
+    print 'working on {0}'.format(base_file_name)
     write_directory = config['location_data_merged']
     all_files = glob.glob('{0}*'.format(base_file_name))
-    #print 'Found a total of {0} file for {1}'.format(str(len(all_files)), base_file_name)
+    print 'Found a total of {0} file for {1}'.format(str(len(all_files)), base_file_name)
 
     is_file_created = False
 
@@ -303,8 +303,6 @@ def merge_files(base_file_name):
         else:
             dataframe = pandas.read_csv(file)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
-
-    print 'finished working on {0}'.format(base_file_name)
 
 
 # def monitor_processes():
@@ -332,43 +330,10 @@ if __name__ == '__main__':
 
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
     print len(base_list)
-
-    file_queue = Queue()
-    for file_name in base_list:
-        file_queue.put(file_name)
-
-    processes = []
-    max_processes = multiprocessing.cpu_count() - 2
-    time.sleep(1)
-    for i in xrange(0, max_processes):
-        if file_queue.empty():
-            break
-        p = Process(target=merge_files, args=(file_queue.get(),))
-        print 'Starting new process'
-        p.start()
-        processes.append(p)
-
-    while True:
-        alive_processes = []
-        for process in processes:
-            if process.is_alive():
-                alive_processes.append(process)
-
-        time.sleep(5)
-        print 'Currently {0} processes running'.format(str(len(alive_processes)))
-
-        if len(alive_processes) < max_processes:
-            for i in xrange(0, (max_processes - len(alive_processes))):
-                if not file_queue.empty():
-                    print 'Starting new process'
-                    p = Process(target=merge_files, args=(file_queue.get(),))
-                    p.start()
-                    alive_processes.append(p)
-
-        processes = alive_processes
-        if len(processes) == 0:
-            print 'All processes are done'
-            break
+    pool = Pool()
+    pool.imap_unordered(merge_files, base_list, 25)
+    pool.close()
+    pool.join()
 
 
     # values = Queue()
