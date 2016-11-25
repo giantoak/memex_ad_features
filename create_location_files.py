@@ -301,6 +301,7 @@ def merge_files(base_file_name):
         else:
             dataframe = pandas.read_csv(file)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
+            is_file_created = True
 
     print 'Finished merging {0}'.format(base_file_name)
 
@@ -335,7 +336,7 @@ if __name__ == '__main__':
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
     print len(base_list)
     pool = Pool()
-    pool.imap_unordered(merge_files, base_list, 25)
+    pool.imap_unordered(merge_files, base_list, 1)
     pool.close()
     pool.join()
 
