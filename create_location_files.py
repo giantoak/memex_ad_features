@@ -52,15 +52,15 @@ def create_location_files(file):
     dataframe.drop_duplicates()
 
     # Impute age and rate
-    print 'Starting rate imputations for {0}'.format(file)
-    X = cv_rate.transform(dataframe['content'])
-    imputed_rate = rf_rate.predict(X)
-    dataframe['imputed_rate'] = imputed_rate
-
-    print 'Starting age imputations for {0}'.format(file)
-    X = cv_age.transform(dataframe['content'])
-    imputed_age = rf_age.predict(X)
-    dataframe['imputed_age'] = imputed_age
+    # print 'Starting rate imputations for {0}'.format(file)
+    # X = cv_rate.transform(dataframe['content'])
+    # imputed_rate = rf_rate.predict(X)
+    # dataframe['imputed_rate'] = imputed_rate
+    #
+    # print 'Starting age imputations for {0}'.format(file)
+    # X = cv_age.transform(dataframe['content'])
+    # imputed_age = rf_age.predict(X)
+    # dataframe['imputed_age'] = imputed_age
 
 
     print 'Imputations done for {0}'.format(file)
@@ -315,18 +315,26 @@ def merge_files(base_file_name):
 if __name__ == '__main__':
     config = Parser().parse_config('config/config.conf', 'AWS')
 
-    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    print 'Loading age imputation modelsous'
-    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    # print 'Loading age imputation modelsous'
+    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+    #
+    # directory = '{0}*.gz'.format(config['split_file_directory'])
+    # file_names = glob.glob(directory)
+    # pool = Pool()
+    # pool.imap_unordered(create_location_files, file_names, 1)
+    # pool.close()
+    # pool.join()
 
-    directory = '{0}*.gz'.format(config['split_file_directory'])
-    file_names = glob.glob(directory)
+    base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
+    print len(base_list)
     pool = Pool()
-    pool.imap_unordered(create_location_files, file_names, 1)
+    pool.imap_unordered(merge_files, base_list)
     pool.close()
     pool.join()
+
 
     # values = Queue()
     # for i in xrange(0,100):
