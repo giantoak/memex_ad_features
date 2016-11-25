@@ -16,34 +16,33 @@ from random import random
 import time
 
 
+def split_file(filename):
+    """
+
+    :param filename:
+    :return:
+    """
+    count = 0
+    outfile = gzip.open('{0}{1}_{2}.gz'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
+    for line in gzip.open(filename):
+        if count % 500000 == 0:
+            outfile.close()
+            outfile = gzip.open('{0}{1}_{2}.gz'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
+        outfile.write(line)
+        count += 1
+
+    outfile.close()
+    print '****** Finished {0}'.format(filename)
+
+
 def create_location_files(file):
     """
 
+    :param file:
     :return:
     """
     print 'Starting analyis for {0}'.format(file)
     process_id = multiprocessing.current_process().pid
-    # start_time = datetime.datetime.now()
-    # lock.acquire()
-    # results = {'file': file,
-    #            'start_time': start_time,
-    #            'end_time': None,
-    #            'total_time': None}
-    #
-    # if os.path.isfile(config['log_file']):
-    #     with open(config['log_file'], 'a') as csv_file:
-    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
-    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
-    #         writer.writerow(results)
-    #         csv_file.close()
-    # else:
-    #     with open(config['log_file'], 'wb') as csv_file:
-    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
-    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
-    #         writer.writeheader()
-    #         writer.writerow(results)
-    #         csv_file.close()
-    # lock.release()
 
     # Get the dataframe from the provided file
     dataframe = gzipped_jsonline_file_to_df(file)
@@ -52,15 +51,15 @@ def create_location_files(file):
     dataframe.drop_duplicates()
 
     # Impute age and rate
-    # print 'Starting rate imputations for {0}'.format(file)
-    # X = cv_rate.transform(dataframe['content'])
-    # imputed_rate = rf_rate.predict(X)
-    # dataframe['imputed_rate'] = imputed_rate
-    #
-    # print 'Starting age imputations for {0}'.format(file)
-    # X = cv_age.transform(dataframe['content'])
-    # imputed_age = rf_age.predict(X)
-    # dataframe['imputed_age'] = imputed_age
+    print 'Starting rate imputations for {0}'.format(file)
+    X = cv_rate.transform(dataframe['content'])
+    imputed_rate = rf_rate.predict(X)
+    dataframe['imputed_rate'] = imputed_rate
+
+    print 'Starting age imputations for {0}'.format(file)
+    X = cv_age.transform(dataframe['content'])
+    imputed_age = rf_age.predict(X)
+    dataframe['imputed_age'] = imputed_age
 
 
     print 'Imputations done for {0}'.format(file)
@@ -90,30 +89,83 @@ def create_location_files(file):
         else:
             value.to_csv('{0}state_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id)), header=True, encoding='utf-8')
 
-    # end_time = datetime.datetime.now()
-    # total_time = end_time - start_time
-    # results = {'file': file,
-    #            'start_time': start_time,
-    #            'end_time': end_time,
-    #            'total_time': total_time}
-    #
-    # if os.path.isfile(config['log_file']):
-    #     lock.acquire()
-    #     with open(config['log_file'], 'a') as csv_file:
-    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
-    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
-    #         writer.writerow(results)
-    #         csv_file.close()
-    #     lock.release()
-    # else:
-    #     with open(config['log_file'], 'wb') as csv_file:
-    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
-    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
-    #         writer.writeheader()
-    #         writer.writerow(results)
-    #         csv_file.close()
-
     print '*******************Finished file {0}********************************'.format(file)
+
+
+def make_location_stas(file):
+    """
+
+    :param file:
+    :return:
+    """
+    if 'city' in file:
+        file_type = 'city'
+    else:
+        file_type = 'state'
+
+    print 'Starting analysis on {0}'.format(file)
+    dataframe = pandas.read_csv(file)
+
+    print '{0}'.format(len(dataframe))
+    if (len(dataframe) > 100000):
+        print 'Dataframe has size of {0}'.format(str(len(dataframe)))
+        dataframe = dataframe.sample(n=100000)
+        print 'Dataframe sample taken, new size is {0}'.format(str(len(dataframe)))
+
+    make_msa = MakeMSA(dataframe)
+    print 'Calculating stats for file {0}'.format(file)
+    results = make_msa.get_msa_features(file_type)
+    print 'finished file {0}'.format(file)
+
+    if os.path.isfile('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type)):
+        lock.acquire()
+        results.to_csv('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type), header=False, mode='a', encoding='utf-8')
+        lock.release()
+    else:
+        results.to_csv('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type), header=True, encoding='utf-8')
+
+
+def make_ad_stats(file):
+    """
+
+    :param file:
+    :return:
+    """
+    # Get the dataframe from the provided file
+    dataframe = pandas.read_csv(file)
+
+    # Get the city and state location info
+    city_dataframe = pandas.read_csv('{0}location_characteristics_city.csv'.format(config['result_data']))
+    state_dataframe = pandas.read_csv('{0}location_characteristics_state.csv'.format(config['result_data']))
+
+    make_ad = MakeAd(city_dataframe, state_dataframe, dataframe)
+    results = make_ad.get_ad_features()
+
+    if os.path.isfile('{0}ad_characteristics.csv'.format(config['result_data'])):
+        lock.acquire()
+        results.to_csv('{0}ad_characteristics.csv'.format(config['result_data']), header=False, mode='a', encoding='utf-8')
+        lock.release()
+    else:
+        results.to_csv('{0}ad_characteristics.csv'.format(config['result_data']), header=True, encoding='utf-8')
+
+
+def make_entity_stats(file):
+    """
+
+    :param file:
+    :return:
+    """
+    # Get the dataframe from the provided file
+    entity = 'phone'
+    dataframe = pandas.read_csv(file)
+
+    make_entity = MakeEntity(dataframe, entity)
+    results = make_entity.get_entity_features()
+
+    if os.path.isfile('{0}{1}_characteristics.csv'.format(config['result_data'], entity)):
+        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, mode='a', encoding='utf8',index=False)
+    else:
+        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, encoding='utf8', index=False)
 
 def initializeLock(l):
     """
@@ -121,10 +173,35 @@ def initializeLock(l):
     :param l: Lock
     :return:
     """
-
-    # Lock needs to be globad for it to be passed to map
+    # Lock needs to be global for it to be passed to map
     global lock
     lock = l
+
+
+def merge_files(base_file_name):
+    """
+
+    :param base_file_name:
+    :return:
+    """
+    write_directory = config['location_data_merged']
+    all_files = glob.glob('{0}*'.format(base_file_name))
+
+    is_file_created = False
+
+    for file in all_files:
+        if is_file_created:
+            print 'File already exists, appending'
+            dataframe = pandas.read_csv(file)
+            dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), mode='a', header=False, encoding='utf-8')
+        else:
+            print 'File does not exist, creating.'
+            dataframe = pandas.read_csv(file)
+            dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
+            is_file_created = True
+
+    print 'Finished merging {0}'.format(base_file_name)
+
 
 def get_unique_base_file_names(directory):
     all_files_list = glob.glob(directory)
@@ -148,197 +225,101 @@ def get_base_file_name(file_name):
     index = file_name.rfind('_')
     return file_name[:index]
 
-def make_location_stas(file):
 
-    if 'city' in file:
-        file_type = 'city'
-    else:
-        file_type = 'state'
-
-    print 'Starting analysis on {0}'.format(file)
-    dataframe = pandas.read_csv(file)
-
-    print '{0}'.format(len(dataframe))
-    if (len(dataframe) > 100000):
-        print 'Dataframe has size of {0}'.format(str(len(dataframe)))
-        dataframe = dataframe.sample(n=100000)
-        print 'Dataframe sample taken, new size is {0}'.format(str(len(dataframe)))
-
-    make_msa = MakeMSA(dataframe)
-    print 'Calculating stats for file {0}'.format(file)
-    results = make_msa.get_msa_features(file_type)
-    print 'finished file {0}'.format(file)
-    #lock.acquire()
-    if os.path.isfile('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type)):
-        results.to_csv('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type), header=False, mode='a', encoding='utf-8')
-    else:
-        results.to_csv('{0}location_characteristics_{1}.csv'.format(config['result_data'], file_type), header=True, encoding='utf-8')
-    #lock.release()
-
-def make_ad_stats(file):
-
-    # Get the dataframe from the provided file
-    dataframe = pandas.read_csv(file)
-
-    # Get the city and state location info
-    city_dataframe = pandas.read_csv('{0}location_characteristics_city.csv'.format(config['result_data']))
-    state_dataframe = pandas.read_csv('{0}location_characteristics_state.csv'.format(config['result_data']))
-
-    make_ad = MakeAd(city_dataframe, state_dataframe, dataframe)
-    results = make_ad.get_ad_features()
-    lock.acquire()
-    if os.path.isfile('{0}ad_characteristics.csv'.format(config['result_data'])):
-        results.to_csv('{0}ad_characteristics.csv'.format(config['result_data']), header=False, mode='a', encoding='utf-8')
-    else:
-        results.to_csv('{0}ad_characteristics.csv'.format(config['result_data']), header=True, encoding='utf-8')
-    lock.release()
-
-def make_entity_stats(file):
-
-    # Get the dataframe from the provided file
-    entity = 'phone'
-    dataframe = pandas.read_csv(file)
-
-    make_entity = MakeEntity(dataframe, entity)
-    results = make_entity.get_entity_features()
-
-    if os.path.isfile('{0}{1}_characteristics.csv'.format(config['result_data'], entity)):
-        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, mode='a', encoding='utf8',index=False)
-    else:
-        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, encoding='utf8', index=False)
-
-def split_array(data, size=100):
-    return [data[x:x+size] for x in xrange(0, len(data), size)]
-
-
-def split_file(filename):
-    count = 0
-    outfile = gzip.open('{0}{1}_{2}.gz'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
-    for line in gzip.open(filename):
-        if count % 500000 == 0:
-            outfile.close()
-            outfile = gzip.open('{0}{1}_{2}.gz'.format(config['split_file_directory'], os.path.basename(filename), count), 'wb')
-        outfile.write(line)
-        count += 1
-
-    outfile.close()
-    print '****** Finished {0}'.format(filename)
-
-def create_phone_files(file):
-    dataframe = pandas.read_csv(file)
-
-    # Drop all rows without a phone number
-    dataframe = dataframe.dropna(subset=['phone'])
-    dataframe.drop('content', 1, inplace=True)
-    dataframe.drop('age', 1, inplace=True)
-    dataframe.drop('city', 1, inplace=True)
-    dataframe.drop('state', 1, inplace=True)
-    dataframe.drop('city_wikidata_id', 1, inplace=True)
-    dataframe.drop('state_wikidata_id', 1, inplace=True)
-    dataframe.drop(dataframe.columns[0], 1, inplace=True)
-    dataframe.rename(columns={'imputed_rate': 'imputed_price'})
-
-    # Break file up by phone
-    phone_numbers = dataframe.phone.unique()
-    phone_dataframe = {phone_number: pandas.DataFrame() for phone_number in phone_numbers}
-    for key in phone_dataframe.keys():
-        phone_dataframe[key] = dataframe[:][dataframe.phone == key]
-
-    # Check if file already exists for each location, if so then append, if not then create a new file
-    print 'Appending location data to existing files'
-
-    # Lock all processes while work is being done to save files
-    for key, value in phone_dataframe.iteritems():
-        if os.path.isfile('{0}phone_{1}.csv'.format(config['phone_data'], str(key))):
-            lock.acquire()
-            print 'lock has been set for file {0}'.format(file)
-            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), mode='a', header=False, encoding='utf-8')
-            lock.release()
-        else:
-            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), header=True, encoding='utf-8')
-    print 'finished file {0}'.format(file)
-
-
-
-def count_line():
-    count = 0
-    for line in gzip.open('/home/gabriel/Documents/Memex/ad_features/flat_data/data_20160813-0000_1440_2016-07-20.json.gz'):
-        print count
-        count += 1
-
-
-def test_concurrent_filling(key, queue):
-    x = random()
-    d = {key: x}
-    queue.put(d)
-
-    print 'From tester: {0}'.format(str(x))
-
-    return
-
-def process_info(work_queue, end_queue):
-    while True:
-        if not end_queue.empty() and work_queue.empty():
-            break
-        if work_queue.empty():
-            continue
-        output = work_queue.get()
-
-        print 'From processor: {0}'.format(str(output))
-
-    return
-
-def merge_files(base_file_name):
-    write_directory = config['location_data_merged']
-    all_files = glob.glob('{0}*'.format(base_file_name))
-
-    is_file_created = False
-
-    for file in all_files:
-        if is_file_created:
-            print 'File already exists, appending'
-            dataframe = pandas.read_csv(file)
-            dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), mode='a', header=False, encoding='utf-8')
-        else:
-            print 'File does not exist, creating.'
-            dataframe = pandas.read_csv(file)
-            dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
-            is_file_created = True
-
-    print 'Finished merging {0}'.format(base_file_name)
+# def create_phone_files(file):
+#     dataframe = pandas.read_csv(file)
+#
+#     # Drop all rows without a phone number
+#     dataframe = dataframe.dropna(subset=['phone'])
+#     dataframe.drop('content', 1, inplace=True)
+#     dataframe.drop('age', 1, inplace=True)
+#     dataframe.drop('city', 1, inplace=True)
+#     dataframe.drop('state', 1, inplace=True)
+#     dataframe.drop('city_wikidata_id', 1, inplace=True)
+#     dataframe.drop('state_wikidata_id', 1, inplace=True)
+#     dataframe.drop(dataframe.columns[0], 1, inplace=True)
+#     dataframe.rename(columns={'imputed_rate': 'imputed_price'})
+#
+#     # Break file up by phone
+#     phone_numbers = dataframe.phone.unique()
+#     phone_dataframe = {phone_number: pandas.DataFrame() for phone_number in phone_numbers}
+#     for key in phone_dataframe.keys():
+#         phone_dataframe[key] = dataframe[:][dataframe.phone == key]
+#
+#     # Check if file already exists for each location, if so then append, if not then create a new file
+#     print 'Appending location data to existing files'
+#
+#     # Lock all processes while work is being done to save files
+#     for key, value in phone_dataframe.iteritems():
+#         if os.path.isfile('{0}phone_{1}.csv'.format(config['phone_data'], str(key))):
+#             lock.acquire()
+#             print 'lock has been set for file {0}'.format(file)
+#             value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), mode='a', header=False, encoding='utf-8')
+#             lock.release()
+#         else:
+#             value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), header=True, encoding='utf-8')
+#     print 'finished file {0}'.format(file)
 
 if __name__ == '__main__':
     # Load the configuration
     config = Parser().parse_config('config/config.conf', 'AWS')
 
     # Split the files into smaller files, each one containing no more than 500,000 json lines
-    # directory = '{0}*.gz'.format(config['flat_data'])
-    # file_names = glob.glob(directory)
-    # pool = Pool()
-    # pool.imap_unordered(split_file, file_names, 1)
-    # pool.close()
-    # pool.join()
-    #
-    # # From the split files, create a location file for each
-    # print 'Loading rate imputations'
-    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    # print 'Loading age imputations'
-    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-    #
-    # directory = '{0}*.gz'.format(config['split_file_directory'])
-    # file_names = glob.glob(directory)
-    # pool = Pool()
-    # pool.imap_unordered(create_location_files, file_names, 1)
-    # pool.close()
-    # pool.join()
+    directory = '{0}*.gz'.format(config['flat_data'])
+    file_names = glob.glob(directory)
+    pool = Pool()
+    pool.imap_unordered(split_file, file_names, 1)
+    pool.close()
+    pool.join()
+
+    # From the split files, create a location file for each
+    print 'Loading rate imputations'
+    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    print 'Loading age imputations'
+    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+
+    directory = '{0}*.gz'.format(config['split_file_directory'])
+    file_names = glob.glob(directory)
+    pool = Pool()
+    pool.imap_unordered(create_location_files, file_names, 1)
+    pool.close()
+    pool.join()
 
     # Merge all of the files together
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
-    print len(base_list)
     pool = Pool()
-    pool.imap_unordered(merge_files, base_list, 25)
+    pool.imap_unordered(merge_files, base_list, 100)
+    pool.close()
+    pool.join()
+
+    # Calculate stats for each location
+    directory = '{0}*.csv'.format(config['location_data_merged'])
+    file_names = glob.glob(directory)
+
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(make_location_stas, file_names)
+    pool.close()
+    pool.join()
+
+    # Now that we have the location data. Let's calculate stats for each ad.
+    # Since the same ads are in the city and state file, let's only pull from the city files
+    directory = '{0}city*.csv'.format(config['location_data'])
+    file_names = glob.glob(directory)
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(make_ad_stats, file_names)
+    pool.close()
+    pool.join()
+
+    # Lastly, calculate phone stats
+    directory = '{0}city*.csv'.format(config['location_data'])
+    file_names = glob.glob(directory)
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    pool.imap_unordered(make_entity_stats, file_names)
     pool.close()
     pool.join()
 
@@ -546,33 +527,3 @@ if __name__ == '__main__':
     # pool.imap_unordered(create_location_files, file_names, 1)
     # pool.close()
     # pool.join()
-
-    # # Calculate stats for each location
-    # directory = '{0}*.csv'.format(config['location_data'])
-    # file_names = glob.glob(directory)
-    #
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(make_location_stas, file_names)
-    # pool.close()
-    # pool.join()
-    #
-    # # Now that we have the location data. Let's calculate stats for each ad.
-    # # Since the same ads are in the city and state file, let's only pull from the city files
-    # directory = '{0}city*.csv'.format(config['location_data'])
-    # file_names = glob.glob(directory)
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(make_ad_stats, file_names)
-    # pool.close()
-    # pool.join()
-    #
-    # # Lastly, calculate phone stats
-    # directory = '{0}city*.csv'.format(config['location_data'])
-    # file_names = glob.glob(directory)
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(make_entity_stats, file_names)
-    # pool.close()
-    # pool.join()
-
