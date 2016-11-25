@@ -135,6 +135,8 @@ def get_unique_base_file_names(directory):
     for file in all_files_list:
         base_file = get_base_file_name(file)
         if all_files_dict.get(base_file, None):
+            pass
+        else:
             all_files_dict[base_file] = True
 
     for key, value in all_files_dict.iteritems():
@@ -351,7 +353,7 @@ if __name__ == '__main__':
     files_in_use = {}
     lock = Lock()
 
-    get_unique_base_file_names(config['split_file_directory'])
+    get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
 
     # directory = '{0}*'.format(config['flat_data'])
     # file_names = glob.glob(directory)
