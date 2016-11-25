@@ -296,9 +296,11 @@ def merge_files(base_file_name):
 
     for file in all_files:
         if is_file_created:
+            print 'File already exists, appending'
             dataframe = pandas.read_csv(file)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), mode='a', header=False, encoding='utf-8')
         else:
+            print 'File does not exist, creating.'
             dataframe = pandas.read_csv(file)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
             is_file_created = True
