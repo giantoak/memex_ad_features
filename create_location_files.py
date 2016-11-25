@@ -360,6 +360,7 @@ if __name__ == '__main__':
         if len(alive_processes) < max_processes:
             for i in xrange(0, (max_processes - len(alive_processes))):
                 if not file_queue.empty():
+                    print 'Starting new process'
                     p = Process(target=merge_files, args=(file_queue.get(),))
                     p.start()
                     alive_processes.append(p)
