@@ -304,6 +304,8 @@ def merge_files(base_file_name):
             dataframe = pandas.read_csv(file)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
 
+    print 'finished working on {0}'.format(base_file_name)
+
 
 # def monitor_processes():
 #
