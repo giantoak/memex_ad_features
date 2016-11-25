@@ -291,8 +291,10 @@ def process_info(work_queue, end_queue):
     return
 
 def merge_files(base_file_name):
+    print 'working on {0}'.format(base_file_name)
     write_directory = config['location_data_merged']
     all_files = glob.glob('{0}*'.format(base_file_name))
+    print 'Found a total of {0} file for {1}'.format(str(len(all_files)), base_file_name)
 
     is_file_created = False
 
