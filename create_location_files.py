@@ -469,7 +469,7 @@ if __name__ == '__main__':
     # lock = Lock()
     directory = '{0}data_20160810-0000_1440*.gz'.format(config['split_file_directory'])
     file_names = glob.glob(directory)
-    pool = Pool(processes=3)
+    pool = Pool()
     pool.imap_unordered(create_location_files, file_names, 1)
     pool.close()
     pool.join()
