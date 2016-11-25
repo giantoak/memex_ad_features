@@ -22,27 +22,28 @@ def create_location_files(file):
     :return:
     """
     print 'Starting analyis for {0}'.format(file)
-    start_time = datetime.datetime.now()
-    lock.acquire()
-    results = {'file': file,
-               'start_time': start_time,
-               'end_time': None,
-               'total_time': None}
-
-    if os.path.isfile(config['log_file']):
-        with open(config['log_file'], 'a') as csv_file:
-            field_names = ['file', 'start_time', 'end_time', 'total_time']
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writerow(results)
-            csv_file.close()
-    else:
-        with open(config['log_file'], 'wb') as csv_file:
-            field_names = ['file', 'start_time', 'end_time', 'total_time']
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writeheader()
-            writer.writerow(results)
-            csv_file.close()
-    lock.release()
+    process_id = multiprocessing.current_process().pid
+    # start_time = datetime.datetime.now()
+    # lock.acquire()
+    # results = {'file': file,
+    #            'start_time': start_time,
+    #            'end_time': None,
+    #            'total_time': None}
+    #
+    # if os.path.isfile(config['log_file']):
+    #     with open(config['log_file'], 'a') as csv_file:
+    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
+    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
+    #         writer.writerow(results)
+    #         csv_file.close()
+    # else:
+    #     with open(config['log_file'], 'wb') as csv_file:
+    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
+    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
+    #         writer.writeheader()
+    #         writer.writerow(results)
+    #         csv_file.close()
+    # lock.release()
 
     # Get the dataframe from the provided file
     dataframe = gzipped_jsonline_file_to_df(file)
@@ -52,14 +53,14 @@ def create_location_files(file):
 
     # Impute age and rate
     #print 'Starting rate imputations for {0}'.format(file)
-    X = cv_rate.transform(dataframe['content'])
-    imputed_rate = rf_rate.predict(X)
-    dataframe['imputed_rate'] = imputed_rate
-
-    #print 'Starting age imputations for {0}'.format(file)
-    X = cv_age.transform(dataframe['content'])
-    imputed_age = rf_age.predict(X)
-    dataframe['imputed_age'] = imputed_age
+    # X = cv_rate.transform(dataframe['content'])
+    # imputed_rate = rf_rate.predict(X)
+    # dataframe['imputed_rate'] = imputed_rate
+    #
+    # #print 'Starting age imputations for {0}'.format(file)
+    # X = cv_age.transform(dataframe['content'])
+    # imputed_age = rf_age.predict(X)
+    # dataframe['imputed_age'] = imputed_age
 
 
     #print 'Imputations done'
@@ -80,71 +81,39 @@ def create_location_files(file):
 
     # Lock all processes while work is being done to save files
     for key, value in city_dataframe.iteritems():
-        if os.path.isfile('{0}city_id_{1}.csv'.format(config['location_data'], str(key))):
-            while True:
-                lock.acquire()
-                print 'lock has been set for file {0}'.format(file)
-                if files_in_use.get(key, None):
-                    lock.release()
-                    print 'file is in use, waiting...'
-                    time.sleep(1)
-                else:
-                    print 'File is not in use, placing it in dict and releasing lock'
-                    files_in_use[key] = True
-                    print 'lock has been relased and key set in dict'
-                    lock.release()
-                    break
-            value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
-            lock.acquire()
-            files_in_use.pop(key)
-            lock.release()
+        if os.path.isfile('{0}city_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id))):
+            value.to_csv('{0}city_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id)), mode='a', header=False, encoding='utf-8')
         else:
-            value.to_csv('{0}city_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
+            value.to_csv('{0}city_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id)), header=True, encoding='utf-8')
 
     for key, value in state_dataframe.iteritems():
-        if os.path.isfile('{0}state_id_{1}.csv'.format(config['location_data'], str(key))):
-            while True:
-                lock.acquire()
-                print 'lock has been set for file {0}'.format(file)
-                if files_in_use.get(key, None):
-                    lock.release()
-                    print 'file is in use, waiting...'
-                    time.sleep(1)
-                else:
-                    print 'File is not in use, placing it in dict and releasing lock'
-                    files_in_use[key] = True
-                    print 'lock has been relased and key set in dict'
-                    lock.release()
-                    break
-            value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), mode='a', header=False, encoding='utf-8')
-            lock.acquire()
-            files_in_use.pop(key)
-            lock.release()
+        if os.path.isfile('{0}state_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id))):
+            value.to_csv('{0}state_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id)), mode='a', header=False, encoding='utf-8')
         else:
-            value.to_csv('{0}state_id_{1}.csv'.format(config['location_data'], str(key)), header=True, encoding='utf-8')
+            value.to_csv('{0}state_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id)), header=True, encoding='utf-8')
 
-    end_time = datetime.datetime.now()
-    total_time = end_time - start_time
-    results = {'file': file,
-               'start_time': start_time,
-               'end_time': end_time,
-               'total_time': total_time}
-
-    if os.path.isfile(config['log_file']):
-        lock.acquire()
-        with open(config['log_file'], 'a') as csv_file:
-            field_names = ['file', 'start_time', 'end_time', 'total_time']
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writerow(results)
-            csv_file.close()
-        lock.release()
-    else:
-        with open(config['log_file'], 'wb') as csv_file:
-            field_names = ['file', 'start_time', 'end_time', 'total_time']
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writeheader()
-            writer.writerow(results)
-            csv_file.close()
+    # end_time = datetime.datetime.now()
+    # total_time = end_time - start_time
+    # results = {'file': file,
+    #            'start_time': start_time,
+    #            'end_time': end_time,
+    #            'total_time': total_time}
+    #
+    # if os.path.isfile(config['log_file']):
+    #     lock.acquire()
+    #     with open(config['log_file'], 'a') as csv_file:
+    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
+    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
+    #         writer.writerow(results)
+    #         csv_file.close()
+    #     lock.release()
+    # else:
+    #     with open(config['log_file'], 'wb') as csv_file:
+    #         field_names = ['file', 'start_time', 'end_time', 'total_time']
+    #         writer = csv.DictWriter(csv_file, fieldnames=field_names)
+    #         writer.writeheader()
+    #         writer.writerow(results)
+    #         csv_file.close()
 
     #print 'lock released for file {0}'.format(file)
 
@@ -405,49 +374,49 @@ if __name__ == '__main__':
 
     # Load the imputation models
     print 'Loading rate imputation models'
-    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    print 'Loading age imputation modelsous'
-    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    # print 'Loading age imputation modelsous'
+    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
 
-    directory = '{0}*'.format(config['split_file_directory'])
-    file_names = glob.glob(directory)
-    file_queue = Queue()
-    for file_name in file_names:
-        file_queue.put(file_name)
-
-    processes = []
-    max_processes = multiprocessing.cpu_count() - 1
-    time.sleep(1)
-    for i in xrange(0, max_processes):
-        if file_queue.empty():
-            break
-        p = Process(target=create_location_files, args=(file_queue.get(),))
-        print 'Starting new process'
-        p.start()
-        processes.append(p)
-
-    while True:
-        alive_processes = []
-        for process in processes:
-            if process.is_alive():
-                alive_processes.append(process)
-
-        time.sleep(5)
-        print 'Currently {0} processes running'.format(str(len(alive_processes)))
-
-        if len(alive_processes) < max_processes:
-            for i in xrange(0, (max_processes - len(alive_processes))):
-                if not file_queue.empty():
-                    p = Process(target=create_location_files, args=(file_queue.get(),))
-                    p.start()
-                    alive_processes.append(p)
-
-        processes = alive_processes
-        if len(processes) == 0:
-            print 'All processes are done'
-            break
+    # directory = '{0}*'.format(config['split_file_directory'])
+    # file_names = glob.glob(directory)
+    # file_queue = Queue()
+    # for file_name in file_names:
+    #     file_queue.put(file_name)
+    #
+    # processes = []
+    # max_processes = multiprocessing.cpu_count() - 2
+    # time.sleep(1)
+    # for i in xrange(0, max_processes):
+    #     if file_queue.empty():
+    #         break
+    #     p = Process(target=create_location_files, args=(file_queue.get(),))
+    #     print 'Starting new process'
+    #     p.start()
+    #     processes.append(p)
+    #
+    # while True:
+    #     alive_processes = []
+    #     for process in processes:
+    #         if process.is_alive():
+    #             alive_processes.append(process)
+    #
+    #     time.sleep(5)
+    #     print 'Currently {0} processes running'.format(str(len(alive_processes)))
+    #
+    #     if len(alive_processes) < max_processes:
+    #         for i in xrange(0, (max_processes - len(alive_processes))):
+    #             if not file_queue.empty():
+    #                 p = Process(target=create_location_files, args=(file_queue.get(),))
+    #                 p.start()
+    #                 alive_processes.append(p)
+    #
+    #     processes = alive_processes
+    #     if len(processes) == 0:
+    #         print 'All processes are done'
+    #         break
 
                     # print 'All files have been consumed by a process, waiting for process to end'
     # for process in processes:
@@ -498,10 +467,12 @@ if __name__ == '__main__':
     #     process.join()
 
     # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(create_location_files, file_names, 1)
-    # pool.close()
-    # pool.join()
+    directory = '{0}data_20160810-0000_1440*.gz'.format(config['split_file_directory'])
+    file_names = glob.glob(directory)
+    pool = Pool(processes=3)
+    pool.imap_unordered(create_location_files, file_names, 1)
+    pool.close()
+    pool.join()
 
     # # Calculate stats for each location
     # directory = '{0}*.csv'.format(config['location_data'])
