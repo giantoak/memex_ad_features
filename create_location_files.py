@@ -375,7 +375,7 @@ if __name__ == '__main__':
 
     base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
     pool = Pool()
-    pool.imap_unordered(merge_files, base_list, 1)
+    pool.imap_unordered(merge_files, base_list)
     pool.close()
     pool.join()
 
