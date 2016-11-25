@@ -52,18 +52,18 @@ def create_location_files(file):
     dataframe.drop_duplicates()
 
     # Impute age and rate
-    #print 'Starting rate imputations for {0}'.format(file)
-    # X = cv_rate.transform(dataframe['content'])
-    # imputed_rate = rf_rate.predict(X)
-    # dataframe['imputed_rate'] = imputed_rate
-    #
-    # #print 'Starting age imputations for {0}'.format(file)
-    # X = cv_age.transform(dataframe['content'])
-    # imputed_age = rf_age.predict(X)
-    # dataframe['imputed_age'] = imputed_age
+    print 'Starting rate imputations for {0}'.format(file)
+    X = cv_rate.transform(dataframe['content'])
+    imputed_rate = rf_rate.predict(X)
+    dataframe['imputed_rate'] = imputed_rate
+
+    print 'Starting age imputations for {0}'.format(file)
+    X = cv_age.transform(dataframe['content'])
+    imputed_age = rf_age.predict(X)
+    dataframe['imputed_age'] = imputed_age
 
 
-    #print 'Imputations done'
+    print 'Imputations done for {0}'.format(file)
 
     # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
     city_ids = dataframe.city_wikidata_id.unique()
@@ -77,9 +77,7 @@ def create_location_files(file):
         state_dataframe[key] = dataframe[:][dataframe.state_wikidata_id == key]
 
     # Check if file already exists for each location, if so then append, if not then create a new file
-    #print 'Appending location data to existing files'
-
-    # Lock all processes while work is being done to save files
+    print 'Appending location data to existing files'
     for key, value in city_dataframe.iteritems():
         if os.path.isfile('{0}city_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id))):
             value.to_csv('{0}city_id_{1}_{2}.csv'.format(config['location_data'], str(key), str(process_id)), mode='a', header=False, encoding='utf-8')
@@ -115,7 +113,7 @@ def create_location_files(file):
     #         writer.writerow(results)
     #         csv_file.close()
 
-    #print 'lock released for file {0}'.format(file)
+    print '*******************Finished file {0}********************************'.format(file)
 
 def initializeLock(l):
     """
@@ -315,6 +313,21 @@ def merge_files(base_file_name):
 #         print 'Currently {0} processes running'.format(str(len(processes)))
 
 if __name__ == '__main__':
+    config = Parser().parse_config('config/config.conf', 'AWS')
+
+    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    print 'Loading age imputation modelsous'
+    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+
+    directory = '{0}*.gz'.format(config['split_file_directory'])
+    file_names = glob.glob(directory)
+    pool = Pool()
+    pool.imap_unordered(create_location_files, file_names, 1)
+    pool.close()
+    pool.join()
+
     # values = Queue()
     # for i in xrange(0,100):
     #     values.put(i)
@@ -369,12 +382,10 @@ if __name__ == '__main__':
     # p.join()
 
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'AWS')
-    files_in_use = {}
-    lock = Lock()
-
-    base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
-    print len(base_list)
+    # lock = Lock()
+    #
+    # base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
+    # print len(base_list)
     # pool = Pool()
     # pool.imap_unordered(merge_files, base_list)
     # pool.close()
@@ -420,7 +431,7 @@ if __name__ == '__main__':
     #         break
 
     # Load the imputation models
-    print 'Loading rate imputation models'
+    # print 'Loading rate imputation models'
     # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
     # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
     # print 'Loading age imputation modelsous'
