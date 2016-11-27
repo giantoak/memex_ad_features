@@ -14,11 +14,8 @@ class MakeAd:
         self.city_features = city_features
         self.state_features = state_features
         self.ad_df = ad_df
-        self.ad_df.drop(self.ad_df.columns[0], axis=1, inplace=True)
-        self.ad_df.reset_index(inplace=True)
-        #self.ad_df.set_index(keys='_id', inplace=True)
-        x = 3
-        pass
+
+
     def get_ad_features(self):
         """
         Will get the specified ad features
@@ -27,7 +24,6 @@ class MakeAd:
         # Since we need the rate to do any calculations
         # drop all values from the ad that do not have a rate
         df = self.ad_df.dropna(subset=['rate'])
-        #df = self.ad_df
         imputed_rate_df = self.ad_df.dropna(subset=['imputed_rate'])
 
         # Calculate the rate per hour
@@ -71,6 +67,11 @@ class MakeAd:
                                                                'state',
                                                                x['state_wikidata_id']),
                 axis=1)
+        else:
+            df['relative_price_to_city'] = []
+            df['relative_price_to_state'] = []
+            df['relative_quantile_to_city'] = []
+            df['relative_quantile_to_state'] = []
 
         if len(imputed_rate_df):
             # Now get the imputed relative price
@@ -102,6 +103,11 @@ class MakeAd:
                                                                'state',
                                                                x['state_wikidata_id']),
                 axis=1)
+        else:
+            imputed_rate_df['relative_imputed_price_to_city'] = []
+            imputed_rate_df['relative_imputed_price_to_state'] = []
+            imputed_rate_df['relative_imputed_quantile_to_city'] = []
+            imputed_rate_df['relative_imputed_quantile_to_state'] = []
 
         total_df = imputed_rate_df.merge(df, how='outer')
         return total_df

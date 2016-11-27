@@ -2,19 +2,16 @@ import pandas
 import glob
 import cPickle
 import os.path
-import csv
-import datetime
 import gzip
 import multiprocessing
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
 from lattice_json_tools import gzipped_jsonline_file_to_df
-from multiprocessing import Process, Queue, Lock, Pool
+from multiprocessing import Lock, Pool
 from config_parser import Parser
-from random import random
-import time
-
+from model_munge import ItemSelector
+from model_munge import Summarizer
 
 def split_file(filename):
     """
@@ -92,7 +89,7 @@ def create_location_files(file):
     print '*******************Finished file {0}********************************'.format(file)
 
 
-def make_location_stas(file):
+def make_location_stats(file):
     """
 
     :param file:
@@ -132,7 +129,7 @@ def make_ad_stats(file):
     :return:
     """
     # Get the dataframe from the provided file
-    dataframe = pandas.read_csv(file)
+    dataframe = pandas.read_csv(file, index_col=0)
 
     # Get the city and state location info
     city_dataframe = pandas.read_csv('{0}location_characteristics_city.csv'.format(config['result_data']))
@@ -163,9 +160,11 @@ def make_entity_stats(file):
     results = make_entity.get_entity_features()
 
     if os.path.isfile('{0}{1}_characteristics.csv'.format(config['result_data'], entity)):
+        lock.acquire()
         results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, mode='a', encoding='utf8',index=False)
+        lock.release()
     else:
-        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, encoding='utf8', index=False)
+        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=True, encoding='utf8', index=False)
 
 def initializeLock(l):
     """
@@ -192,11 +191,11 @@ def merge_files(base_file_name):
     for file in all_files:
         if is_file_created:
             print 'File already exists, appending'
-            dataframe = pandas.read_csv(file)
+            dataframe = pandas.read_csv(file, index_col=0)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), mode='a', header=False, encoding='utf-8')
         else:
             print 'File does not exist, creating.'
-            dataframe = pandas.read_csv(file)
+            dataframe = pandas.read_csv(file, index_col=0)
             dataframe.to_csv('{0}{1}.csv'.format(write_directory, os.path.basename(base_file_name)), header=True, encoding='utf-8')
             is_file_created = True
 
@@ -225,45 +224,66 @@ def get_base_file_name(file_name):
     index = file_name.rfind('_')
     return file_name[:index]
 
+def get_ht_score(file):
+    dataframe = pandas.read_csv(file)
+    dataframe.rename(columns={'phone': 'phone_1', 'imputed_rate': 'price_imputed', 'imputed_age': 'age_imputed'}, inplace=True)
 
-# def create_phone_files(file):
-#     dataframe = pandas.read_csv(file)
-#
-#     # Drop all rows without a phone number
-#     dataframe = dataframe.dropna(subset=['phone'])
-#     dataframe.drop('content', 1, inplace=True)
-#     dataframe.drop('age', 1, inplace=True)
-#     dataframe.drop('city', 1, inplace=True)
-#     dataframe.drop('state', 1, inplace=True)
-#     dataframe.drop('city_wikidata_id', 1, inplace=True)
-#     dataframe.drop('state_wikidata_id', 1, inplace=True)
-#     dataframe.drop(dataframe.columns[0], 1, inplace=True)
-#     dataframe.rename(columns={'imputed_rate': 'imputed_price'})
-#
-#     # Break file up by phone
-#     phone_numbers = dataframe.phone.unique()
-#     phone_dataframe = {phone_number: pandas.DataFrame() for phone_number in phone_numbers}
-#     for key in phone_dataframe.keys():
-#         phone_dataframe[key] = dataframe[:][dataframe.phone == key]
-#
-#     # Check if file already exists for each location, if so then append, if not then create a new file
-#     print 'Appending location data to existing files'
-#
-#     # Lock all processes while work is being done to save files
-#     for key, value in phone_dataframe.iteritems():
-#         if os.path.isfile('{0}phone_{1}.csv'.format(config['phone_data'], str(key))):
-#             lock.acquire()
-#             print 'lock has been set for file {0}'.format(file)
-#             value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), mode='a', header=False, encoding='utf-8')
-#             lock.release()
-#         else:
-#             value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), header=True, encoding='utf-8')
-#     print 'finished file {0}'.format(file)
+    ht_probs = pipeline.predict_proba(dataframe)[:, 1]
+    dict_result = {'ht_score': ht_probs[0]}
+    result = pandas.DataFrame(index=[dataframe.get_value(0, 1, True)], data=dict_result)
+
+    if os.path.isfile('{0}ht_scores.csv'.format(config['result_data'])):
+        lock.acquire()
+        print 'lock has been set for file {0}'.format(file)
+        result.to_csv('{0}ht_scores.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+        lock.release()
+    else:
+        result.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
+
+
+def create_phone_files(dataframe):
+    # Drop all rows without a phone number
+    dataframe = dataframe.dropna(subset=['phone'])
+
+    # Break file up by phone
+    phone_numbers = dataframe.phone.unique()
+    phone_dataframe = {phone_number: pandas.DataFrame() for phone_number in phone_numbers}
+    for key in phone_dataframe.keys():
+        phone_dataframe[key] = dataframe[:][dataframe.phone == key]
+
+    # Check if file already exists for each location, if so then append, if not then create a new file
+    print 'Appending location data to existing files'
+
+    # Lock all processes while work is being done to save files
+    for key, value in phone_dataframe.iteritems():
+        if os.path.isfile('{0}phone_{1}.csv'.format(config['phone_data'], str(key))):
+            lock.acquire()
+            print 'lock has been set for file {0}'.format(file)
+            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.release()
+        else:
+            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), header=True, encoding='utf-8')
+    print 'finished file {0}'.format(file)
+
+
+def apply_ht_scores(dataframe):
+    # Load the ht score dataframe
+    ht_scores = pandas.read_csv('{0}ht_scores.csv'.format(config['result_data']), index_col=0)
+    final = dataframe.merge(ht_scores, how='left', left_on='phone', right_index=True)
+
+    if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
+        lock.acquire()
+        print 'lock has been set for file {0}'.format(file)
+        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+        lock.release()
+    else:
+        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8')
+
+    x = 5
 
 if __name__ == '__main__':
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'AWS')
-
+    config = Parser().parse_config('config/config.conf', 'Test')
     # Split the files into smaller files, each one containing no more than 500,000 json lines
     directory = '{0}*.gz'.format(config['flat_data'])
     file_names = glob.glob(directory)
@@ -300,7 +320,7 @@ if __name__ == '__main__':
 
     lock = Lock()
     pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.imap_unordered(make_location_stas, file_names)
+    pool.imap_unordered(make_location_stats, file_names)
     pool.close()
     pool.join()
 
@@ -308,20 +328,66 @@ if __name__ == '__main__':
     # Since the same ads are in the city and state file, let's only pull from the city files
     directory = '{0}city*.csv'.format(config['location_data'])
     file_names = glob.glob(directory)
+
     lock = Lock()
     pool = Pool(initializer=initializeLock, initargs=(lock,))
     pool.imap_unordered(make_ad_stats, file_names)
     pool.close()
     pool.join()
 
-    # Lastly, calculate phone stats
+    # Calculate phone stats
+    lock = Lock()
     directory = '{0}city*.csv'.format(config['location_data'])
     file_names = glob.glob(directory)
-    lock = Lock()
     pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
     pool.imap_unordered(make_entity_stats, file_names)
     pool.close()
     pool.join()
+
+    # Now we need the human traficking scores. First get all of the phone numbers in one file
+    chunksize = 100000
+    file_name = '{0}ad_characteristics.csv'.format(config['result_data'])
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    reader = pandas.read_csv(file_name,
+                             chunksize=chunksize,
+                             usecols=['phone',
+                                      'imputed_rate',
+                                      'imputed_age'])
+
+    for chunk in reader:
+        pool.apply_async(create_phone_files, [chunk])
+
+    pool.close()
+    pool.join()
+
+    # Next we need to calculate the human traficking scores
+    lock = Lock()
+    # Load the ht model
+    pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
+    directory = '{0}*.csv'.format(config['phone_data'])
+    file_names = glob.glob(directory)
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(get_ht_score, file_names)
+    pool.close()
+    pool.join()
+
+    # Finally apply the human traficking scores
+    chunksize = 100000
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
+                             chunksize=chunksize, index_col=0)
+
+    for chunk in reader:
+        pool.apply_async(apply_ht_scores, [chunk])
+
+    pool.close()
+    pool.join()
+
+
+
+
 
 
     # values = Queue()
