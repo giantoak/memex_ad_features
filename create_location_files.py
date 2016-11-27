@@ -8,7 +8,7 @@ from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
 from lattice_json_tools import gzipped_jsonline_file_to_df
-from multiprocessing import Lock, Pool
+from multiprocessing import Lock, Pool, Queue, Process
 from config_parser import Parser
 from model_munge import ItemSelector
 from model_munge import Summarizer
@@ -232,13 +232,8 @@ def get_ht_score(file):
     dict_result = {'ht_score': ht_probs[0]}
     result = pandas.DataFrame(index=[dataframe.get_value(0, 1, True)], data=dict_result)
 
-    if os.path.isfile('{0}ht_scores.csv'.format(config['result_data'])):
-        lock.acquire()
-        print 'lock has been set for file {0}'.format(file)
-        result.to_csv('{0}ht_scores.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
-        lock.release()
-    else:
-        result.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
+    print 'Adding data to queue'
+    worker_queue.put(result)
 
 
 def create_phone_files(dataframe):
@@ -281,87 +276,112 @@ def apply_ht_scores(dataframe):
 
     x = 5
 
+def append_ht_scores(worker_queue, ender_queue):
+    append_count = 0
+    while True:
+        if worker_queue.empty() and not ender_queue.empty():
+            return
+        elif not worker_queue.empty():
+            print 'Getting dataframe from queue'
+            if append_count == 0:
+                dataframe = worker_queue.get()
+            else:
+                dataframe = dataframe.append(worker_queue.get())
+            append_count += 1
+        if append_count == 1000:
+            append_count = 0
+            if os.path.isfile('{0}ht_scores.csv'.format(config['result_data'])):
+                dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+            else:
+                dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
+
 if __name__ == '__main__':
     # Load the configuration
     config = Parser().parse_config('config/config.conf', 'Test')
     # Split the files into smaller files, each one containing no more than 500,000 json lines
-    directory = '{0}*.gz'.format(config['flat_data'])
-    file_names = glob.glob(directory)
-    pool = Pool()
-    pool.imap_unordered(split_file, file_names, 1)
-    pool.close()
-    pool.join()
+    # directory = '{0}*.gz'.format(config['flat_data'])
+    # file_names = glob.glob(directory)
+    # pool = Pool()
+    # pool.imap_unordered(split_file, file_names, 1)
+    # pool.close()
+    # pool.join()
+    #
+    # # From the split files, create a location file for each
+    # print 'Loading rate imputations'
+    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    # print 'Loading age imputations'
+    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+    #
+    # directory = '{0}*.gz'.format(config['split_file_directory'])
+    # file_names = glob.glob(directory)
+    # pool = Pool()
+    # pool.imap_unordered(create_location_files, file_names, 1)
+    # pool.close()
+    # pool.join()
+    #
+    # # Merge all of the files together
+    # base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
+    # pool = Pool()
+    # pool.imap_unordered(merge_files, base_list, 100)
+    # pool.close()
+    # pool.join()
+    #
+    # # Calculate stats for each location
+    # directory = '{0}*.csv'.format(config['location_data_merged'])
+    # file_names = glob.glob(directory)
+    #
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,))
+    # pool.imap_unordered(make_location_stats, file_names)
+    # pool.close()
+    # pool.join()
+    #
+    # # Now that we have the location data. Let's calculate stats for each ad.
+    # # Since the same ads are in the city and state file, let's only pull from the city files
+    # directory = '{0}city*.csv'.format(config['location_data'])
+    # file_names = glob.glob(directory)
+    #
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,))
+    # pool.imap_unordered(make_ad_stats, file_names)
+    # pool.close()
+    # pool.join()
+    #
+    # # Calculate phone stats
+    # lock = Lock()
+    # directory = '{0}city*.csv'.format(config['location_data'])
+    # file_names = glob.glob(directory)
+    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    # pool.imap_unordered(make_entity_stats, file_names)
+    # pool.close()
+    # pool.join()
+    #
+    # # Now we need the human traficking scores. First get all of the phone numbers in one file
+    # chunksize = 100000
+    # file_name = '{0}ad_characteristics.csv'.format(config['result_data'])
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,))
+    # reader = pandas.read_csv(file_name,
+    #                          chunksize=chunksize,
+    #                          usecols=['phone',
+    #                                   'imputed_rate',
+    #                                   'imputed_age'])
+    #
+    # for chunk in reader:
+    #     pool.apply_async(create_phone_files, [chunk])
+    #
+    # pool.close()
+    # pool.join()
 
-    # From the split files, create a location file for each
-    print 'Loading rate imputations'
-    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    print 'Loading age imputations'
-    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-
-    directory = '{0}*.gz'.format(config['split_file_directory'])
-    file_names = glob.glob(directory)
-    pool = Pool()
-    pool.imap_unordered(create_location_files, file_names, 1)
-    pool.close()
-    pool.join()
-
-    # Merge all of the files together
-    base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
-    pool = Pool()
-    pool.imap_unordered(merge_files, base_list, 100)
-    pool.close()
-    pool.join()
-
-    # Calculate stats for each location
-    directory = '{0}*.csv'.format(config['location_data_merged'])
-    file_names = glob.glob(directory)
-
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.imap_unordered(make_location_stats, file_names)
-    pool.close()
-    pool.join()
-
-    # Now that we have the location data. Let's calculate stats for each ad.
-    # Since the same ads are in the city and state file, let's only pull from the city files
-    directory = '{0}city*.csv'.format(config['location_data'])
-    file_names = glob.glob(directory)
-
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.imap_unordered(make_ad_stats, file_names)
-    pool.close()
-    pool.join()
-
-    # Calculate phone stats
-    lock = Lock()
-    directory = '{0}city*.csv'.format(config['location_data'])
-    file_names = glob.glob(directory)
-    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    pool.imap_unordered(make_entity_stats, file_names)
-    pool.close()
-    pool.join()
-
-    # Now we need the human traficking scores. First get all of the phone numbers in one file
-    chunksize = 100000
-    file_name = '{0}ad_characteristics.csv'.format(config['result_data'])
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    reader = pandas.read_csv(file_name,
-                             chunksize=chunksize,
-                             usecols=['phone',
-                                      'imputed_rate',
-                                      'imputed_age'])
-
-    for chunk in reader:
-        pool.apply_async(create_phone_files, [chunk])
-
-    pool.close()
-    pool.join()
 
     # Next we need to calculate the human traficking scores
+    worker_queue = Queue()
+    ender_queue = Queue()
+
+    ht_append_process = Process(target=append_ht_scores, args=(worker_queue, ender_queue,))
+    ht_append_process.start()
     lock = Lock()
     # Load the ht model
     pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
@@ -371,6 +391,8 @@ if __name__ == '__main__':
     pool.imap_unordered(get_ht_score, file_names)
     pool.close()
     pool.join()
+    ender_queue.put(True)
+    ht_append_process.join()
 
     # Finally apply the human traficking scores
     chunksize = 100000
