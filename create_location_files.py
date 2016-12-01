@@ -298,6 +298,25 @@ def append_ht_scores(worker_queue, ender_queue):
             else:
                 dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
 
+def remove_content(dataframe):
+    dataframe.drop('content', axis=1, inplace=True)
+    print 'Removed content'
+    worker_queue.put(dataframe)
+
+def append_dataframe(worker_queue, ender_queue, lock):
+    while True:
+        if worker_queue.empty() and not ender_queue.empty():
+            return
+        elif not worker_queue.empty():
+            print 'Getting dataframe from queue'
+            dataframe = worker_queue.get()
+            if os.path.isfile('{0}ad_no_content.csv'.format(config['result_data'])):
+                lock.acquire()
+                dataframe.to_csv('{0}ad_no_content.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+                lock.release()
+            else:
+                dataframe.to_csv('{0}ad_no_content.csv'.format(config['result_data']), header=True, encoding='utf-8')
+
 if __name__ == '__main__':
     # Load the configuration
     config = Parser().parse_config('config/config.conf', 'AWS')
@@ -380,36 +399,60 @@ if __name__ == '__main__':
 
 
     # Next we need to calculate the human traficking scores
+    # worker_queue = Queue()
+    # ender_queue = Queue()
+    #
+    # ht_append_process = Process(target=append_ht_scores, args=(worker_queue, ender_queue,))
+    # ht_append_process.start()
+    # lock = Lock()
+    # # Load the ht model
+    # pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
+    # directory = '{0}*.csv'.format(config['phone_data'])
+    # file_names = glob.glob(directory)
+    # pool = Pool(initializer=initializeLock, initargs=(lock,))
+    # pool.imap_unordered(get_ht_score, file_names)
+    # pool.close()
+    # pool.join()
+    # ender_queue.put(True)
+    # ht_append_process.join()
+    #
+    # # Finally apply the human traficking scores
+    # chunksize = 100000
+    # lock = Lock()
+    # pool = Pool(initializer=initializeLock, initargs=(lock,))
+    # reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
+    #                          chunksize=chunksize, index_col=0)
+    #
+    # for chunk in reader:
+    #     pool.apply_async(apply_ht_scores, [chunk])
+    #
+    # pool.close()
+    # pool.join()
+
+
     worker_queue = Queue()
     ender_queue = Queue()
-
-    ht_append_process = Process(target=append_ht_scores, args=(worker_queue, ender_queue,))
-    ht_append_process.start()
     lock = Lock()
-    # Load the ht model
-    pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
-    directory = '{0}*.csv'.format(config['phone_data'])
-    file_names = glob.glob(directory)
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    pool.imap_unordered(get_ht_score, file_names)
+
+    processes = []
+
+    for x in xrange(0, 10):
+        process = Process(target=append_dataframe, args=(worker_queue, ender_queue, lock))
+        processes.append(process)
+        process.start()
+
+    reader = pandas.read_csv('/home/ubuntu/results/ad_characteristics.csv', index_col=0, chunksize=500000)
+
+    pool = Pool()
+
+    for chunk in reader:
+        pool.apply_async(remove_content, [chunk])
+
     pool.close()
     pool.join()
     ender_queue.put(True)
-    ht_append_process.join()
-
-    # Finally apply the human traficking scores
-    chunksize = 100000
-    lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
-    reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
-                             chunksize=chunksize, index_col=0)
-
-    for chunk in reader:
-        pool.apply_async(apply_ht_scores, [chunk])
-
-    pool.close()
-    pool.join()
-
+    for process in processes:
+        process.join()
 
 
 
