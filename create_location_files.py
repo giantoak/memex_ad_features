@@ -4,6 +4,7 @@ import cPickle
 import os.path
 import gzip
 import multiprocessing
+import re
 from make_msa import MakeMSA
 from make_ad import MakeAd
 from make_entity import MakeEntity
@@ -60,6 +61,9 @@ def create_location_files(file):
 
 
     print 'Imputations done for {0}'.format(file)
+
+    # We no longer need the content, so drop it.
+    dataframe.drop('content', inplace=True, axis=1)
 
     # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
     city_ids = dataframe.city_wikidata_id.unique()
@@ -239,6 +243,7 @@ def get_ht_score(file):
 def create_phone_files(dataframe):
     # Drop all rows without a phone number
     dataframe = dataframe.dropna(subset=['phone'])
+    dataframe['phone'] = dataframe['phone'].map(lambda x: re.sub('[^0-9]', '', str(x)))
 
     # Break file up by phone
     phone_numbers = dataframe.phone.unique()
@@ -264,6 +269,9 @@ def create_phone_files(dataframe):
 def apply_ht_scores(dataframe):
     # Load the ht score dataframe
     ht_scores = pandas.read_csv('{0}ht_scores.csv'.format(config['result_data']), index_col=0)
+    dataframe['phone'] = dataframe['phone'].map(lambda x: re.sub('[^0-9]', '', str(x)))
+    # Make the column a numeric column for merging
+    dataframe['phone'] = pandas.to_numeric(dataframe['phone'])
     final = dataframe.merge(ht_scores, how='left', left_on='phone', right_index=True)
 
     if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
@@ -298,366 +306,119 @@ def append_ht_scores(worker_queue, ender_queue):
             else:
                 dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
 
-def remove_content(dataframe):
-    dataframe.drop('content', axis=1, inplace=True)
-    print 'Removed content'
-    worker_queue.put(dataframe)
-
-def append_dataframe(worker_queue, ender_queue, lock):
-    while True:
-        if worker_queue.empty() and not ender_queue.empty():
-            return
-        elif not worker_queue.empty():
-            print 'Getting dataframe from queue'
-            dataframe = worker_queue.get()
-            if os.path.isfile('{0}ad_no_content.csv'.format(config['result_data'])):
-                lock.acquire()
-                dataframe.to_csv('{0}ad_no_content.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
-                lock.release()
-            else:
-                dataframe.to_csv('{0}ad_no_content.csv'.format(config['result_data']), header=True, encoding='utf-8')
-
 if __name__ == '__main__':
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'AWS')
+    config = Parser().parse_config('config/config.conf', 'Test')
     # Split the files into smaller files, each one containing no more than 500,000 json lines
-    # directory = '{0}*.gz'.format(config['flat_data'])
-    # file_names = glob.glob(directory)
-    # pool = Pool()
-    # pool.imap_unordered(split_file, file_names, 1)
-    # pool.close()
-    # pool.join()
-    #
-    # # From the split files, create a location file for each
-    # print 'Loading rate imputations'
-    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    # print 'Loading age imputations'
-    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-    #
-    # directory = '{0}*.gz'.format(config['split_file_directory'])
-    # file_names = glob.glob(directory)
-    # pool = Pool()
-    # pool.imap_unordered(create_location_files, file_names, 1)
-    # pool.close()
-    # pool.join()
-    #
-    # # Merge all of the files together
-    # base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
-    # pool = Pool()
-    # pool.imap_unordered(merge_files, base_list, 100)
-    # pool.close()
-    # pool.join()
-    #
-    # # Calculate stats for each location
-    # directory = '{0}*.csv'.format(config['location_data_merged'])
-    # file_names = glob.glob(directory)
-    #
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # pool.imap_unordered(make_location_stats, file_names)
-    # pool.close()
-    # pool.join()
-    #
-    # # Now that we have the location data. Let's calculate stats for each ad.
-    # # Since the same ads are in the city and state file, let's only pull from the city files
-    # directory = '{0}city*.csv'.format(config['location_data'])
-    # file_names = glob.glob(directory)
-    #
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # pool.imap_unordered(make_ad_stats, file_names)
-    # pool.close()
-    # pool.join()
-    #
-    # # Calculate phone stats
-    # lock = Lock()
-    # directory = '{0}city*.csv'.format(config['location_data'])
-    # file_names = glob.glob(directory)
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(make_entity_stats, file_names)
-    # pool.close()
-    # pool.join()
-    #
-    # # Now we need the human traficking scores. First get all of the phone numbers in one file
-    # chunksize = 100000
-    # file_name = '{0}ad_characteristics.csv'.format(config['result_data'])
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # reader = pandas.read_csv(file_name,
-    #                          chunksize=chunksize,
-    #                          usecols=['phone',
-    #                                   'imputed_rate',
-    #                                   'imputed_age'])
-    #
-    # for chunk in reader:
-    #     pool.apply_async(create_phone_files, [chunk])
-    #
-    # pool.close()
-    # pool.join()
+    directory = '{0}*.gz'.format(config['flat_data'])
+    file_names = glob.glob(directory)
+    pool = Pool()
+    pool.imap_unordered(split_file, file_names, 1)
+    pool.close()
+    pool.join()
+
+    # From the split files, create a location file for each
+    print 'Loading rate imputations'
+    cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
+    rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
+    print 'Loading age imputations'
+    cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
+    rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
+
+    directory = '{0}*.gz'.format(config['split_file_directory'])
+    file_names = glob.glob(directory)
+    pool = Pool()
+    pool.imap_unordered(create_location_files, file_names, 1)
+    pool.close()
+    pool.join()
+
+    # Merge all of the files together
+    base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
+    pool = Pool()
+    pool.imap_unordered(merge_files, base_list, 100)
+    pool.close()
+    pool.join()
+
+    # Calculate stats for each location
+    directory = '{0}*.csv'.format(config['location_data_merged'])
+    file_names = glob.glob(directory)
+
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(make_location_stats, file_names)
+    pool.close()
+    pool.join()
+
+    # Now that we have the location data. Let's calculate stats for each ad.
+    # Since the same ads are in the city and state file, let's only pull from the city files
+    directory = '{0}city*.csv'.format(config['location_data'])
+    file_names = glob.glob(directory)
+
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(make_ad_stats, file_names)
+    pool.close()
+    pool.join()
+
+    # Calculate phone stats
+    lock = Lock()
+    directory = '{0}city*.csv'.format(config['location_data'])
+    file_names = glob.glob(directory)
+    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    pool.imap_unordered(make_entity_stats, file_names)
+    pool.close()
+    pool.join()
+
+    # Now we need the human traficking scores. First get all of the phone numbers in one file
+    chunksize = 100000
+    file_name = '{0}ad_characteristics.csv'.format(config['result_data'])
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    reader = pandas.read_csv(file_name,
+                             chunksize=chunksize,
+                             usecols=['phone',
+                                      'imputed_rate',
+                                      'imputed_age'])
+
+    for chunk in reader:
+        pool.apply_async(create_phone_files, [chunk])
+
+    pool.close()
+    pool.join()
 
 
     # Next we need to calculate the human traficking scores
-    # worker_queue = Queue()
-    # ender_queue = Queue()
-    #
-    # ht_append_process = Process(target=append_ht_scores, args=(worker_queue, ender_queue,))
-    # ht_append_process.start()
-    # lock = Lock()
-    # # Load the ht model
-    # pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
-    # directory = '{0}*.csv'.format(config['phone_data'])
-    # file_names = glob.glob(directory)
-    # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # pool.imap_unordered(get_ht_score, file_names)
-    # pool.close()
-    # pool.join()
-    # ender_queue.put(True)
-    # ht_append_process.join()
-    #
-    # # Finally apply the human traficking scores
-    # chunksize = 100000
-    # lock = Lock()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,))
-    # reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
-    #                          chunksize=chunksize, index_col=0)
-    #
-    # for chunk in reader:
-    #     pool.apply_async(apply_ht_scores, [chunk])
-    #
-    # pool.close()
-    # pool.join()
+    worker_queue = Queue()
+    ender_queue = Queue()
+
+    ht_append_process = Process(target=append_ht_scores, args=(worker_queue, ender_queue,))
+    ht_append_process.start()
+    lock = Lock()
+    # Load the ht model
+    pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
+    directory = '{0}*.csv'.format(config['phone_data'])
+    file_names = glob.glob(directory)
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(get_ht_score, file_names)
+    pool.close()
+    pool.join()
+    ender_queue.put(True)
+    ht_append_process.join()
+
+    # Finally apply the human traficking scores
+    chunksize = 100000
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
+                             chunksize=chunksize, index_col=0)
+
+    for chunk in reader:
+        pool.apply_async(apply_ht_scores, [chunk])
+
+    pool.close()
+    pool.join()
 
 
     worker_queue = Queue()
     ender_queue = Queue()
     lock = Lock()
-
-    processes = []
-
-    for x in xrange(0, 10):
-        process = Process(target=append_dataframe, args=(worker_queue, ender_queue, lock))
-        processes.append(process)
-        process.start()
-
-    reader = pandas.read_csv('/home/ubuntu/results/ad_characteristics.csv', index_col=0, chunksize=500000)
-
-    pool = Pool()
-
-    for chunk in reader:
-        pool.apply_async(remove_content, [chunk])
-
-    pool.close()
-    pool.join()
-    ender_queue.put(True)
-    for process in processes:
-        process.join()
-
-
-
-
-
-    # values = Queue()
-    # for i in xrange(0,100):
-    #     values.put(i)
-    #
-    # processes = []
-    # worker = Queue()
-    # ender = Queue()
-    #
-    # lock = Lock()
-    # max_processes = multiprocessing.cpu_count() - 2
-    # for i in xrange(0, max_processes):
-    #     if values.empty:
-    #         break
-    #     p = Process(target=test_concurrent_filling, args=(values.get(), worker,))
-    #     p.start()
-    #     processes.append(p)
-    #
-    # processor = Process(target=process_info, args=(worker, ender,))
-    # processor.start()
-    #
-    # while True:
-    #     alive_processes = []
-    #     for process in processes:
-    #         if process.is_alive():
-    #             alive_processes.append(process)
-    #
-    #     if len(alive_processes) < max_processes:
-    #         for i in xrange(0, (max_processes - len(alive_processes))):
-    #             if not values.empty():
-    #                 p = Process(target=test_concurrent_filling, args=(values.get(), worker,))
-    #                 p.start()
-    #                 alive_processes.append(p)
-    #
-    #     processes = alive_processes
-    #     if values.empty():
-    #         break
-    #
-    # for process in processes:
-    #     process.join()
-    #
-    # ender.put(True)
-    # processor.join
-
-
-
-    # p.start()
-    # pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
-    # pool.imap_unordered(test_concurrent_filling, input)
-    # pool.close()
-    # pool.join()
-    # ender.put(True)
-    # p.join()
-
-    # Load the configuration
-    # lock = Lock()
-    #
-    # base_list = get_unique_base_file_names('{0}*.csv'.format(config['location_data']))
-    # print len(base_list)
-    # pool = Pool()
-    # pool.imap_unordered(merge_files, base_list)
-    # pool.close()
-    # pool.join()
-
-
-    # directory = '{0}*'.format(config['flat_data'])
-    # file_names = glob.glob(directory)
-    # file_queue = Queue()
-    # for file_name in file_names:
-    #     file_queue.put(file_name)
-    #
-    # processes = []
-    # max_processes = multiprocessing.cpu_count() - 3
-    # time.sleep(1)
-    # for i in xrange(0, max_processes):
-    #     if file_queue.empty():
-    #         break
-    #     p = Process(target=split_file, args=(file_queue.get(),))
-    #     print 'Starting new process'
-    #     p.start()
-    #     processes.append(p)
-    #
-    # while True:
-    #     alive_processes = []
-    #     for process in processes:
-    #         if process.is_alive():
-    #             alive_processes.append(process)
-    #
-    #     time.sleep(5)
-    #     print 'Currently {0} processes running'.format(str(len(alive_processes)))
-    #
-    #     if len(alive_processes) < max_processes:
-    #         for i in xrange(0, (max_processes - len(alive_processes))):
-    #             if not file_queue.empty():
-    #                 p = Process(target=split_file, args=(file_queue.get(),))
-    #                 p.start()
-    #                 alive_processes.append(p)
-    #
-    #     processes = alive_processes
-    #     if len(processes) == 0:
-    #         print 'All processes are done'
-    #         break
-
-    # Load the imputation models
-    # print 'Loading rate imputation models'
-    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    # print 'Loading age imputation modelsous'
-    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-
-    # directory = '{0}*'.format(config['split_file_directory'])
-    # file_names = glob.glob(directory)
-    # file_queue = Queue()
-    # for file_name in file_names:
-    #     file_queue.put(file_name)
-    #
-    # processes = []
-    # max_processes = multiprocessing.cpu_count() - 2
-    # time.sleep(1)
-    # for i in xrange(0, max_processes):
-    #     if file_queue.empty():
-    #         break
-    #     p = Process(target=create_location_files, args=(file_queue.get(),))
-    #     print 'Starting new process'
-    #     p.start()
-    #     processes.append(p)
-    #
-    # while True:
-    #     alive_processes = []
-    #     for process in processes:
-    #         if process.is_alive():
-    #             alive_processes.append(process)
-    #
-    #     time.sleep(5)
-    #     print 'Currently {0} processes running'.format(str(len(alive_processes)))
-    #
-    #     if len(alive_processes) < max_processes:
-    #         for i in xrange(0, (max_processes - len(alive_processes))):
-    #             if not file_queue.empty():
-    #                 p = Process(target=create_location_files, args=(file_queue.get(),))
-    #                 p.start()
-    #                 alive_processes.append(p)
-    #
-    #     processes = alive_processes
-    #     if len(processes) == 0:
-    #         print 'All processes are done'
-    #         break
-
-                    # print 'All files have been consumed by a process, waiting for process to end'
-    # for process in processes:
-    #     process.join()
-
-    # Load the imputation models
-    # print 'Loading rate imputation models'
-    # cv_rate = cPickle.load(open(config['price_imputation_text_extractor_location'], 'rb'))
-    # rf_rate = cPickle.load(open(config['price_imputation_model_location'], 'rb'))
-    # print 'Loading age imputation modelsous'
-    # cv_age = cPickle.load(open(config['age_imputation_text_extractor_location'], 'rb'))
-    # rf_age = cPickle.load(open(config['age_imputation_model_location'], 'rb'))
-    #
-    # # Now we take all of the files that have been split and split them further by state wiki id and city wiki id
-    # directory = '{0}*.gz'.format(config['split_file_directory'])
-    # file_names = glob.glob(directory)
-    # file_queue = Queue()
-    # for file_name in file_names:
-    #     file_queue.put(file_name)
-    #
-    # processes = []
-    # max_processes = multiprocessing.cpu_count() - 2
-    # for i in xrange(0, max_processes):
-    #     if file_queue.empty:
-    #         break
-    #     p = Process(target=create_location_files, args=(file_queue.get(),))
-    #     p.start()
-    #     processes.append(p)
-    #
-    # while True:
-    #     alive_processes = []
-    #     for process in processes:
-    #         if process.is_alive():
-    #             alive_processes.append(process)
-    #
-    #     if len(alive_processes) < max_processes:
-    #         for i in xrange(0, (max_processes - len(alive_processes))):
-    #             if not file_queue.empty():
-    #                 p = Process(target=create_location_files, args=(file_queue.get(),))
-    #                 p.start()
-    #                 alive_processes.append(p)
-    #
-    #     processes = alive_processes
-    #     if file_queue.empty():
-    #         break
-    #
-    # for process in processes:
-    #     process.join()
-
-    # lock = Lock()
-    # directory = '{0}data_20160810-0000_1440*.gz'.format(config['split_file_directory'])
-    # file_names = glob.glob(directory)
-    # pool = Pool()
-    # pool.imap_unordered(create_location_files, file_names, 1)
-    # pool.close()
-    # pool.join()
