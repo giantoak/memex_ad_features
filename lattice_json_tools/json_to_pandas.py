@@ -8,14 +8,23 @@ def gzipped_jsonline_file_to_df(fpath):
     import gzip
     from numpy import nan
 
-    cols_to_use = ['_id', 'age',
+    """cols_to_use = ['_id', 'age',
                    'email', 'flag',
                    # 'location_city_lat_lon', 'location_state_lat_lon',
                    'location_city_name', 'location_state_name',
                    'location_city_wikidata_id', 'location_state_wikidata_id',
-                   'phone', 'postdatetime',
-                   'rate',
-                   'content']
+                   'phone', 'postdatetime', 'content',
+                   'rate']"""
+
+    cols_to_use = ['_id',
+                   'age',
+                   'location_city_name',
+                   'location_state_name',
+                   'location_city_wikidata_id',
+                   'location_state_wikidata_id',
+                   'phone',
+                   'content',
+                   'rate']
 
     df = DataFrame.from_records((json.loads(line) for line in gzip.open(fpath)),
                                 columns=cols_to_use)
@@ -38,11 +47,12 @@ def gzipped_jsonline_file_to_df(fpath):
     df.age = df.age.astype(float)
     df.city_wikidata_id = df.city_wikidata_id.fillna(-1).astype(int)
     df.state_wikidata_id = df.state_wikidata_id.fillna(-1).astype(int)
+    df.content.fillna('',inplace=True)
 
     # For the moment, we are dropping all entities with no age or rate
     # to save memory
-    df = df.dropna(how='all',
-                   subset=['age', 'rate'])
+    """df = df.dropna(how='all',
+                   subset=['age', 'rate'])"""
 
     return df.drop_duplicates()
 
