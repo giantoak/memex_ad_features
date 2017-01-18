@@ -3,5 +3,5 @@ pandas==0.18.1
 python-dateutil==2.5.3
 pytz==2016.4
 six==1.10.0
-tqdm==4.8.3
+tqdm==4.8.4
 ujson==1.35
