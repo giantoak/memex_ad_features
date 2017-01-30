@@ -62,9 +62,6 @@ def create_location_files(file):
 
     print 'Imputations done for {0}'.format(file)
 
-    # We no longer need the content, so drop it.
-    dataframe.drop('content', inplace=True, axis=1)
-
     # Get data frames by city ids and then create a dictionary containing a city id as the key and a dataframe for that city as the value
     city_ids = dataframe.city_wikidata_id.unique()
     city_dataframe = {city_id : pandas.DataFrame() for city_id in city_ids}
@@ -274,13 +271,16 @@ def apply_ht_scores(dataframe):
     dataframe['phone'] = pandas.to_numeric(dataframe['phone'])
     final = dataframe.merge(ht_scores, how='left', left_on='phone', right_index=True)
 
+    # Drop the content column and drop the index column
+    final.drop('content', axis=1, inplace=True)
+
     if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
         lock.acquire()
         print 'lock has been set for file {0}'.format(file)
-        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8', index=False)
         lock.release()
     else:
-        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8')
+        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8', index=False)
 
 def append_ht_scores(worker_queue, ender_queue):
     append_count = 0
