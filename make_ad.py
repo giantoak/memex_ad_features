@@ -1,9 +1,6 @@
 import pandas as pd
-import pandas
-import os
 from helpers import mean_hourly_rate_df
 from tqdm import tqdm
-from config_parser import Parser
 
 quantiles = ['rate_ad_p{}_msa'.format(str(i).zfill(2))
              for i in range(5, 96, 5)]
@@ -14,7 +11,6 @@ class MakeAd:
         self.city_features = city_features
         self.state_features = state_features
         self.ad_df = ad_df
-
 
     def get_ad_features(self):
         """
@@ -35,7 +31,6 @@ class MakeAd:
 
         # Since we just got rid of the rate column, let's drop the duplicates
         df.drop_duplicates(inplace=True)
-
 
         if len(df) > 0:
             # Now get relative price
@@ -159,21 +154,3 @@ class MakeAd:
             return None
         else:
             return (df.iloc[0][quantiles].searchsorted(rate)[0] + 1) * 5
-
-
-if __name__ == '__main__':
-    config = Parser().parse_config('config/config.conf', 'Test')
-    # Get the dataframe from the provided file
-    file = '/home/gabriel/Documents/Memex/ad_features/location_data/city_id_490584.csv'
-    dataframe = pandas.read_csv(file)
-
-    # Get the city and state location info
-    city_dataframe = pandas.read_csv('{0}location_characteristics_city.csv'.format(config['result_data']))
-    state_dataframe = pandas.read_csv('{0}location_characteristics_state.csv'.format(config['result_data']))
-
-    make_ad = MakeAd(city_dataframe, state_dataframe, dataframe)
-    results = make_ad.get_ad_features()
-    if os.path.isfile('{0}ad_characteristics.csv'.format(config['result_data'])):
-        results.to_csv('{0}ad_characteristics.csv'.format(config['result_data']), header=False, mode='a', encoding='utf-8')
-    else:
-        results.to_csv('{0}ad_characteristics.csv'.format(config['result_data']), header=True, encoding='utf-8')

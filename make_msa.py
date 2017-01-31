@@ -1,10 +1,8 @@
 import pandas as pd
 import numpy as np
 import datetime
-from helpers import mean_hourly_rate_df
 import pandas
-import os
-from make_ad import MakeAd
+from helpers import mean_hourly_rate_df
 
 
 def _calculate_grouped_col_stats(df, grouping_col, stat_col, prefix):
