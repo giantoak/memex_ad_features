@@ -1,0 +1,29 @@
+SHELL := /bin/bash
+### Run process
+make: get_data calculate_features rename convert prepare
+
+### Download all data
+get_data:
+	aws s3 sync s3://giantoak.memex/lattice_data_store/flat /home/ubuntu/flat_data --profile default
+
+### Calculate features
+calculate_features:
+	python /home/ubuntu/memex_ad_features/run_daily.py
+
+### Rename and delete files
+rename:
+    rm /home/ubuntu/results/ad_characteristics.csv
+    mv /home/ubuntu/results/ad_chars_final.csv /home/ubuntu/results/ad_characteristics.csv
+
+### Convert csv to json
+convert:
+    python /home/ubuntu/memex_ad_features/convert_csv_to_json.py
+
+### Prepare files for upload
+prepare:
+    zip /home/ubuntu/results/ad_characteristics.json.zip /home/ubuntu/results/ad_characteristics.json
+    zip /home/ubuntu/results/phone_characteristics.json.zip /home/ubuntu/results/phone_characteristics.json
+    zip /home/ubuntu/results/ht_scores.json.zip /home/ubuntu/results/ht_scores.json
+
+
+
