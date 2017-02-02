@@ -195,7 +195,7 @@ def initializeLock(l):
 
 if __name__ == '__main__':
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'aws')
+    config = Parser().parse_config('config/config.conf', 'AWS')
 
     # Get only the files with a timestamp of today
 
