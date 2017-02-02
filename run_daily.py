@@ -1,7 +1,8 @@
 from config_parser import Parser
-from multiprocessing import Pool, Lock
+from multiprocessing import Pool, Lock, Queue, Process
 from lattice_json_tools import gzipped_jsonline_file_to_df
 from make_ad import MakeAd
+from make_entity import MakeEntity
 import glob
 import gzip
 import os
@@ -57,9 +58,6 @@ def calculate_daily_ad(file):
 
     print 'Imputations done for {0}'.format(file)
 
-    # We no longer need the content, so drop it.
-    dataframe.drop('content', inplace=True, axis=1)
-
     # Get the city and state location info
     city_dataframe = pandas.read_csv('{0}location_characteristics_city.csv'.format(config['result_data']))
     state_dataframe = pandas.read_csv('{0}location_characteristics_state.csv'.format(config['result_data']))
@@ -95,6 +93,90 @@ def apply_ht_scores(dataframe):
         final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8')
 
 
+def create_phone_files(dataframe):
+    # Drop all rows without a phone number
+    dataframe = dataframe.dropna(subset=['phone'])
+    dataframe['phone'] = dataframe['phone'].map(lambda x: re.sub('[^0-9]', '', str(x)))
+
+    # Break file up by phone
+    phone_numbers = dataframe.phone.unique()
+    phone_dataframe = {phone_number: pandas.DataFrame() for phone_number in phone_numbers}
+    for key in phone_dataframe.keys():
+        phone_dataframe[key] = dataframe[:][dataframe.phone == key]
+
+    # Check if file already exists for each location, if so then append, if not then create a new file
+    print 'Appending location data to existing files'
+
+    # Lock all processes while work is being done to save files
+    for key, value in phone_dataframe.iteritems():
+        if os.path.isfile('{0}phone_{1}.csv'.format(config['phone_data'], str(key))):
+            lock.acquire()
+            print 'lock has been set for file {0}'.format(file)
+            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), mode='a', header=False, encoding='utf-8')
+            lock.release()
+        else:
+            value.to_csv('{0}phone_{1}.csv'.format(config['phone_data'], str(key)), header=True, encoding='utf-8')
+    print 'finished file {0}'.format(file)
+
+
+def append_ht_scores(worker_queue, ender_queue):
+    append_count = 0
+    while True:
+        if worker_queue.empty() and not ender_queue.empty():
+            if append_count > 0:
+                if os.path.isfile('{0}ht_scores.csv'.format(config['result_data'])):
+                    dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+                else:
+                    dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
+            return
+        elif not worker_queue.empty():
+            print 'Getting dataframe from queue'
+            if append_count == 0:
+                dataframe = worker_queue.get()
+            else:
+                dataframe = dataframe.append(worker_queue.get())
+            append_count += 1
+        if append_count == 1000:
+            append_count = 0
+            if os.path.isfile('{0}ht_scores.csv'.format(config['result_data'])):
+                dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8')
+            else:
+                dataframe.to_csv('{0}ht_scores.csv'.format(config['result_data']), header=True, encoding='utf-8')
+
+
+def make_entity_stats(file):
+    """
+
+    :param file:
+    :return:
+    """
+    # Get the dataframe from the provided file
+    entity = 'phone'
+    dataframe = pandas.read_csv(file)
+
+    make_entity = MakeEntity(dataframe, entity)
+    results = make_entity.get_entity_features()
+
+    if os.path.isfile('{0}{1}_characteristics.csv'.format(config['result_data'], entity)):
+        lock.acquire()
+        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=False, mode='a', encoding='utf8',index=False)
+        lock.release()
+    else:
+        results.to_csv('{0}{1}_characteristics.csv'.format(config['result_data'], entity), header=True, encoding='utf8', index=False)
+
+
+def get_ht_score(file):
+    dataframe = pandas.read_csv(file)
+    dataframe.rename(columns={'phone': 'phone_1', 'imputed_rate': 'price_imputed', 'imputed_age': 'age_imputed'}, inplace=True)
+
+    ht_probs = pipeline.predict_proba(dataframe)[:, 1]
+    dict_result = {'ht_score': ht_probs[0]}
+    result = pandas.DataFrame(index=[dataframe.get_value(0, 1, True)], data=dict_result)
+
+    print 'Adding data to queue'
+    worker_queue.put(result)
+
+
 def initializeLock(l):
     """
 
@@ -108,7 +190,7 @@ def initializeLock(l):
 
 if __name__ == '__main__':
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'Test')
+    config = Parser().parse_config('config/config.conf', 'aws')
 
     # Get only the files with a timestamp of today
 
@@ -146,8 +228,53 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
+    # Calculate phone stats
+    lock = Lock()
+    directory = '{0}city*.csv'.format(config['location_data'])
+    file_names = glob.glob(directory)
+    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=3)
+    pool.imap_unordered(make_entity_stats, file_names)
+    pool.close()
+    pool.join()
+
+    # Now we need the human traficking scores. First get all of the phone numbers in one file
+    chunksize = 100000
+    file_name = '{0}ad_characteristics.csv'.format(config['result_data'])
+    lock = Lock()
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    reader = pandas.read_csv(file_name,
+                             chunksize=chunksize,
+                             usecols=['phone',
+                                      'imputed_rate',
+                                      'imputed_age'])
+
+    for chunk in reader:
+        pool.apply_async(create_phone_files, [chunk])
+
+    pool.close()
+    pool.join()
+
+    # Next we need to calculate the human traficking scores
+    worker_queue = Queue()
+    ender_queue = Queue()
+
+    ht_append_process = Process(target=append_ht_scores, args=(worker_queue, ender_queue,))
+    ht_append_process.start()
+    lock = Lock()
+    # Load the ht model
+    pipeline = cPickle.load(open(config['ht_score_model'], 'rb'))
+    directory = '{0}*.csv'.format(config['phone_data'])
+    file_names = glob.glob(directory)
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool.imap_unordered(get_ht_score, file_names)
+    pool.close()
+    pool.join()
+    ender_queue.put(True)
+    ht_append_process.join()
+
     # Finally apply the human traficking scores
-    chunksize = 10000
+    chunksize = 100000
+    lock = Lock()
     pool = Pool(initializer=initializeLock, initargs=(lock,))
     reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
                              chunksize=chunksize, index_col=0)
@@ -157,3 +284,6 @@ if __name__ == '__main__':
 
     pool.close()
     pool.join()
+
+    worker_queue = Queue()
+    ender_queue = Queue()
