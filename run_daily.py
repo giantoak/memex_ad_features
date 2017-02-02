@@ -83,6 +83,9 @@ def apply_ht_scores(dataframe):
     dataframe['phone'] = pandas.to_numeric(dataframe['phone'])
     final = dataframe.merge(ht_scores, how='left', left_on='phone', right_index=True)
 
+    # Drop the content column and drop the index column
+    final.drop('content', axis=1, inplace=True)
+
     if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
         lock.acquire()
         print 'lock has been set for file {0}'.format(file)
