@@ -410,11 +410,12 @@ if __name__ == '__main__':
     # Finally apply the human traficking scores
     chunksize = 100000
     lock = Lock()
-    pool = Pool(initializer=initializeLock, initargs=(lock,))
+    pool = Pool(initializer=initializeLock, initargs=(lock,), processes=1)
     reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
                              chunksize=chunksize, index_col=0)
 
     for chunk in reader:
+        ipdb.set_trace()
         pool.apply_async(apply_ht_scores, [chunk])
 
     pool.close()
