@@ -310,7 +310,7 @@ def append_ht_scores(worker_queue, ender_queue):
 
 if __name__ == '__main__':
     # Load the configuration
-    config = Parser().parse_config('config/config.conf', 'Test')
+    config = Parser().parse_config('config/config.conf', 'AWS')
     # Split the files into smaller files, each one containing no more than 500,000 json lines
     # directory = '{0}*.gz'.format(config['flat_data'])
     # file_names = glob.glob(directory)
