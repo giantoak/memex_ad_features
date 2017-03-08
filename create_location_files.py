@@ -272,17 +272,20 @@ def apply_ht_scores(dataframe):
     final = dataframe.merge(ht_scores, how='left', left_on='phone', right_index=True)
 
     # Drop the content column and drop the index column
-    final.drop('content', axis=1, inplace=True)
     final = final[['_id', 'ht_score']]
     final.set_index('_id', inplace=True)
+
+    new_df = pandas.DataFrame()
+    new_df['ht_score'] = final['ht_score']
+    new_df['_id'] = final['_id']
 
     if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
         lock.acquire()
         print 'lock has been set for file {0}'.format(file)
-        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8', index=False)
+        new_df.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8', index=False)
         lock.release()
     else:
-        final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8', index=False)
+        new_df.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8', index=False)
 
 def append_ht_scores(worker_queue, ender_queue):
     append_count = 0
