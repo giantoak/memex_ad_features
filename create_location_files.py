@@ -410,13 +410,14 @@ if __name__ == '__main__':
     # ht_append_process.join()
 
     # Finally apply the human traficking scores
-    chunksize = 100000
+    chunksize = 1000
     lock = Lock()
     pool = Pool(initializer=initializeLock, initargs=(lock,), processes=1)
     reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
                              chunksize=chunksize, index_col=0)
 
     for chunk in reader:
+        print chunk
         pool.apply_async(apply_ht_scores, [chunk])
         break
 
