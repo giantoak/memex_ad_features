@@ -11,7 +11,6 @@ from make_entity import MakeEntity
 from lattice_json_tools import gzipped_jsonline_file_to_df
 from multiprocessing import Lock, Pool, Queue, Process
 from config_parser import Parser
-import ipdb
 from model_munge import ItemSelector
 from model_munge import Summarizer
 
@@ -266,13 +265,10 @@ def create_phone_files(dataframe):
 
 def apply_ht_scores(dataframe):
     # Load the ht score dataframe
-    print 'Starting apply'
-    ipdb.set_trace()
     ht_scores = pandas.read_csv('{0}ht_scores.csv'.format(config['result_data']), index_col=0)
-    print 'got ht_scores'
     dataframe['phone'] = dataframe['phone'].map(lambda x: re.sub('[^0-9]', '', str(x)))
     # Make the column a numeric column for merging
-    dataframe['phone'] = pandas.to_numeric(dataframe['phone'])
+    #dataframe['phone'] = pandas.to_numeric(dataframe['phone'])
     final = dataframe.merge(ht_scores, how='left', left_on='phone', right_index=True)
 
     # Drop the content column and drop the index column
@@ -410,41 +406,17 @@ if __name__ == '__main__':
     # ht_append_process.join()
 
     # Finally apply the human traficking scores
-    chunksize = 1000
+    chunksize = 100000
     lock = Lock()
-    #pool = Pool(initializer=initializeLock, initargs=(lock,), processes=1)
+    pool = Pool(initializer=initializeLock, initargs=(lock,))
     reader = pandas.read_csv('{0}ad_characteristics.csv'.format(config['result_data']),
                              chunksize=chunksize, index_col=0)
 
     for chunk in reader:
-        # Load the ht score dataframe
-        print 'Starting apply'
-        ipdb.set_trace()
-        ht_scores = pandas.read_csv('{0}ht_scores.csv'.format(config['result_data']), index_col=0)
-        print 'got ht_scores'
-        chunk['phone'] = chunk['phone'].map(lambda x: re.sub('[^0-9]', '', str(x)))
-        # Make the column a numeric column for merging
-        chunk['phone'] = pandas.to_numeric(chunk['phone'])
-        final = chunk.merge(ht_scores, how='left', left_on='phone', right_index=True)
+        pool.apply_async(apply_ht_scores, [chunk])
 
-        # Drop the content column and drop the index column
-        final.drop('content', axis=1, inplace=True)
-
-        if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
-            lock.acquire()
-            print 'lock has been set for file {0}'.format(file)
-            final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), mode='a', header=False, encoding='utf-8', index=False)
-            lock.release()
-        else:
-            final.to_csv('{0}ad_chars_final.csv'.format(config['result_data']), header=True, encoding='utf-8', index=False)
-
-
-        print chunk
-        #pool.apply_async(apply_ht_scores, [chunk])
-        break
-
-    #pool.close()
-    #pool.join()
+    pool.close()
+    pool.join()
 
 
     worker_queue = Queue()
