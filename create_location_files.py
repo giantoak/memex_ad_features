@@ -266,8 +266,10 @@ def create_phone_files(dataframe):
 
 def apply_ht_scores(dataframe):
     # Load the ht score dataframe
+    print 'Starting apply'
     ipdb.set_trace()
     ht_scores = pandas.read_csv('{0}ht_scores.csv'.format(config['result_data']), index_col=0)
+    print 'got ht_scores'
     dataframe['phone'] = dataframe['phone'].map(lambda x: re.sub('[^0-9]', '', str(x)))
     # Make the column a numeric column for merging
     dataframe['phone'] = pandas.to_numeric(dataframe['phone'])
