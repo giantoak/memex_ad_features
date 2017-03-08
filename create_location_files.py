@@ -418,6 +418,7 @@ if __name__ == '__main__':
 
     for chunk in reader:
         pool.apply_async(apply_ht_scores, [chunk])
+        break
 
     pool.close()
     pool.join()
