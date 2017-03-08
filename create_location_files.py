@@ -273,7 +273,8 @@ def apply_ht_scores(dataframe):
 
     # Drop the content column and drop the index column
     final.drop('content', axis=1, inplace=True)
-    final = final['ht_score']
+    final = final[['_id', 'ht_score']]
+    final.set_index('_id', inplace=True)
 
     if os.path.isfile('{0}ad_chars_final.csv'.format(config['result_data'])):
         lock.acquire()
