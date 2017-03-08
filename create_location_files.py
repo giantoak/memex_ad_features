@@ -415,7 +415,6 @@ if __name__ == '__main__':
                              chunksize=chunksize, index_col=0)
 
     for chunk in reader:
-        ipdb.set_trace()
         pool.apply_async(apply_ht_scores, [chunk])
 
     pool.close()
